@@ -42,7 +42,8 @@ const Browse = () => {
   });
   return <div className="min-h-screen flex w-full bg-background">
       <AppSidebar />
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto flex flex-col items-center">
+        <div className="w-full max-w-[1920px]">
 
       <div className="container mx-auto px-4 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -187,7 +188,8 @@ const Browse = () => {
         />
       )}
 
-        <Footer />
+          <Footer />
+        </div>
       </div>
     </div>;
 };

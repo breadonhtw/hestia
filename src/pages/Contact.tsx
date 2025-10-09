@@ -6,7 +6,8 @@ const Contact = () => {
   return (
     <div className="min-h-screen flex w-full bg-background">
       <AppSidebar />
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto flex flex-col items-center">
+        <div className="w-full max-w-[1920px]">
 
       <section className="container mx-auto px-4 lg:px-8 py-24">
         <div className="max-w-2xl mx-auto text-center">
@@ -54,7 +55,8 @@ const Contact = () => {
         </div>
       </section>
 
-        <Footer />
+          <Footer />
+        </div>
       </div>
     </div>
   );

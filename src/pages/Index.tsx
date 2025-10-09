@@ -34,8 +34,9 @@ const Index = () => {
   return (
     <div className="min-h-screen flex w-full bg-background">
       <AppSidebar />
-      <div className="flex-1 overflow-auto">
-        <ScrollProgress />
+      <div className="flex-1 overflow-auto flex flex-col items-center">
+        <div className="w-full max-w-[1920px]">
+          <ScrollProgress />
 
       {/* Hero Section with Ethereal Shadow */}
       <HeroShadow variant="sage" intensity="medium">
@@ -227,7 +228,8 @@ const Index = () => {
         </div>
       </section>
 
-        <Footer />
+          <Footer />
+        </div>
       </div>
     </div>
   );
