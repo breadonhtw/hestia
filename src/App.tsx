@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import Browse from "./pages/Browse";
+import Search from "./pages/Search";
 import CreatorProfile from "./pages/CreatorProfile";
 import About from "./pages/About";
 import Join from "./pages/Join";
@@ -24,6 +25,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/browse" element={<Browse />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/creator/:id" element={<CreatorProfile />} />
           <Route path="/about" element={<About />} />
           <Route path="/join" element={<Join />} />

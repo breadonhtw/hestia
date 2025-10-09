@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
@@ -8,6 +9,7 @@ export const TopSearchBar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
+  const navigate = useNavigate();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (latest > 50) {
@@ -16,6 +18,18 @@ export const TopSearchBar = () => {
       setIsScrolled(false);
     }
   });
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <motion.div
@@ -61,6 +75,8 @@ export const TopSearchBar = () => {
                 stiffness: 300,
                 damping: 30,
               }}
+              className="cursor-pointer"
+              onClick={handleSearch}
             >
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </motion.div>
@@ -69,7 +85,8 @@ export const TopSearchBar = () => {
               placeholder="Search creators by name, craft, or location..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-card border-border focus:border-primary focus:ring-primary rounded-xl transition-all duration-300"
+              onKeyDown={handleKeyDown}
+              className="pl-10 bg-card border-border focus:border-primary focus:ring-2 focus:ring-primary rounded-xl transition-all duration-300"
               style={{
                 height: isScrolled ? "2.5rem" : "2.75rem",
               }}
