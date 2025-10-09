@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Instagram, Mail, Heart } from "lucide-react";
-import hestiaLogo from "@/assets/hestia-logo.png";
+import hestiaLogo from "@/assets/hestia-logo.svg";
 export const Footer = () => {
   return <footer className="bg-card border-t border-border mt-24">
       <div className="container mx-auto px-4 lg:px-8 py-12">
@@ -9,9 +9,6 @@ export const Footer = () => {
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-4">
               <img src={hestiaLogo} alt="Hestia" className="h-12" />
-              <span className="font-serif text-2xl font-bold text-foreground">
-                HESTIA
-              </span>
             </Link>
             <p className="text-muted-foreground max-w-sm">
               Celebrating the makers behind your neighborhood's hidden treasures.
