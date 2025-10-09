@@ -1,15 +1,11 @@
-import { AppSidebar } from "@/components/AppSidebar";
-import { TopSearchBar } from "@/components/TopSearchBar";
+import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
 import { Mail, Instagram } from "lucide-react";
 
 const Contact = () => {
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-      <TopSearchBar />
-      <div className="flex-1 overflow-auto flex flex-col items-center md:ml-[70px] pt-20 md:pt-16">
-        <div className="w-full max-w-[1920px]">
+    <PageLayout>
+      <div className="w-full max-w-[1920px]">
 
       <section className="container mx-auto px-4 lg:px-8 py-24">
         <div className="max-w-2xl mx-auto text-center">
@@ -58,9 +54,8 @@ const Contact = () => {
       </section>
 
           <Footer />
-        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

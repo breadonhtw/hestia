@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { AppSidebar } from "@/components/AppSidebar";
-import { TopSearchBar } from "@/components/TopSearchBar";
+import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,11 +72,8 @@ const Join = () => {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-      <TopSearchBar />
-      <div className="flex-1 overflow-auto flex flex-col items-center md:ml-[70px] pt-20 md:pt-16">
-        <div className="w-full max-w-[1920px]">
+    <PageLayout>
+      <div className="w-full max-w-[1920px]">
 
       {/* Hero */}
       <section className="container mx-auto px-4 lg:px-8 py-16 text-center">
@@ -256,9 +252,8 @@ const Join = () => {
       </section>
 
           <Footer />
-        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 
