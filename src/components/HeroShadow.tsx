@@ -55,7 +55,7 @@ export function HeroShadow({
 
   return (
     <div className={`relative min-h-screen ${className}`}>
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 pointer-events-none">
         <EtherealShadow
           color={colors[variant]}
           animation={finalAnimation}

@@ -107,6 +107,7 @@ export function EtherealShadow({
         position: "relative",
         width: "100%",
         height: "100%",
+        pointerEvents: "none",
         ...style
       }}
     >
