@@ -55,17 +55,17 @@ export function HeroShadow({
 
   return (
     <div className={`relative min-h-screen ${className}`}>
-      <EtherealShadow
-        color={colors[variant]}
-        animation={finalAnimation}
-        noise={{ opacity: 0.9, scale: 1.3 }}
-        sizing="fill"
-        className="absolute inset-0"
-      >
-        <div className="relative z-10 h-full">
-          {children}
-        </div>
-      </EtherealShadow>
+      <div className="absolute inset-0">
+        <EtherealShadow
+          color={colors[variant]}
+          animation={finalAnimation}
+          noise={{ opacity: 0.9, scale: 1.3 }}
+          sizing="fill"
+        />
+      </div>
+      <div className="relative z-10 min-h-screen">
+        {children}
+      </div>
     </div>
   );
 }

@@ -169,18 +169,6 @@ export function EtherealShadow({
         />
       </div>
 
-      {children && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 10
-          }}
-        >
-          {children}
-        </div>
-      )}
-
       {noise && noise.opacity > 0 && (
         <div
           style={{
