@@ -387,6 +387,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_artisan_owner: {
+        Args: { _artisan_id: string }
+        Returns: boolean
+      }
       is_following: {
         Args: { _artisan_id: string; _user_id: string }
         Returns: boolean

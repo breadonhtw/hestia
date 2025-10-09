@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CreatorCard } from "@/components/CreatorCard";
 import { creators } from "@/data/creators";
 import { MapPin, Instagram, Globe, Mail } from "lucide-react";
+import { sanitizeUrl, sanitizeEmail, sanitizeInstagramHandle } from "@/lib/sanitize";
 
 const CreatorProfile = () => {
   const { id } = useParams();
@@ -78,7 +79,7 @@ const CreatorProfile = () => {
           <div className="absolute top-8 right-8 flex gap-3">
             {creator.instagram && (
               <a
-                href={`https://instagram.com/${creator.instagram.replace('@', '')}`}
+                href={`https://instagram.com/${sanitizeInstagramHandle(creator.instagram)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background hover:bg-primary flex items-center justify-center transition-all hover:scale-110 shadow-soft"
@@ -88,7 +89,7 @@ const CreatorProfile = () => {
             )}
             {creator.website && (
               <a
-                href={creator.website}
+                href={sanitizeUrl(creator.website)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background hover:bg-primary flex items-center justify-center transition-all hover:scale-110 shadow-soft"
@@ -98,7 +99,7 @@ const CreatorProfile = () => {
             )}
             {creator.email && (
               <a
-                href={`mailto:${creator.email}`}
+                href={`mailto:${sanitizeEmail(creator.email)}`}
                 className="w-10 h-10 rounded-full bg-background hover:bg-primary flex items-center justify-center transition-all hover:scale-110 shadow-soft"
               >
                 <Mail className="h-5 w-5 text-foreground hover:text-primary-foreground" />
@@ -191,7 +192,7 @@ const CreatorProfile = () => {
             Reach out to discuss commissions, ask questions, or just say hello
           </p>
           {creator.email && (
-            <a href={`mailto:${creator.email}`}>
+            <a href={`mailto:${sanitizeEmail(creator.email)}`}>
               <Button
                 size="lg"
                 className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"

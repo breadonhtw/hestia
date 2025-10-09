@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { joinFormSchema } from "@/lib/validations";
 
 const Join = () => {
   const [formData, setFormData] = useState({
@@ -26,10 +27,30 @@ const Join = () => {
     instagram: "",
     phone: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+
+    // Validate with Zod
+    const result = joinFormSchema.safeParse(formData);
+    
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      toast.error("Please fix the form errors");
+      return;
+    }
+
+    // Data is validated and safe to submit
     toast.success("Application submitted! We'll review it and be in touch within 5 business days.");
+    
     // Reset form
     setFormData({
       name: "",
@@ -80,6 +101,7 @@ const Join = () => {
               onChange={handleChange}
               className="bg-background"
             />
+            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
           </div>
 
           <div className="space-y-2">
@@ -93,6 +115,7 @@ const Join = () => {
               onChange={handleChange}
               className="bg-background"
             />
+            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
           </div>
 
           <div className="space-y-2">
@@ -106,6 +129,7 @@ const Join = () => {
               placeholder="e.g., Downtown District"
               className="bg-background"
             />
+            {errors.location && <p className="text-sm text-destructive">{errors.location}</p>}
           </div>
 
           <div className="space-y-2">
@@ -150,6 +174,7 @@ const Join = () => {
             <p className="text-xs text-muted-foreground">
               {formData.story.length}/500 characters
             </p>
+            {errors.story && <p className="text-sm text-destructive">{errors.story}</p>}
           </div>
 
           <div className="space-y-2">
@@ -180,6 +205,7 @@ const Join = () => {
                 placeholder="https://..."
                 className="bg-background"
               />
+              {errors.website && <p className="text-sm text-destructive">{errors.website}</p>}
             </div>
 
             <div className="space-y-2">
@@ -192,6 +218,7 @@ const Join = () => {
                 placeholder="@yourusername"
                 className="bg-background"
               />
+              {errors.instagram && <p className="text-sm text-destructive">{errors.instagram}</p>}
             </div>
           </div>
 
@@ -205,6 +232,7 @@ const Join = () => {
               onChange={handleChange}
               className="bg-background"
             />
+            {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
           </div>
 
           <div className="pt-6">
