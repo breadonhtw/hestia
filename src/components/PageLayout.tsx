@@ -1,23 +1,26 @@
 import { ReactNode } from "react";
-import { AppSidebar } from "@/components/AppSidebar";
-import { TopSearchBar } from "@/components/TopSearchBar";
-import { SidebarAceternity } from "@/components/ui/sidebar-aceternity";
-import { SidebarContentWrapper } from "@/components/SidebarContentWrapper";
+import { NavBar } from "@/components/ui/tubelight-navbar";
+import { Home, Users, Info, UserPlus, Mail } from "lucide-react";
 
 interface PageLayoutProps {
   children: ReactNode;
 }
 
+const navItems = [
+  { name: 'Home', url: '/', icon: Home },
+  { name: 'Browse', url: '/browse', icon: Users },
+  { name: 'About', url: '/about', icon: Info },
+  { name: 'Join', url: '/join', icon: UserPlus },
+  { name: 'Contact', url: '/contact', icon: Mail }
+];
+
 export const PageLayout = ({ children }: PageLayoutProps) => {
   return (
-    <SidebarAceternity>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <TopSearchBar />
-        <SidebarContentWrapper>
-          {children}
-        </SidebarContentWrapper>
-      </div>
-    </SidebarAceternity>
+    <div className="min-h-screen w-full bg-background">
+      <NavBar items={navItems} />
+      <main className="pb-20 sm:pt-20">
+        {children}
+      </main>
+    </div>
   );
 };
