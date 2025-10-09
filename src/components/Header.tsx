@@ -1,19 +1,26 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, Flame } from "lucide-react";
+import { Search, Menu, Flame, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import hestiaLogo from "@/assets/hestia-logo.png";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    const stored = localStorage.getItem('hestia-theme');
+    if (stored) return stored === 'dark';
+    return document.documentElement.classList.contains('dark');
+  });
   const navigate = useNavigate();
+  const { favoritesCount } = useFavorites();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,8 +31,10 @@ export const Header = () => {
   }, []);
 
   const toggleTheme = () => {
+    const newTheme = !isDark;
     document.documentElement.classList.toggle("dark");
-    setIsDark(!isDark);
+    setIsDark(newTheme);
+    localStorage.setItem('hestia-theme', newTheme ? 'dark' : 'light');
   };
 
   const menuItems = [
@@ -78,6 +87,23 @@ export const Header = () => {
 
           {/* Right Icons */}
           <div className="flex items-center gap-4">
+            {/* Favorites */}
+            <Link to="/browse">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-primary/10 relative"
+                aria-label="Favorites"
+              >
+                <Heart className="h-5 w-5 text-primary" />
+                {favoritesCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary">
+                    {favoritesCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -87,8 +113,10 @@ export const Header = () => {
               aria-label="Toggle theme"
             >
               <Flame
-                className={`h-5 w-5 transition-colors ${
-                  isDark ? "text-primary" : "text-primary"
+                className={`h-5 w-5 transition-all duration-500 ${
+                  isDark 
+                    ? "text-primary animate-pulse-glow rotate-12" 
+                    : "text-primary/70 rotate-0"
                 }`}
               />
             </Button>

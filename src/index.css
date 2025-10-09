@@ -88,6 +88,12 @@ All colors MUST be HSL.
     --shadow-lift: 0 4px 20px rgba(0, 0, 0, 0.4);
     --shadow-glow: 0 8px 24px rgba(184, 151, 106, 0.5);
   }
+
+  /* Smooth transitions for theme switching */
+  :root,
+  :root * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
 }
 
 @layer base {
@@ -158,5 +164,55 @@ All colors MUST be HSL.
         rgba(0, 0, 0, 0.02) 4px
       );
     pointer-events: none;
+  }
+
+  /* Skeleton shimmer animation */
+  .shimmer-skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--primary) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Scroll reveal animation */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Perspective for 3D effects */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  /* Confetti animation */
+  @keyframes confetti {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--x), var(--y)) rotate(720deg);
+      opacity: 0;
+    }
   }
 }

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, Heart } from "lucide-react";
 import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface CreatorCardProps {
   creator: Creator;
@@ -12,6 +14,8 @@ interface CreatorCardProps {
 export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [hoverIntent, setHoverIntent] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Random subtle rotation for organic feel
   const baseRotation = (index % 3 - 1) * 1.5; // -1.5, 0, or 1.5 degrees
@@ -26,6 +30,14 @@ export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
   const handleMouseLeave = () => {
     setIsHovered(false);
     setHoverIntent(false);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite(creator.id, creator.name);
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 600);
   };
 
   return (
@@ -48,6 +60,22 @@ export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
             transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
+          {/* Favorite Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleFavoriteClick}
+            className="absolute top-4 right-4 z-10 rounded-full hover:bg-primary/10"
+          >
+            <Heart
+              className={`h-5 w-5 transition-all ${
+                isFavorite(creator.id)
+                  ? "fill-primary text-primary"
+                  : "text-muted-foreground"
+              } ${isAnimating ? "animate-heart-beat" : ""}`}
+            />
+          </Button>
+
           {/* Creator Photo */}
           <div className="mb-4 flex justify-center">
             <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-primary/10">

@@ -1,30 +1,58 @@
 import { Link } from "react-router-dom";
-import { ChevronDown, Sparkles, Users, Quote } from "lucide-react";
+import { ChevronDown, Users, Quote, Palette, Scissors, Hammer, CakeSlice, Gem, Flower, Home, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
+import { ScrollProgress } from "@/components/ScrollProgress";
+import { ThreeJsFlame } from "@/components/ThreeJsFlame";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { useParallax } from "@/hooks/useParallax";
 import { creators } from "@/data/creators";
 import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
   const featuredCreator = creators.find((c) => c.featured);
   const exploreCreators = creators.slice(0, 6);
+  const parallaxOffset = useParallax(0.5);
+  
+  // Scroll reveal hooks for different sections
+  const bentoReveal = useScrollReveal({ threshold: 0.1 });
+  const artisansReveal = useScrollReveal({ threshold: 0.1 });
+  const categoriesReveal = useScrollReveal({ threshold: 0.1 });
+
+  const categoryIcons = {
+    "Pottery & Ceramics": Gem,
+    "Textiles & Fiber Arts": Scissors,
+    "Woodworking": Hammer,
+    "Baked Goods": CakeSlice,
+    "Jewelry": Gem,
+    "Art & Illustration": Palette,
+    "Plants & Florals": Flower,
+    "Home Decor": Home,
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <ScrollProgress />
 
-      {/* Hero Section */}
-      <section
-        className="relative h-screen flex items-center justify-center overflow-hidden"
-        style={{
-          backgroundImage: `url(${heroBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+      {/* Hero Section with Parallax */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Parallax Background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${heroBackground})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            transform: `translateY(${parallaxOffset}px)`,
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-background/20 to-background/60" />
+        
+        {/* Three.js Goddess Flame */}
+        <ThreeJsFlame />
         
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up">
@@ -49,7 +77,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* This Week at Hestia - Bento Grid */}
+      {/* This Week at Hestia - Bento Grid with Scroll Reveal */}
       <section className="container mx-auto px-4 lg:px-8 py-24">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -60,7 +88,10 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div 
+          ref={bentoReveal.ref}
+          className={`grid grid-cols-1 md:grid-cols-12 gap-6 scroll-reveal ${bentoReveal.isVisible ? 'visible' : ''}`}
+        >
           {/* Large Featured Creator Tile */}
           {featuredCreator && (
             <div className="md:col-span-8 md:row-span-2 bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift">
@@ -139,7 +170,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Explore Our Artisans - Uniform Grid */}
+      {/* Explore Our Artisans - Uniform Grid with Scroll Reveal */}
       <section className="container mx-auto px-4 lg:px-8 py-24">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -150,9 +181,18 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-12">
+        <div 
+          ref={artisansReveal.ref}
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-12 scroll-reveal ${artisansReveal.isVisible ? 'visible' : ''}`}
+        >
           {exploreCreators.map((creator, index) => (
-            <CreatorCard key={creator.id} creator={creator} index={index} />
+            <div 
+              key={creator.id}
+              style={{ transitionDelay: `${index * 100}ms` }}
+              className="scroll-reveal"
+            >
+              <CreatorCard creator={creator} index={index} />
+            </div>
           ))}
         </div>
 
@@ -169,7 +209,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Browse by Craft Categories */}
+      {/* Browse by Craft Categories with Custom Icons */}
       <section className="bg-primary/5 py-24">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
@@ -178,26 +218,21 @@ const Index = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              "Pottery & Ceramics",
-              "Textiles & Fiber Arts",
-              "Woodworking",
-              "Baked Goods",
-              "Jewelry",
-              "Art & Illustration",
-              "Plants & Florals",
-              "Home Decor",
-            ].map((category) => (
+          <div 
+            ref={categoriesReveal.ref}
+            className={`grid grid-cols-2 md:grid-cols-4 gap-6 scroll-reveal ${categoriesReveal.isVisible ? 'visible' : ''}`}
+          >
+            {Object.entries(categoryIcons).map(([category, Icon], index) => (
               <Link
                 key={category}
                 to="/browse"
-                className="bg-card rounded-xl p-6 text-center hover:shadow-lift transition-all card-lift border-2 border-transparent hover:border-secondary"
+                className="bg-card rounded-xl p-6 text-center hover:shadow-lift transition-all duration-300 card-lift border-2 border-transparent hover:border-primary group"
+                style={{ transitionDelay: `${index * 50}ms` }}
               >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="h-8 w-8 text-primary" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all group-hover:rotate-12">
+                  <Icon className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
                 </div>
-                <h3 className="font-sans font-medium text-foreground">
+                <h3 className="font-sans font-medium text-foreground group-hover:text-primary transition-colors">
                   {category}
                 </h3>
               </Link>
