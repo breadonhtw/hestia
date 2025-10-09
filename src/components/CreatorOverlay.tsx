@@ -129,7 +129,7 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
         {/* Featured Works Section */}
         <div className="px-2">
           <h4 
-            className="featured-works-heading text-center text-lg mb-4 text-[#B8976A] font-semibold uppercase tracking-wider"
+            className="featured-works-heading text-center text-lg mb-4 text-[#B8976A] dark:text-[#D4AF7A] font-semibold uppercase tracking-wider"
           >
             Featured Works
           </h4>
