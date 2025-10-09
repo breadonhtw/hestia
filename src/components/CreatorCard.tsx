@@ -1,0 +1,122 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { MapPin } from "lucide-react";
+import { Creator } from "@/types/creator";
+import { Badge } from "@/components/ui/badge";
+
+interface CreatorCardProps {
+  creator: Creator;
+  index?: number;
+}
+
+export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Random subtle rotation for organic feel
+  const baseRotation = (index % 3 - 1) * 1.5; // -1.5, 0, or 1.5 degrees
+
+  return (
+    <div className="relative perspective-1000">
+      {/* Main Card */}
+      <Link
+        to={`/creator/${creator.id}`}
+        className="block"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div
+          className={`relative bg-card rounded-xl p-6 shadow-soft transition-all duration-[350ms] ease-in-out ${
+            isHovered
+              ? "scale-105 -translate-y-2 shadow-glow z-30 rotate-0"
+              : "hover:shadow-lift"
+          }`}
+          style={{
+            transform: !isHovered ? `rotate(${baseRotation}deg)` : undefined,
+          }}
+        >
+          {/* Creator Photo */}
+          <div className="mb-4 flex justify-center">
+            <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-primary/10">
+              <img
+                src={creator.image}
+                alt={creator.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Creator Info */}
+          <div className="text-center space-y-2">
+            <h3 className="font-serif text-xl font-semibold text-foreground">
+              {creator.name}
+            </h3>
+            <Badge
+              variant="secondary"
+              className="bg-secondary text-secondary-foreground"
+            >
+              {creator.craftType}
+            </Badge>
+            <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {creator.location}
+            </p>
+          </div>
+
+          {/* Work Preview (shown on hover) */}
+          {isHovered && creator.works[1] && (
+            <div className="mt-4 rounded-lg overflow-hidden">
+              <img
+                src={creator.works[1].image}
+                alt={creator.works[1].title}
+                className="w-full h-32 object-cover"
+              />
+            </div>
+          )}
+        </div>
+      </Link>
+
+      {/* Side Cards (Desktop Only - Fan Out on Hover) */}
+      {isHovered && (
+        <>
+          {/* Left Card */}
+          {creator.works[0] && (
+            <div
+              className="hidden lg:block absolute top-0 left-0 w-full h-full pointer-events-none z-20 transition-all duration-[350ms] ease-in-out"
+              style={{
+                transform: "translateX(-120px) rotate(-15deg)",
+                opacity: 0.95,
+              }}
+            >
+              <div className="bg-card rounded-xl p-4 shadow-lift h-full">
+                <img
+                  src={creator.works[0].image}
+                  alt={creator.works[0].title}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Right Card */}
+          {creator.works[2] && (
+            <div
+              className="hidden lg:block absolute top-0 left-0 w-full h-full pointer-events-none z-20 transition-all duration-[350ms] ease-in-out"
+              style={{
+                transform: "translateX(120px) rotate(15deg)",
+                opacity: 0.95,
+              }}
+            >
+              <div className="bg-card rounded-xl p-4 shadow-lift h-full">
+                <img
+                  src={creator.works[2].image}
+                  alt={creator.works[2].title}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};

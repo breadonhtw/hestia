@@ -1,0 +1,231 @@
+import { useState } from "react";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+
+const Join = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    location: "",
+    craftType: "",
+    story: "",
+    specialty: "",
+    website: "",
+    instagram: "",
+    phone: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Application submitted! We'll review it and be in touch within 5 business days.");
+    // Reset form
+    setFormData({
+      name: "",
+      email: "",
+      location: "",
+      craftType: "",
+      story: "",
+      specialty: "",
+      website: "",
+      instagram: "",
+      phone: "",
+    });
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+
+      {/* Hero */}
+      <section className="container mx-auto px-4 lg:px-8 py-16 text-center">
+        <h1 className="font-serif text-5xl md:text-6xl font-bold text-foreground mb-6">
+          Share Your Craft with the Community
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          Join Hestia and connect with people who appreciate handmade
+        </p>
+      </section>
+
+      {/* Form */}
+      <section className="container mx-auto px-4 lg:px-8 pb-24">
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-2xl mx-auto bg-card rounded-xl shadow-soft p-8 md:p-12 space-y-6"
+        >
+          <div className="space-y-2">
+            <Label htmlFor="name">Full Name *</Label>
+            <Input
+              id="name"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email Address *</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="location">Location (City/Neighborhood) *</Label>
+            <Input
+              id="location"
+              name="location"
+              required
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="e.g., Downtown District"
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="craftType">Craft Type *</Label>
+            <Select
+              value={formData.craftType}
+              onValueChange={(value) =>
+                setFormData({ ...formData, craftType: value })
+              }
+              required
+            >
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="Select your craft" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pottery">Pottery & Ceramics</SelectItem>
+                <SelectItem value="textiles">Textiles & Fiber Arts</SelectItem>
+                <SelectItem value="woodwork">Woodworking</SelectItem>
+                <SelectItem value="baked">Baked Goods & Preserves</SelectItem>
+                <SelectItem value="jewelry">Jewelry & Accessories</SelectItem>
+                <SelectItem value="art">Art & Illustration</SelectItem>
+                <SelectItem value="plants">Plants & Florals</SelectItem>
+                <SelectItem value="decor">Home Decor</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="story">Your Story (500 characters max) *</Label>
+            <Textarea
+              id="story"
+              name="story"
+              required
+              value={formData.story}
+              onChange={handleChange}
+              maxLength={500}
+              rows={4}
+              placeholder="Tell us about your journey as a maker..."
+              className="bg-background resize-none"
+            />
+            <p className="text-xs text-muted-foreground">
+              {formData.story.length}/500 characters
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="specialty">What Makes Your Work Special? (300 characters max)</Label>
+            <Textarea
+              id="specialty"
+              name="specialty"
+              value={formData.specialty}
+              onChange={handleChange}
+              maxLength={300}
+              rows={3}
+              className="bg-background resize-none"
+            />
+            <p className="text-xs text-muted-foreground">
+              {formData.specialty.length}/300 characters
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="website">Website URL</Label>
+              <Input
+                id="website"
+                name="website"
+                type="url"
+                value={formData.website}
+                onChange={handleChange}
+                placeholder="https://..."
+                className="bg-background"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="instagram">Instagram Handle</Label>
+              <Input
+                id="instagram"
+                name="instagram"
+                value={formData.instagram}
+                onChange={handleChange}
+                placeholder="@yourusername"
+                className="bg-background"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number (optional)</Label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="pt-6">
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Apply to Join Hestia
+            </Button>
+          </div>
+
+          <p className="text-sm text-muted-foreground text-center pt-4">
+            We'll review your application and be in touch within 5 business days
+          </p>
+        </form>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Join;
