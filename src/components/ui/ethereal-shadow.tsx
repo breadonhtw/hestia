@@ -159,13 +159,17 @@ export function EtherealShadow({
         <div
           style={{
             backgroundColor: color,
+            WebkitMaskImage: `url('/ethereal-mask.png')`,
             maskImage: `url('/ethereal-mask.png')`,
+            WebkitMaskSize: sizing === "stretch" ? "100% 100%" : "cover",
             maskSize: sizing === "stretch" ? "100% 100%" : "cover",
+            WebkitMaskRepeat: "no-repeat",
             maskRepeat: "no-repeat",
+            WebkitMaskPosition: "center",
             maskPosition: "center",
             width: "100%",
             height: "100%"
-          }}
+          } as React.CSSProperties}
         />
       </div>
 
