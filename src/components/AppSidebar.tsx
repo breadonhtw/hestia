@@ -47,7 +47,6 @@ export const AppSidebar = () => {
   const menuItems = [
     { label: "Home", path: "/", Icon: Home },
     { label: "Browse Creators", path: "/browse", Icon: Users },
-    { label: "Logout", path: "/", Icon: LogOut },
   ];
 
   return (
@@ -59,7 +58,9 @@ export const AppSidebar = () => {
           {/* Navigation Links */}
           <div className="mt-8 flex flex-col gap-2">
             {menuItems.map((item, idx) => {
-              const isActive = location.pathname === item.path;
+              const isActive = item.path === "/" 
+                ? location.pathname === "/" 
+                : location.pathname.startsWith(item.path);
               const IconComponent = item.Icon;
               return (
                 <SidebarLink
@@ -67,7 +68,7 @@ export const AppSidebar = () => {
                   link={{
                     label: item.label,
                     href: item.path,
-                    icon: <IconComponent className={`h-5 w-5 transition-colors duration-200 ${isActive ? "text-primary" : "text-foreground"}`} />,
+                    icon: <IconComponent className={`h-5 w-5 transition-colors duration-200 ${isActive ? "text-primary" : "text-muted-foreground"}`} />,
                   }}
                   className={`transition-all duration-200 ${isActive ? "bg-primary/10" : "hover:bg-muted/50"}`}
                 />
