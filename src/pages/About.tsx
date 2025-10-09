@@ -3,7 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Heart, Users, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import hestiaLogo from "@/assets/hestia-logo.png";
+import hestiaLogo from "@/assets/hestia-logo.svg";
 
 const About = () => {
   return (
