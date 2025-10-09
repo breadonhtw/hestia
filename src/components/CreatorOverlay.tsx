@@ -99,12 +99,8 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
         {/* Creator Info */}
         <div className="text-center space-y-2 mb-4">
           <h3 
-            className="creator-name font-serif text-[32px] font-bold"
+            className="creator-name font-serif text-[32px] font-bold text-[#1F4742] dark:text-[#F5F0E8]"
             id="creator-name"
-            style={{
-              color: '#1F4742',
-              textShadow: '0 1px 1px rgba(255,255,255,0.3)'
-            }}
           >
             {creator.name}
           </h3>
@@ -118,7 +114,7 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
           >
             {creator.craftType}
           </Badge>
-          <p className="location-text text-base flex items-center justify-center gap-1.5 mt-2" style={{ color: '#7A8A86' }}>
+          <p className="location-text text-base flex items-center justify-center gap-1.5 mt-2 text-[#7A8A86] dark:text-[#C4B5A5]">
             <MapPin className="h-4 w-4" style={{ color: '#B8976A' }} />
             {creator.location}
           </p>
@@ -133,8 +129,7 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
         {/* Featured Works Section */}
         <div className="px-2">
           <h4 
-            className="featured-works-heading text-center text-lg mb-4"
-            style={{ color: '#B8976A', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+            className="featured-works-heading text-center text-lg mb-4 text-[#B8976A] font-semibold uppercase tracking-wider"
           >
             Featured Works
           </h4>
