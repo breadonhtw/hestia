@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
+import { TopSearchBar } from "@/components/TopSearchBar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CreatorCard } from "@/components/CreatorCard";
@@ -12,10 +13,11 @@ const CreatorProfile = () => {
   const creator = creators.find((c) => c.id === id);
 
   if (!creator) {
-    return (
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 overflow-auto flex flex-col items-center md:ml-[70px] mt-16 md:mt-0">
+  return (
+    <div className="min-h-screen flex w-full bg-background">
+      <AppSidebar />
+      <TopSearchBar />
+      <div className="flex-1 overflow-auto flex flex-col items-center md:ml-[70px] pt-20 md:pt-16">
           <div className="w-full max-w-[1920px]">
         <div className="container mx-auto px-4 py-24 text-center">
           <h1 className="font-serif text-4xl font-bold mb-4">Creator Not Found</h1>
