@@ -38,15 +38,15 @@ export const TopSearchBar = () => {
       animate={{ 
         y: 0, 
         opacity: 1,
-        paddingTop: isScrolled ? "1rem" : "1.5rem",
-        paddingBottom: isScrolled ? "1rem" : "1.5rem",
+        paddingTop: isScrolled ? "0.5rem" : "0.75rem",
+        paddingBottom: isScrolled ? "0.5rem" : "0.75rem",
       }}
       transition={{
         type: "spring",
         stiffness: 300,
         damping: 30,
       }}
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      className="fixed top-0 left-14 right-0 lg:left-0 z-50 transition-all duration-300"
     >
       <motion.div 
         className="max-w-3xl mx-auto md:ml-auto md:mr-auto px-4 md:px-8"
@@ -61,20 +61,20 @@ export const TopSearchBar = () => {
       >
         <div className="relative">
           <div
-            className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer z-10"
+            className="absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 cursor-pointer z-10"
             onClick={handleSearch}
           >
-            <Search className="h-5 w-5 text-muted-foreground" />
+            <Search className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />
           </div>
           <Input
             type="search"
-            placeholder="Search creators by name, craft, or location..."
+            placeholder="Search creators..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="pl-12 pr-4 bg-card border-border shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-full transition-all duration-300"
+            className="pl-10 lg:pl-12 pr-3 lg:pr-4 text-sm lg:text-base bg-card border-border shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-full transition-all duration-300 h-9 lg:h-auto"
             style={{
-              height: isScrolled ? "2.75rem" : "3.25rem",
+              height: window.innerWidth >= 1024 ? (isScrolled ? "2.75rem" : "3.25rem") : "2.25rem",
             }}
           />
         </div>
