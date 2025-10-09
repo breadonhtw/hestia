@@ -47,20 +47,25 @@ const Browse = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <aside className="lg:w-80 flex-shrink-0">
-            <div className="bg-[#F5F0E8] rounded-xl p-6 shadow-soft sticky top-24 border border-border/30">
+            <div 
+              className="filter-sidebar relative bg-[#F5F0E8] dark:bg-[rgba(245,240,232,0.08)] rounded-xl p-6 shadow-soft sticky top-24 border border-[rgba(160,97,58,0.1)] dark:border-[rgba(245,240,232,0.1)]"
+            >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-serif text-2xl font-semibold text-foreground">
+                <h2 
+                  className="font-serif text-2xl font-semibold"
+                  style={{ color: 'var(--dark-teal, #1F4742)' }}
+                >
                   Refine Your Search
                 </h2>
               </div>
 
               {/* Craft Type Filters */}
               <div className="mb-6">
-                <h3 className="font-medium mb-3">Craft Type</h3>
+                <h3 className="font-medium mb-3" style={{ color: '#2A5A54' }}>Craft Type</h3>
                 <div className="space-y-3">
                   {craftTypes.map(craft => <div key={craft} className="flex items-center space-x-2">
-                      <Checkbox id={craft} checked={selectedCrafts.includes(craft)} onCheckedChange={() => handleCraftToggle(craft)} />
-                      <Label htmlFor={craft} className="text-sm cursor-pointer">
+                      <Checkbox id={craft} checked={selectedCrafts.includes(craft)} onCheckedChange={() => handleCraftToggle(craft)} className="focus-terracotta" />
+                      <Label htmlFor={craft} className="text-sm cursor-pointer" style={{ color: '#2A5A54' }}>
                         {craft}
                       </Label>
                     </div>)}
@@ -69,12 +74,12 @@ const Browse = () => {
 
               {/* Location Filter */}
               <div className="mb-6">
-                <h3 className="font-medium mb-3">Location</h3>
+                <h3 className="font-medium mb-3" style={{ color: '#2A5A54' }}>Location</h3>
                 <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                  <SelectTrigger className="w-full bg-background">
+                  <SelectTrigger className="w-full bg-background dark:bg-[rgba(245,240,232,0.08)] focus-terracotta">
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-[rgba(245,240,232,0.08)]">
                     {locations.map(location => <SelectItem key={location} value={location === "All Locations" ? "all" : location}>
                         {location}
                       </SelectItem>)}
@@ -84,19 +89,19 @@ const Browse = () => {
 
               {/* Availability Filters */}
               <div className="mb-6">
-                <h3 className="font-medium mb-3">Availability</h3>
+                <h3 className="font-medium mb-3" style={{ color: '#2A5A54' }}>Availability</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="accepting-orders" className="text-sm cursor-pointer">
+                    <Label htmlFor="accepting-orders" className="text-sm cursor-pointer" style={{ color: '#2A5A54' }}>
                       Accepting Orders
                     </Label>
-                    <Switch id="accepting-orders" checked={acceptingOrders} onCheckedChange={setAcceptingOrders} />
+                    <Switch id="accepting-orders" checked={acceptingOrders} onCheckedChange={setAcceptingOrders} className="focus-terracotta" />
                   </div>
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="open-commissions" className="text-sm cursor-pointer">
+                    <Label htmlFor="open-commissions" className="text-sm cursor-pointer" style={{ color: '#2A5A54' }}>
                       Open for Commissions
                     </Label>
-                    <Switch id="open-commissions" checked={openForCommissions} onCheckedChange={setOpenForCommissions} />
+                    <Switch id="open-commissions" checked={openForCommissions} onCheckedChange={setOpenForCommissions} className="focus-terracotta" />
                   </div>
                   
                 </div>
@@ -105,15 +110,20 @@ const Browse = () => {
               {/* Newly Joined Filter */}
               <div className="mb-6">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="newly-joined" className="font-medium cursor-pointer">
+                  <Label htmlFor="newly-joined" className="font-medium cursor-pointer" style={{ color: '#2A5A54' }}>
                     Newly Joined
                   </Label>
-                  <Switch id="newly-joined" checked={newlyJoined} onCheckedChange={setNewlyJoined} />
+                  <Switch id="newly-joined" checked={newlyJoined} onCheckedChange={setNewlyJoined} className="focus-terracotta" />
                 </div>
               </div>
 
               {/* Clear Filters */}
-              <Button variant="link" onClick={clearFilters} className="text-secondary p-0 h-auto mb-4 underline">
+              <Button 
+                variant="link" 
+                onClick={clearFilters} 
+                className="p-0 h-auto mb-4 underline dark:text-[#D4AF7A]"
+                style={{ color: '#A0613A' }}
+              >
                 Clear All Filters
               </Button>
 
@@ -128,19 +138,19 @@ const Browse = () => {
           <main className="flex-1">
             {/* Top Bar */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-              <p className="text-muted-foreground">
-                <span className="font-medium text-foreground">
+              <p style={{ color: '#5A6F6B' }} className="dark:text-[#C4B5A5]">
+                <span className="font-medium" style={{ color: '#2A5A54' }}>
                   {filteredCreators.length}
                 </span>{" "}
                 creators found
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Sort by:</span>
+                <span className="text-sm" style={{ color: '#5A6F6B' }}>Sort by:</span>
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-40 dark:bg-[rgba(245,240,232,0.08)] focus-terracotta">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-[rgba(245,240,232,0.08)]">
                     <SelectItem value="featured">Featured</SelectItem>
                     <SelectItem value="newest">Newest</SelectItem>
                     <SelectItem value="a-z">A-Z</SelectItem>

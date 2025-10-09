@@ -89,7 +89,7 @@ export const CreatorCard = ({
 
       {/* Creator Info */}
       <div className="text-center space-y-2">
-        <h3 className="font-serif text-2xl font-semibold text-foreground">
+        <h3 className="font-serif text-2xl font-semibold" style={{ color: '#2A5A54' }}>
           {creator.name}
         </h3>
         <Badge
@@ -97,8 +97,8 @@ export const CreatorCard = ({
         >
           {creator.craftType}
         </Badge>
-        <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-          <MapPin className="h-3 w-3" />
+        <p className="text-sm flex items-center justify-center gap-1" style={{ color: '#7A8A86' }}>
+          <MapPin className="h-3 w-3" style={{ color: '#B8976A' }} />
           {creator.location}
         </p>
       </div>

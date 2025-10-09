@@ -58,13 +58,13 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
         className="creator-card floating-overlay"
         role="dialog"
         aria-modal="true"
-        aria-label={`${creator.name} preview`}
+        aria-labelledby="creator-name"
       >
         {/* Close Button */}
         <button
           className="close-overlay-btn"
           onClick={onClose}
-          aria-label="Close preview"
+          aria-label="Close creator preview"
         >
           <X size={20} />
         </button>
@@ -87,7 +87,7 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
 
         {/* Creator Photo - Enlarged */}
         <div className="mb-4 flex justify-center">
-          <div className="relative w-[160px] h-[160px] rounded-full overflow-hidden border-4 border-primary/10">
+          <div className="relative w-[160px] h-[160px] rounded-full overflow-hidden border-4 border-white shadow-[0_4px_16px_rgba(0,0,0,0.1)]">
             <img
               src={creator.image}
               alt={creator.name}
@@ -98,27 +98,44 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
 
         {/* Creator Info */}
         <div className="text-center space-y-2 mb-4">
-          <h3 className="font-serif text-2xl font-semibold text-foreground">
+          <h3 
+            className="creator-name font-serif text-[32px] font-bold"
+            id="creator-name"
+            style={{
+              color: '#1F4742',
+              textShadow: '0 1px 1px rgba(255,255,255,0.3)'
+            }}
+          >
             {creator.name}
           </h3>
-          <Badge className="bg-secondary text-white text-xs rounded-full px-3 py-1">
+          <Badge 
+            className="text-sm font-bold px-4 py-1.5"
+            style={{
+              backgroundColor: '#A0613A',
+              color: 'white',
+              borderRadius: '20px'
+            }}
+          >
             {creator.craftType}
           </Badge>
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-            <MapPin className="h-3 w-3" />
+          <p className="location-text text-base flex items-center justify-center gap-1.5 mt-2" style={{ color: '#7A8A86' }}>
+            <MapPin className="h-4 w-4" style={{ color: '#B8976A' }} />
             {creator.location}
           </p>
         </div>
 
         {/* Gold Divider */}
         <div
-          className="w-full h-px mx-auto my-4"
-          style={{ background: "#B8976A", opacity: 0.2, maxWidth: "80%" }}
+          className="w-full h-px mx-auto"
+          style={{ background: "#B8976A", opacity: 0.4, marginTop: '24px', marginBottom: '20px' }}
         />
 
         {/* Featured Works Section */}
         <div className="px-2">
-          <h4 className="text-center text-muted-foreground text-sm mb-3">
+          <h4 
+            className="featured-works-heading text-center text-lg mb-4"
+            style={{ color: '#B8976A', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}
+          >
             Featured Works
           </h4>
 
@@ -127,10 +144,13 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
             {creator.works.slice(0, 3).map((work, idx) => (
               <div
                 key={work.title}
-                className="work-thumbnail w-[110px] h-[110px] rounded-lg overflow-hidden hover:scale-105 hover:shadow-lg transition-all cursor-pointer"
+                className="work-thumbnail w-[110px] h-[110px] rounded-xl overflow-hidden"
                 style={{
                   animationDelay: `${idx * 0.1}s`,
                 }}
+                tabIndex={0}
+                role="button"
+                aria-label={`View ${work.title}`}
               >
                 <img
                   src={work.image}
@@ -144,7 +164,25 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
           {/* View Full Profile Button */}
           <Button
             onClick={handleViewProfile}
-            className="w-full h-12 bg-primary text-primary-foreground hover:bg-secondary rounded-xl font-semibold text-base flex items-center justify-center gap-2"
+            className="focus-terracotta w-full font-semibold text-base flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98]"
+            style={{
+              height: '52px',
+              backgroundColor: '#B8976A',
+              color: 'white',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(184, 151, 106, 0.3)',
+              marginTop: '24px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#A0613A';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(160, 97, 58, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#B8976A';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(184, 151, 106, 0.3)';
+            }}
           >
             View Full Profile
             <ArrowRight className="h-5 w-5" />
