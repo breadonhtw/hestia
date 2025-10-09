@@ -98,7 +98,7 @@ export const CreatorOverlay = ({
 
         {/* Featured Works Section */}
         <div className="px-2">
-          <h4 className="featured-works-heading text-center text-lg mb-4 font-semibold uppercase tracking-wider text-zinc-700">
+          <h4 className="featured-works-heading text-center text-lg mb-4 font-semibold uppercase tracking-wider text-yellow-500">
             Featured Works
           </h4>
 
