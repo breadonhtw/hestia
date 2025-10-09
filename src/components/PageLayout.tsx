@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { TopSearchBar } from "@/components/TopSearchBar";
 import { SidebarAceternity } from "@/components/ui/sidebar-aceternity";
@@ -10,12 +10,14 @@ interface PageLayoutProps {
 
 export const PageLayout = ({ children }: PageLayoutProps) => {
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-      <TopSearchBar />
-      <SidebarContentWrapper>
-        {children}
-      </SidebarContentWrapper>
-    </div>
+    <SidebarAceternity>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
+        <TopSearchBar />
+        <SidebarContentWrapper>
+          {children}
+        </SidebarContentWrapper>
+      </div>
+    </SidebarAceternity>
   );
 };
