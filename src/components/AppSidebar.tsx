@@ -33,7 +33,7 @@ const LogoIcon = () => {
 };
 
 export const AppSidebar = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // Collapsed by default
   const [isDark, setIsDark] = useState(() => {
     const stored = localStorage.getItem('hestia-theme');
     if (stored) return stored === 'dark';
@@ -59,20 +59,26 @@ export const AppSidebar = () => {
 
   return (
     <SidebarAceternity open={open} setOpen={setOpen}>
-      <SidebarBody className="justify-between gap-10">
+      <SidebarBody className="justify-between gap-10 fixed">
         <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
           {open ? <Logo /> : <LogoIcon />}
           
-          {/* Search Bar */}
+          {/* Search - Collapsed to icon when closed */}
           <div className="mt-8 mb-4">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder={open ? "Search creators..." : ""}
-                className="pl-10 bg-card border-border focus:border-primary focus:ring-primary rounded-xl"
-              />
-            </div>
+            {open ? (
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search creators..."
+                  className="pl-10 bg-card border-border focus:border-primary focus:ring-primary rounded-xl"
+                />
+              </div>
+            ) : (
+              <button className="w-full flex items-center justify-center p-2 hover:bg-muted rounded-lg transition-colors">
+                <Search className="h-5 w-5 text-foreground" />
+              </button>
+            )}
           </div>
 
           {/* Navigation Links */}

@@ -15,7 +15,7 @@ const CreatorProfile = () => {
     return (
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
-        <div className="flex-1 overflow-auto flex flex-col items-center">
+        <div className="flex-1 overflow-auto flex flex-col items-center md:ml-[70px] mt-16 md:mt-0">
           <div className="w-full max-w-[1920px]">
         <div className="container mx-auto px-4 py-24 text-center">
           <h1 className="font-serif text-4xl font-bold mb-4">Creator Not Found</h1>
@@ -37,7 +37,7 @@ const CreatorProfile = () => {
   return (
     <div className="min-h-screen flex w-full bg-background">
       <AppSidebar />
-      <div className="flex-1 overflow-auto flex flex-col items-center">
+      <div className="flex-1 overflow-auto flex flex-col items-center md:ml-[70px] mt-16 md:mt-0">
         <div className="w-full max-w-[1920px]">
 
       {/* Hero Section with Cover */}
