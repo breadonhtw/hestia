@@ -8,6 +8,8 @@ import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { creators } from "@/data/creators";
 import { HeroShadow } from "@/components/HeroShadow";
+import { GradientText } from "@/components/ui/gradient-text";
+import { FloatingOrbs } from "@/components/ui/floating-orbs";
 
 const Index = () => {
   const featuredCreator = creators.find((c) => c.featured);
@@ -36,10 +38,13 @@ const Index = () => {
 
       {/* Hero Section with Ethereal Shadow */}
       <HeroShadow variant="sage" intensity="medium">
+        <FloatingOrbs count={6} />
         <section className="h-screen flex items-center justify-center overflow-hidden">
           <div className="text-center px-4 max-w-4xl mx-auto">
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
-              Discover the Makers Behind Your Neighborhood's Hidden Treasures
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fade-in-up drop-shadow-lg">
+              <GradientText>
+                Discover the Makers Behind Your Neighborhood's Hidden Treasures
+              </GradientText>
             </h1>
             <p className="font-sans text-xl md:text-2xl text-foreground mb-8 animate-fade-in-up drop-shadow-md" style={{ animationDelay: "0.1s" }}>
               Connect with local artisans crafting beauty from home
@@ -47,7 +52,8 @@ const Index = () => {
             <Link to="/browse">
               <Button
                 size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up"
+                variant="glass"
+                className="px-8 py-6 text-lg animate-fade-in-up"
                 style={{ animationDelay: "0.2s" }}
               >
                 Explore Creators

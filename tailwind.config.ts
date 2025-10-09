@@ -103,6 +103,10 @@ export default {
           "25%": { transform: "scale(1.2)" },
           "50%": { transform: "scale(1)" },
         },
+        "gradient": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -111,6 +115,7 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "heart-beat": "heart-beat 0.6s ease-in-out",
+        "gradient": "gradient 8s linear infinite",
       },
     },
   },
