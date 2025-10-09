@@ -8,7 +8,7 @@ export const SidebarContentWrapper = ({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1024);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -17,7 +17,7 @@ export const SidebarContentWrapper = ({ children }: { children: React.ReactNode 
   
   return (
     <motion.div
-      className="flex-1 overflow-auto flex flex-col items-center pt-20 md:pt-16"
+      className="flex-1 overflow-auto flex flex-col items-center"
       animate={{
         marginLeft: isMobile ? "0" : (open ? "300px" : "70px"),
       }}

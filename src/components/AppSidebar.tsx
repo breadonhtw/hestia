@@ -50,64 +50,62 @@ export const AppSidebar = () => {
   ];
 
   return (
-    <SidebarAceternity open={open} setOpen={setOpen}>
-      <SidebarBody className="justify-between gap-10 fixed">
-        <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-          {open ? <Logo /> : <LogoIcon />}
+    <SidebarBody className="justify-between gap-10 fixed">
+      <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+        {open ? <Logo /> : <LogoIcon />}
 
-          {/* Navigation Links */}
-          <div className="mt-8 flex flex-col gap-2">
-            {menuItems.map((item, idx) => {
-              const isActive = item.path === "/" 
-                ? location.pathname === "/" 
-                : location.pathname.startsWith(item.path);
-              const IconComponent = item.Icon;
-              return (
-                <SidebarLink
-                  key={idx}
-                  link={{
-                    label: item.label,
-                    href: item.path,
-                    icon: <IconComponent className={`h-5 w-5 transition-colors duration-200 ${isActive ? "text-primary" : "text-muted-foreground"}`} />,
-                  }}
-                  className={`transition-all duration-200 ${isActive ? "bg-primary/10" : "hover:bg-muted/50"}`}
-                />
-              );
-            })}
-          </div>
+        {/* Navigation Links */}
+        <div className="mt-8 flex flex-col gap-2">
+          {menuItems.map((item, idx) => {
+            const isActive = item.path === "/" 
+              ? location.pathname === "/" 
+              : location.pathname.startsWith(item.path);
+            const IconComponent = item.Icon;
+            return (
+              <SidebarLink
+                key={idx}
+                link={{
+                  label: item.label,
+                  href: item.path,
+                  icon: <IconComponent className={`h-5 w-5 transition-colors duration-200 ${isActive ? "text-primary" : "text-muted-foreground"}`} />,
+                }}
+                className={`transition-all duration-200 ${isActive ? "bg-primary/10" : "hover:bg-muted/50"}`}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Bottom Section */}
+      <div className="space-y-2">
+        {/* Theme Toggle */}
+        <div
+          onClick={toggleTheme}
+          className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-muted/50 cursor-pointer"
+        >
+          {isDark ? (
+            <Sun className="h-5 w-5 text-primary" />
+          ) : (
+            <Moon className="h-5 w-5 text-primary" />
+          )}
+          {open && <span className="text-foreground text-sm">{isDark ? "Light Mode" : "Dark Mode"}</span>}
         </div>
 
-        {/* Bottom Section */}
-        <div className="space-y-2">
-          {/* Theme Toggle */}
-          <div
-            onClick={toggleTheme}
-            className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-muted/50 cursor-pointer"
-          >
-            {isDark ? (
-              <Sun className="h-5 w-5 text-primary" />
-            ) : (
-              <Moon className="h-5 w-5 text-primary" />
-            )}
-            {open && <span className="text-foreground text-sm">{isDark ? "Light Mode" : "Dark Mode"}</span>}
-          </div>
-
-          {/* Profile */}
-          <Link to="/profile">
-            <div className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-muted/50 cursor-pointer">
-              <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                <User className="h-5 w-5 text-primary-foreground" />
-              </div>
-              {open && (
-                <div className="flex flex-col overflow-hidden">
-                  <span className="text-foreground text-sm font-medium truncate">Guest User</span>
-                  <span className="text-muted-foreground text-xs truncate">View Profile</span>
-                </div>
-              )}
+        {/* Profile */}
+        <Link to="/profile">
+          <div className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-muted/50 cursor-pointer">
+            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+              <User className="h-5 w-5 text-primary-foreground" />
             </div>
-          </Link>
-        </div>
-      </SidebarBody>
-    </SidebarAceternity>
+            {open && (
+              <div className="flex flex-col overflow-hidden">
+                <span className="text-foreground text-sm font-medium truncate">Guest User</span>
+                <span className="text-muted-foreground text-xs truncate">View Profile</span>
+              </div>
+            )}
+          </div>
+        </Link>
+      </div>
+    </SidebarBody>
   );
 };
