@@ -17,9 +17,6 @@ export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Random subtle rotation for organic feel
-  const baseRotation = (index % 3 - 1) * 1.5; // -1.5, 0, or 1.5 degrees
-
   // Hover intent detection - 150ms delay before triggering
   const handleMouseEnter = () => {
     const timer = setTimeout(() => setHoverIntent(true), 150);
@@ -52,11 +49,10 @@ export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
         <div
           className={`relative bg-card rounded-xl p-6 shadow-soft transition-all duration-[350ms] ${
             hoverIntent
-              ? "scale-105 -translate-y-2 shadow-glow z-30 rotate-0"
+              ? "scale-105 -translate-y-2 shadow-glow z-30"
               : "hover:shadow-lift"
           }`}
           style={{
-            transform: !hoverIntent ? `rotate(${baseRotation}deg)` : undefined,
             transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
