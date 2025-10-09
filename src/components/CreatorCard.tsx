@@ -43,7 +43,7 @@ export const CreatorCard = ({
 
   return (
     <div
-      className={`creator-card relative bg-[#F5F0E8] rounded-[20px] p-6 transition-all duration-300 cursor-pointer ${
+      className={`creator-card relative bg-[#2A5A54] rounded-[20px] p-6 transition-all duration-300 cursor-pointer ${
         isPlaceholder 
           ? "dimmed-placeholder" 
           : isHovered 
@@ -71,7 +71,7 @@ export const CreatorCard = ({
           className={`h-5 w-5 transition-all ${
             isFavorite(creator.id)
               ? "fill-primary text-primary"
-              : "text-muted-foreground"
+              : "text-[#C4B5A5]"
           } ${isAnimating ? "animate-heart-beat" : ""}`}
         />
       </Button>
@@ -89,7 +89,7 @@ export const CreatorCard = ({
 
       {/* Creator Info */}
       <div className="text-center space-y-2">
-        <h3 className="font-serif text-2xl font-semibold" style={{ color: '#2A5A54' }}>
+        <h3 className="font-serif text-2xl font-semibold" style={{ color: '#F5F0E8' }}>
           {creator.name}
         </h3>
         <Badge
@@ -97,7 +97,7 @@ export const CreatorCard = ({
         >
           {creator.craftType}
         </Badge>
-        <p className="text-sm flex items-center justify-center gap-1" style={{ color: '#7A8A86' }}>
+        <p className="text-sm flex items-center justify-center gap-1" style={{ color: '#C4B5A5' }}>
           <MapPin className="h-3 w-3" style={{ color: '#B8976A' }} />
           {creator.location}
         </p>
