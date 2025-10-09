@@ -6,14 +6,12 @@ import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { useParallax } from "@/hooks/useParallax";
 import { creators } from "@/data/creators";
-import heroBackground from "@/assets/hero-background.jpg";
+import { HeroShadow } from "@/components/HeroShadow";
 
 const Index = () => {
   const featuredCreator = creators.find((c) => c.featured);
   const exploreCreators = creators.slice(0, 6);
-  const parallaxOffset = useParallax(0.5);
   
   // Scroll reveal hooks for different sections
   const bentoReveal = useScrollReveal({ threshold: 0.1 });
@@ -36,42 +34,32 @@ const Index = () => {
       <Header />
       <ScrollProgress />
 
-      {/* Hero Section with Parallax */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Parallax Background */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url(${heroBackground})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            transform: `translateY(${parallaxOffset}px)`,
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/20 to-background/60" />
-        
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up">
-            Discover the Makers Behind Your Neighborhood's Hidden Treasures
-          </h1>
-          <p className="font-sans text-xl md:text-2xl text-muted-foreground mb-8 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-            Connect with local artisans crafting beauty from home
-          </p>
-          <Link to="/browse">
-            <Button
-              size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up"
-              style={{ animationDelay: "0.2s" }}
-            >
-              Explore Creators
-            </Button>
-          </Link>
-        </div>
+      {/* Hero Section with Ethereal Shadow */}
+      <HeroShadow variant="sage" intensity="medium">
+        <section className="h-screen flex items-center justify-center overflow-hidden">
+          <div className="text-center px-4 max-w-4xl mx-auto">
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
+              Discover the Makers Behind Your Neighborhood's Hidden Treasures
+            </h1>
+            <p className="font-sans text-xl md:text-2xl text-muted-foreground mb-8 animate-fade-in-up drop-shadow-md" style={{ animationDelay: "0.1s" }}>
+              Connect with local artisans crafting beauty from home
+            </p>
+            <Link to="/browse">
+              <Button
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up"
+                style={{ animationDelay: "0.2s" }}
+              >
+                Explore Creators
+              </Button>
+            </Link>
+          </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="h-8 w-8 text-muted-foreground" />
-        </div>
-      </section>
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20">
+            <ChevronDown className="h-8 w-8 text-muted-foreground drop-shadow-md" />
+          </div>
+        </section>
+      </HeroShadow>
 
       {/* This Week at Hestia - Bento Grid with Scroll Reveal */}
       <section className="container mx-auto px-4 lg:px-8 py-24">
