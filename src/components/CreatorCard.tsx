@@ -11,9 +11,22 @@ interface CreatorCardProps {
 
 export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [hoverIntent, setHoverIntent] = useState(false);
 
   // Random subtle rotation for organic feel
   const baseRotation = (index % 3 - 1) * 1.5; // -1.5, 0, or 1.5 degrees
+
+  // Hover intent detection - 150ms delay before triggering
+  const handleMouseEnter = () => {
+    const timer = setTimeout(() => setHoverIntent(true), 150);
+    setIsHovered(true);
+    return () => clearTimeout(timer);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setHoverIntent(false);
+  };
 
   return (
     <div className="relative perspective-1000">
@@ -21,17 +34,18 @@ export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
       <Link
         to={`/creator/${creator.id}`}
         className="block"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <div
-          className={`relative bg-card rounded-xl p-6 shadow-soft transition-all duration-[350ms] ease-in-out ${
-            isHovered
+          className={`relative bg-card rounded-xl p-6 shadow-soft transition-all duration-[350ms] ${
+            hoverIntent
               ? "scale-105 -translate-y-2 shadow-glow z-30 rotate-0"
               : "hover:shadow-lift"
           }`}
           style={{
-            transform: !isHovered ? `rotate(${baseRotation}deg)` : undefined,
+            transform: !hoverIntent ? `rotate(${baseRotation}deg)` : undefined,
+            transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
           {/* Creator Photo */}
@@ -63,8 +77,14 @@ export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
           </div>
 
           {/* Work Preview (shown on hover) */}
-          {isHovered && creator.works[1] && (
-            <div className="mt-4 rounded-lg overflow-hidden">
+          {creator.works[1] && (
+            <div 
+              className={`mt-4 rounded-lg overflow-hidden transition-all duration-300 ${
+                hoverIntent 
+                  ? "opacity-100 translate-y-0" 
+                  : "opacity-0 translate-y-2 h-0 mt-0"
+              }`}
+            >
               <img
                 src={creator.works[1].image}
                 alt={creator.works[1].title}
@@ -76,46 +96,50 @@ export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
       </Link>
 
       {/* Side Cards (Desktop Only - Fan Out on Hover) */}
-      {isHovered && (
-        <>
-          {/* Left Card */}
-          {creator.works[0] && (
-            <div
-              className="hidden lg:block absolute top-0 left-0 w-full h-full pointer-events-none z-20 transition-all duration-[350ms] ease-in-out"
-              style={{
-                transform: "translateX(-120px) rotate(-15deg)",
-                opacity: 0.95,
-              }}
-            >
-              <div className="bg-card rounded-xl p-4 shadow-lift h-full">
-                <img
-                  src={creator.works[0].image}
-                  alt={creator.works[0].title}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-            </div>
-          )}
+      {/* Left Card */}
+      {creator.works[0] && (
+        <div
+          className={`hidden lg:block absolute top-0 left-0 w-full h-full pointer-events-none z-20 transition-all duration-[350ms]`}
+          style={{
+            transform: hoverIntent 
+              ? "translateX(-120px) rotate(-15deg) scale(1)" 
+              : "translateX(0) rotate(0deg) scale(0.95)",
+            opacity: hoverIntent ? 0.95 : 0,
+            transitionDelay: hoverIntent ? "100ms" : "0ms",
+            transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+          }}
+        >
+          <div className="bg-card rounded-xl p-4 shadow-lift h-full">
+            <img
+              src={creator.works[0].image}
+              alt={creator.works[0].title}
+              className="w-full h-full object-cover rounded-lg"
+            />
+          </div>
+        </div>
+      )}
 
-          {/* Right Card */}
-          {creator.works[2] && (
-            <div
-              className="hidden lg:block absolute top-0 left-0 w-full h-full pointer-events-none z-20 transition-all duration-[350ms] ease-in-out"
-              style={{
-                transform: "translateX(120px) rotate(15deg)",
-                opacity: 0.95,
-              }}
-            >
-              <div className="bg-card rounded-xl p-4 shadow-lift h-full">
-                <img
-                  src={creator.works[2].image}
-                  alt={creator.works[2].title}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-            </div>
-          )}
-        </>
+      {/* Right Card */}
+      {creator.works[2] && (
+        <div
+          className={`hidden lg:block absolute top-0 left-0 w-full h-full pointer-events-none z-20 transition-all duration-[350ms]`}
+          style={{
+            transform: hoverIntent 
+              ? "translateX(120px) rotate(15deg) scale(1)" 
+              : "translateX(0) rotate(0deg) scale(0.95)",
+            opacity: hoverIntent ? 0.95 : 0,
+            transitionDelay: hoverIntent ? "150ms" : "0ms",
+            transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+          }}
+        >
+          <div className="bg-card rounded-xl p-4 shadow-lift h-full">
+            <img
+              src={creator.works[2].image}
+              alt={creator.works[2].title}
+              className="w-full h-full object-cover rounded-lg"
+            />
+          </div>
+        </div>
       )}
     </div>
   );
