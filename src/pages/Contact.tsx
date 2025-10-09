@@ -23,11 +23,11 @@ const Contact = () => {
                 Email Us
               </h2>
               <a
-                href="mailto:hello@hestia.com"
+                href="mailto:brandonhtw@gmail.com"
                 className="text-lg text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-2"
               >
                 <Mail className="h-5 w-5" />
-                hello@hestia.com
+                brandonhtw@gmail.com
               </a>
             </div>
 
@@ -36,13 +36,13 @@ const Contact = () => {
                 Follow Us
               </h2>
               <a
-                href="https://instagram.com/hestia"
+                href="https://instagram.com/brandonhtw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-lg text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-2"
               >
                 <Instagram className="h-5 w-5" />
-                @hestia
+                @brandonhtw
               </a>
             </div>
           </div>
