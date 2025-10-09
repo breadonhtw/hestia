@@ -73,6 +73,51 @@ export type Database = {
           },
         ]
       }
+      contact_requests: {
+        Row: {
+          artisan_id: string
+          created_at: string
+          id: string
+          message: string
+          sender_email: string
+          sender_name: string
+          status: string | null
+        }
+        Insert: {
+          artisan_id: string
+          created_at?: string
+          id?: string
+          message: string
+          sender_email: string
+          sender_name: string
+          status?: string | null
+        }
+        Update: {
+          artisan_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          sender_email?: string
+          sender_name?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_requests_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       craft_types: {
         Row: {
           created_at: string
@@ -128,6 +173,13 @@ export type Database = {
             referencedRelation: "artisans"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "followers_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "artisans_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       gallery_images: {
@@ -166,6 +218,13 @@ export type Database = {
             referencedRelation: "artisans"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "gallery_images_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       posts: {
@@ -199,6 +258,13 @@ export type Database = {
             columns: ["artisan_id"]
             isOneToOne: false
             referencedRelation: "artisans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans_public"
             referencedColumns: ["id"]
           },
         ]
@@ -258,7 +324,56 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      artisans_public: {
+        Row: {
+          bio: string | null
+          craft_type: string | null
+          created_at: string | null
+          featured: boolean | null
+          id: string | null
+          instagram: string | null
+          location: string | null
+          story: string | null
+          updated_at: string | null
+          user_id: string | null
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          craft_type?: string | null
+          created_at?: string | null
+          featured?: boolean | null
+          id?: string | null
+          instagram?: string | null
+          location?: string | null
+          story?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          craft_type?: string | null
+          created_at?: string | null
+          featured?: boolean | null
+          id?: string | null
+          instagram?: string | null
+          location?: string | null
+          story?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_artisan_follower_count: {
