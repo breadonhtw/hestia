@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
+import { AppSidebar } from "@/components/AppSidebar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,8 +72,9 @@ const Join = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen flex w-full bg-background">
+      <AppSidebar />
+      <div className="flex-1 overflow-auto">
 
       {/* Hero */}
       <section className="container mx-auto px-4 lg:px-8 py-16 text-center">
@@ -251,7 +252,8 @@ const Join = () => {
         </form>
       </section>
 
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
 };

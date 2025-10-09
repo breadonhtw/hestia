@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
+import { AppSidebar } from "@/components/AppSidebar";
 import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
 import { CreatorOverlay } from "@/components/CreatorOverlay";
@@ -40,8 +40,9 @@ const Browse = () => {
     const locationMatch = selectedLocation === "all" || creator.location === selectedLocation;
     return craftMatch && locationMatch;
   });
-  return <div className="min-h-screen bg-background">
-      <Header />
+  return <div className="min-h-screen flex w-full bg-background">
+      <AppSidebar />
+      <div className="flex-1 overflow-auto">
 
       <div className="container mx-auto px-4 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -186,7 +187,8 @@ const Browse = () => {
         />
       )}
 
-      <Footer />
+        <Footer />
+      </div>
     </div>;
 };
 export default Browse;

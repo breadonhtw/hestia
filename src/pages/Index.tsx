@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronDown, Users, Quote, Palette, Scissors, Hammer, CakeSlice, Gem, Flower, Home, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/Header";
+import { AppSidebar } from "@/components/AppSidebar";
 import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
@@ -32,9 +32,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <ScrollProgress />
+    <div className="min-h-screen flex w-full bg-background">
+      <AppSidebar />
+      <div className="flex-1 overflow-auto">
+        <ScrollProgress />
 
       {/* Hero Section with Ethereal Shadow */}
       <HeroShadow variant="sage" intensity="medium">
@@ -226,7 +227,8 @@ const Index = () => {
         </div>
       </section>
 
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
 };

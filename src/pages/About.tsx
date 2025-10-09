@@ -1,4 +1,4 @@
-import { Header } from "@/components/Header";
+import { AppSidebar } from "@/components/AppSidebar";
 import { Footer } from "@/components/Footer";
 import { Heart, Users, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -7,8 +7,9 @@ import hestiaLogo from "@/assets/hestia-logo.svg";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen flex w-full bg-background">
+      <AppSidebar />
+      <div className="flex-1 overflow-auto">
 
       {/* Hero */}
       <section className="container mx-auto px-4 lg:px-8 py-24 text-center">
@@ -141,7 +142,8 @@ const About = () => {
         </div>
       </section>
 
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
 };
