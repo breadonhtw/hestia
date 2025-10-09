@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronDown, Users, Quote, Palette, Scissors, Hammer, CakeSlice, Gem, Flower, Home, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AppSidebar } from "@/components/AppSidebar";
-import { TopSearchBar } from "@/components/TopSearchBar";
+import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
@@ -11,7 +10,6 @@ import { creators } from "@/data/creators";
 import { HeroShadow } from "@/components/HeroShadow";
 import { GradientText } from "@/components/ui/gradient-text";
 import { FloatingOrbs } from "@/components/ui/floating-orbs";
-import { SidebarContentWrapper } from "@/components/SidebarContentWrapper";
 
 const Index = () => {
   const featuredCreator = creators.find((c) => c.featured);
@@ -34,11 +32,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-      <TopSearchBar />
-      <SidebarContentWrapper>
-        <div className="w-full max-w-[1920px]">
+    <PageLayout>
+      <div className="w-full max-w-[1920px]">
+        <ScrollProgress />
           <ScrollProgress />
 
       {/* Hero Section with Ethereal Shadow */}
@@ -231,10 +227,9 @@ const Index = () => {
         </div>
       </section>
 
-          <Footer />
-        </div>
-      </SidebarContentWrapper>
-    </div>
+        <Footer />
+      </div>
+    </PageLayout>
   );
 };
 

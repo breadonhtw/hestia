@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { AppSidebar } from "@/components/AppSidebar";
-import { TopSearchBar } from "@/components/TopSearchBar";
+import { PageLayout } from "@/components/PageLayout";
 import { CreatorCard } from "@/components/CreatorCard";
 import { CreatorOverlay } from "@/components/CreatorOverlay";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useArtisans } from "@/hooks/useArtisans";
 import { Creator } from "@/types/creator";
 import { Helmet } from "react-helmet";
-import { SidebarContentWrapper } from "@/components/SidebarContentWrapper";
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -58,11 +56,8 @@ const Search = () => {
         />
       </Helmet>
       
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <TopSearchBar />
-        <SidebarContentWrapper>
-          <main className="container mx-auto px-4 md:px-8 py-8">
+      <PageLayout>
+        <main className="container mx-auto px-4 md:px-8 py-8">
             <div className="mb-8">
               <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-2">
                 Search Results
@@ -113,8 +108,7 @@ const Search = () => {
               </>
             )}
           </main>
-        </SidebarContentWrapper>
-      </div>
+      </PageLayout>
 
       {selectedCreator && (
         <CreatorOverlay

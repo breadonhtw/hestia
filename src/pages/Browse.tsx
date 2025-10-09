@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { AppSidebar } from "@/components/AppSidebar";
-import { TopSearchBar } from "@/components/TopSearchBar";
+import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
-import { SidebarContentWrapper } from "@/components/SidebarContentWrapper";
 import { CreatorCard } from "@/components/CreatorCard";
 import { CreatorOverlay } from "@/components/CreatorOverlay";
 import { Button } from "@/components/ui/button";
@@ -42,11 +40,8 @@ const Browse = () => {
     const locationMatch = selectedLocation === "all" || creator.location === selectedLocation;
     return craftMatch && locationMatch;
   });
-  return <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-      <TopSearchBar />
-      <SidebarContentWrapper>
-        <div className="w-full max-w-[1920px]">
+  return <PageLayout>
+      <div className="w-full max-w-[1920px]">
 
       <div className="container mx-auto px-4 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -193,7 +188,6 @@ const Browse = () => {
 
           <Footer />
         </div>
-      </SidebarContentWrapper>
-    </div>;
+    </PageLayout>;
 };
 export default Browse;
