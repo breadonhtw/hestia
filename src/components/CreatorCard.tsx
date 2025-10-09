@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Heart } from "lucide-react";
+import { MapPin, Heart, ArrowRight } from "lucide-react";
 import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,24 +9,35 @@ import { useFavorites } from "@/hooks/useFavorites";
 interface CreatorCardProps {
   creator: Creator;
   index?: number;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
+export const CreatorCard = ({ creator, index = 0, isExpanded = false, onToggleExpand }: CreatorCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [hoverIntent, setHoverIntent] = useState(false);
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // Random rotation for organic feel
+  const baseRotation = (index % 3 - 1) * 1.5; // -1.5, 0, or 1.5 degrees
 
-  // Hover intent detection - 150ms delay before triggering
+  // Desktop hover or mobile expanded state
+  const showPreview = isHovered || isExpanded;
+
   const handleMouseEnter = () => {
-    const timer = setTimeout(() => setHoverIntent(true), 150);
     setIsHovered(true);
-    return () => clearTimeout(timer);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    setHoverIntent(false);
+  };
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // On mobile/tablet, toggle expansion
+    if (window.innerWidth < 1024 && onToggleExpand) {
+      e.preventDefault();
+      onToggleExpand();
+    }
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -38,133 +49,107 @@ export const CreatorCard = ({ creator, index = 0 }: CreatorCardProps) => {
   };
 
   return (
-    <div className="relative perspective-1000">
-      {/* Main Card */}
-      <Link
-        to={`/creator/${creator.id}`}
-        className="block"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+    <Link
+      to={`/creator/${creator.id}`}
+      className="block"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleCardClick}
+    >
+      <div
+        className={`relative bg-[#F5F0E8] rounded-[20px] p-6 transition-all duration-[350ms] overflow-hidden ${
+          showPreview
+            ? "scale-[1.03] -translate-y-1 shadow-[0_6px_20px_rgba(184,151,106,0.3)] rotate-0"
+            : "shadow-[0_2px_12px_rgba(0,0,0,0.08)]"
+        }`}
+        style={{
+          transform: !showPreview ? `rotate(${baseRotation}deg)` : undefined,
+          transitionTimingFunction: "ease-in-out",
+        }}
       >
-        <div
-          className={`relative bg-card rounded-xl p-6 shadow-soft transition-all duration-[350ms] ${
-            hoverIntent
-              ? "scale-105 -translate-y-2 shadow-glow z-30"
-              : "hover:shadow-lift"
-          }`}
-          style={{
-            transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-          }}
+        {/* Favorite Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleFavoriteClick}
+          className="absolute top-4 right-4 z-10 rounded-full hover:bg-primary/10"
         >
-          {/* Favorite Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleFavoriteClick}
-            className="absolute top-4 right-4 z-10 rounded-full hover:bg-primary/10"
+          <Heart
+            className={`h-5 w-5 transition-all ${
+              isFavorite(creator.id)
+                ? "fill-primary text-primary"
+                : "text-muted-foreground"
+            } ${isAnimating ? "animate-heart-beat" : ""}`}
+          />
+        </Button>
+
+        {/* Creator Photo */}
+        <div className="mb-4 flex justify-center">
+          <div className="relative w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-primary/10">
+            <img
+              src={creator.image}
+              alt={creator.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+        {/* Creator Info */}
+        <div className="text-center space-y-2">
+          <h3 className="font-serif text-2xl font-semibold text-foreground">
+            {creator.name}
+          </h3>
+          <Badge
+            className="bg-secondary text-white text-xs rounded-full px-3 py-1"
           >
-            <Heart
-              className={`h-5 w-5 transition-all ${
-                isFavorite(creator.id)
-                  ? "fill-primary text-primary"
-                  : "text-muted-foreground"
-              } ${isAnimating ? "animate-heart-beat" : ""}`}
-            />
-          </Button>
-
-          {/* Creator Photo */}
-          <div className="mb-4 flex justify-center">
-            <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-primary/10">
-              <img
-                src={creator.image}
-                alt={creator.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Creator Info */}
-          <div className="text-center space-y-2">
-            <h3 className="font-serif text-xl font-semibold text-foreground">
-              {creator.name}
-            </h3>
-            <Badge
-              variant="secondary"
-              className="bg-secondary text-secondary-foreground"
-            >
-              {creator.craftType}
-            </Badge>
-            <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-              <MapPin className="h-3 w-3" />
-              {creator.location}
-            </p>
-          </div>
-
-          {/* Work Preview (shown on hover) */}
-          {creator.works[1] && (
-            <div 
-              className={`mt-4 rounded-lg overflow-hidden transition-all duration-300 ${
-                hoverIntent 
-                  ? "opacity-100 translate-y-0" 
-                  : "opacity-0 translate-y-2 h-0 mt-0"
-              }`}
-            >
-              <img
-                src={creator.works[1].image}
-                alt={creator.works[1].title}
-                className="w-full h-32 object-cover"
-              />
-            </div>
-          )}
+            {creator.craftType}
+          </Badge>
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+            <MapPin className="h-3 w-3" />
+            {creator.location}
+          </p>
         </div>
-      </Link>
 
-      {/* Side Cards (Desktop Only - Fan Out on Hover) */}
-      {/* Left Card */}
-      {creator.works[0] && (
+        {/* Preview Section - Slides Down on Hover/Expand */}
         <div
-          className={`hidden lg:block absolute top-0 left-0 w-full h-full pointer-events-none z-20 transition-all duration-[350ms]`}
-          style={{
-            transform: hoverIntent 
-              ? "translateX(-120px) rotate(-15deg) scale(1)" 
-              : "translateX(0) rotate(0deg) scale(0.95)",
-            opacity: hoverIntent ? 0.95 : 0,
-            transitionDelay: hoverIntent ? "100ms" : "0ms",
-            transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-          }}
+          className={`transition-all duration-300 ease-out overflow-hidden ${
+            showPreview 
+              ? "max-h-48 opacity-100 mt-4" 
+              : "max-h-0 opacity-0 mt-0"
+          }`}
         >
-          <div className="bg-card rounded-xl p-4 shadow-lift h-full">
-            <img
-              src={creator.works[0].image}
-              alt={creator.works[0].title}
-              className="w-full h-full object-cover rounded-lg"
-            />
+          {/* Gold Divider */}
+          <div className="w-full h-px bg-primary my-3" />
+          
+          {/* Work Thumbnails */}
+          <div className="flex justify-center gap-1.5 mb-3">
+            {creator.works.slice(0, 3).map((work, idx) => (
+              <div
+                key={work.title}
+                className="w-20 h-20 rounded-lg overflow-hidden transition-opacity duration-300"
+                style={{
+                  transitionDelay: showPreview ? `${idx * 100}ms` : "0ms",
+                  opacity: showPreview ? 1 : 0,
+                }}
+              >
+                <img
+                  src={work.image}
+                  alt={work.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
           </div>
-        </div>
-      )}
 
-      {/* Right Card */}
-      {creator.works[2] && (
-        <div
-          className={`hidden lg:block absolute top-0 left-0 w-full h-full pointer-events-none z-20 transition-all duration-[350ms]`}
-          style={{
-            transform: hoverIntent 
-              ? "translateX(120px) rotate(15deg) scale(1)" 
-              : "translateX(0) rotate(0deg) scale(0.95)",
-            opacity: hoverIntent ? 0.95 : 0,
-            transitionDelay: hoverIntent ? "150ms" : "0ms",
-            transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-          }}
-        >
-          <div className="bg-card rounded-xl p-4 shadow-lift h-full">
-            <img
-              src={creator.works[2].image}
-              alt={creator.works[2].title}
-              className="w-full h-full object-cover rounded-lg"
-            />
+          {/* View Profile Link */}
+          <div className="text-center">
+            <span className="text-primary text-sm font-medium inline-flex items-center gap-1 hover:gap-2 transition-all">
+              View Profile
+              <ArrowRight className="h-4 w-4" />
+            </span>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    </Link>
   );
 };
