@@ -9,7 +9,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import hestiaLogo from "@/assets/hestia-logo.png";
+import hestiaLogo from "@/assets/hestia-logo.svg";
 import { useFavorites } from "@/hooks/useFavorites";
 
 export const Header = () => {
