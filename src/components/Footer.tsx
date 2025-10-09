@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import { Instagram, Mail, Heart } from "lucide-react";
 import hestiaLogo from "@/assets/hestia-logo.png";
-
 export const Footer = () => {
-  return (
-    <footer className="bg-card border-t border-border mt-24">
+  return <footer className="bg-card border-t border-border mt-24">
       <div className="container mx-auto px-4 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Tagline */}
@@ -52,20 +50,10 @@ export const Footer = () => {
           <div>
             <h3 className="font-serif font-semibold mb-4 text-foreground">Connect</h3>
             <div className="flex gap-3">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-all hover:scale-110"
-                aria-label="Instagram"
-              >
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-all hover:scale-110" aria-label="Instagram">
                 <Instagram className="h-5 w-5 text-primary hover:text-primary-foreground" />
               </a>
-              <a
-                href="mailto:hello@hestia.com"
-                className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-all hover:scale-110"
-                aria-label="Email"
-              >
+              <a href="mailto:hello@hestia.com" className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-all hover:scale-110" aria-label="Email">
                 <Mail className="h-5 w-5 text-primary hover:text-primary-foreground" />
               </a>
             </div>
@@ -76,11 +64,8 @@ export const Footer = () => {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Hestia. All rights reserved.
           </p>
-          <p className="text-sm text-muted-foreground flex items-center gap-1">
-            Made with <Heart className="h-4 w-4 text-secondary fill-secondary" /> for local makers
-          </p>
+          
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
