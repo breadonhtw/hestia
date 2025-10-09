@@ -41,7 +41,7 @@ const Index = () => {
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
               Discover the Makers Behind Your Neighborhood's Hidden Treasures
             </h1>
-            <p className="font-sans text-xl md:text-2xl text-muted-foreground mb-8 animate-fade-in-up drop-shadow-md" style={{ animationDelay: "0.1s" }}>
+            <p className="font-sans text-xl md:text-2xl text-foreground mb-8 animate-fade-in-up drop-shadow-md" style={{ animationDelay: "0.1s" }}>
               Connect with local artisans crafting beauty from home
             </p>
             <Link to="/browse">
