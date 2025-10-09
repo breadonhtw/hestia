@@ -14,16 +14,271 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      artisans: {
+        Row: {
+          bio: string
+          craft_type: string
+          created_at: string
+          email: string
+          featured: boolean
+          id: string
+          instagram: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          story: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          bio: string
+          craft_type: string
+          created_at?: string
+          email: string
+          featured?: boolean
+          id?: string
+          instagram?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          story?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string
+          craft_type?: string
+          created_at?: string
+          email?: string
+          featured?: boolean
+          id?: string
+          instagram?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          story?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      craft_types: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          icon: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      followers: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "followers_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "followers_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "artisans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_images: {
+        Row: {
+          artisan_id: string
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          image_url: string
+          title: string
+        }
+        Insert: {
+          artisan_id: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url: string
+          title: string
+        }
+        Update: {
+          artisan_id?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_images_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          artisan_id: string
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          artisan_id: string
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          artisan_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_artisan_follower_count: {
+        Args: { _artisan_id: string }
+        Returns: number
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_following: {
+        Args: { _artisan_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "artisan" | "community_member" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +405,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["artisan", "community_member", "admin"],
+    },
   },
 } as const
