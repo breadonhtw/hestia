@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
+import { CreatorOverlay } from "@/components/CreatorOverlay";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { creators } from "@/data/creators";
+import { Creator } from "@/types/creator";
 import { Filter } from "lucide-react";
 const Browse = () => {
   const [selectedCrafts, setSelectedCrafts] = useState<string[]>([]);
@@ -17,7 +19,7 @@ const Browse = () => {
   const [openForCommissions, setOpenForCommissions] = useState(false);
   const [justBrowsing, setJustBrowsing] = useState(false);
   const [newlyJoined, setNewlyJoined] = useState(false);
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const craftTypes = ["Pottery & Ceramics", "Textiles & Fiber Arts", "Woodworking", "Baked Goods & Preserves", "Jewelry & Accessories", "Art & Illustration"];
   const locations = ["All Locations", "Downtown District", "Riverside", "Westside", "East Village", "Arts District", "North End"];
   const handleCraftToggle = (craft: string) => {
@@ -150,7 +152,13 @@ const Browse = () => {
 
             {/* Creator Grid */}
             {filteredCreators.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredCreators.map((creator, index) => <CreatorCard key={creator.id} creator={creator} index={index} isExpanded={expandedCard === creator.id} onToggleExpand={() => setExpandedCard(expandedCard === creator.id ? null : creator.id)} />)}
+                {filteredCreators.map((creator, index) => <CreatorCard 
+                    key={creator.id} 
+                    creator={creator} 
+                    index={index}
+                    onClick={() => setSelectedCreator(creator)}
+                    isPlaceholder={selectedCreator?.id === creator.id}
+                  />)}
               </div> : <div className="text-center py-16">
                 <p className="text-xl text-muted-foreground mb-4">
                   No creators found matching your filters
@@ -162,6 +170,14 @@ const Browse = () => {
           </main>
         </div>
       </div>
+
+      {/* Floating Overlay */}
+      {selectedCreator && (
+        <CreatorOverlay 
+          creator={selectedCreator} 
+          onClose={() => setSelectedCreator(null)} 
+        />
+      )}
 
       <Footer />
     </div>;
