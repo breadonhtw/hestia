@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { TopSearchBar } from "@/components/TopSearchBar";
 import { Footer } from "@/components/Footer";
+import { SidebarContentWrapper } from "@/components/SidebarContentWrapper";
 import { CreatorCard } from "@/components/CreatorCard";
 import { CreatorOverlay } from "@/components/CreatorOverlay";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ const Browse = () => {
   return <div className="min-h-screen flex w-full bg-background">
       <AppSidebar />
       <TopSearchBar />
-      <div className="flex-1 overflow-auto flex flex-col items-center md:ml-[70px] pt-20 md:pt-16">
+      <SidebarContentWrapper>
         <div className="w-full max-w-[1920px]">
 
       <div className="container mx-auto px-4 lg:px-8 py-12">
@@ -192,7 +193,7 @@ const Browse = () => {
 
           <Footer />
         </div>
-      </div>
+      </SidebarContentWrapper>
     </div>;
 };
 export default Browse;

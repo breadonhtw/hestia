@@ -62,20 +62,12 @@ export const TopSearchBar = () => {
           }}
         >
           <div className="relative">
-            <motion.div
-              animate={{
-                scale: isScrolled ? 0.95 : 1,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-              }}
-              className="cursor-pointer"
+            <div
+              className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer z-10"
               onClick={handleSearch}
             >
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            </motion.div>
+              <Search className="h-5 w-5 text-muted-foreground" />
+            </div>
             <Input
               type="search"
               placeholder="Search creators by name, craft, or location..."

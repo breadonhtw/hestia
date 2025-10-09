@@ -11,6 +11,7 @@ import { creators } from "@/data/creators";
 import { HeroShadow } from "@/components/HeroShadow";
 import { GradientText } from "@/components/ui/gradient-text";
 import { FloatingOrbs } from "@/components/ui/floating-orbs";
+import { SidebarContentWrapper } from "@/components/SidebarContentWrapper";
 
 const Index = () => {
   const featuredCreator = creators.find((c) => c.featured);
@@ -36,7 +37,7 @@ const Index = () => {
     <div className="min-h-screen flex w-full bg-background">
       <AppSidebar />
       <TopSearchBar />
-      <div className="flex-1 overflow-auto flex flex-col items-center md:ml-[70px] pt-20 md:pt-16">
+      <SidebarContentWrapper>
         <div className="w-full max-w-[1920px]">
           <ScrollProgress />
 
@@ -232,7 +233,7 @@ const Index = () => {
 
           <Footer />
         </div>
-      </div>
+      </SidebarContentWrapper>
     </div>
   );
 };
