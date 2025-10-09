@@ -5,7 +5,6 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
-import { ThreeJsFlame } from "@/components/ThreeJsFlame";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useParallax } from "@/hooks/useParallax";
 import { creators } from "@/data/creators";
@@ -50,9 +49,6 @@ const Index = () => {
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/20 to-background/60" />
-        
-        {/* Three.js Goddess Flame */}
-        <ThreeJsFlame />
         
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up">
