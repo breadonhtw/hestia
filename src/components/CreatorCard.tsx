@@ -57,9 +57,9 @@ export const CreatorCard = ({ creator, index = 0, isExpanded = false, onToggleEx
       onClick={handleCardClick}
     >
       <div
-        className={`relative bg-[#F5F0E8] rounded-[20px] p-6 transition-all duration-[350ms] overflow-hidden ${
+        className={`creator-card relative bg-[#F5F0E8] rounded-[20px] p-6 transition-all duration-[350ms] overflow-hidden ${
           showPreview
-            ? "scale-[1.03] -translate-y-1 shadow-[0_6px_20px_rgba(184,151,106,0.3)] rotate-0"
+            ? "expanded scale-[1.03] -translate-y-1 shadow-[0_6px_20px_rgba(184,151,106,0.3)] rotate-0"
             : "shadow-[0_2px_12px_rgba(0,0,0,0.08)]"
         }`}
         style={{
@@ -112,7 +112,7 @@ export const CreatorCard = ({ creator, index = 0, isExpanded = false, onToggleEx
 
         {/* Preview Section - Slides Down on Hover/Expand */}
         <div
-          className={`transition-all duration-300 ease-out overflow-hidden ${
+          className={`expanded-preview transition-all duration-300 ease-out overflow-hidden ${
             showPreview 
               ? "max-h-48 opacity-100 mt-4" 
               : "max-h-0 opacity-0 mt-0"
@@ -143,7 +143,7 @@ export const CreatorCard = ({ creator, index = 0, isExpanded = false, onToggleEx
 
           {/* View Profile Link */}
           <div className="text-center">
-            <span className="text-primary text-sm font-medium inline-flex items-center gap-1 hover:gap-2 transition-all">
+            <span className="view-profile-link inline-flex items-center gap-1 hover:gap-2 transition-all">
               View Profile
               <ArrowRight className="h-4 w-4" />
             </span>
