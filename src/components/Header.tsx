@@ -9,7 +9,8 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import hestiaLogo from "@/assets/hestia-logo.svg";
+import hestiaLogoDark from "@/assets/hestia-logo-dark.svg";
+import hestiaLogoLight from "@/assets/hestia-logo-light.svg";
 import { useFavorites } from "@/hooks/useFavorites";
 
 export const Header = () => {
@@ -60,7 +61,7 @@ export const Header = () => {
             className="flex items-center gap-3 group"
           >
             <img
-              src={hestiaLogo}
+              src={isDark ? hestiaLogoDark : hestiaLogoLight}
               alt="Hestia"
               className={`transition-all duration-300 ${
                 isScrolled ? "h-10" : "h-12"
