@@ -66,11 +66,6 @@ export const Header = () => {
                 isScrolled ? "h-10" : "h-12"
               }`}
             />
-            {!isScrolled && (
-              <span className="font-serif text-2xl font-bold text-foreground hidden sm:block">
-                HESTIA
-              </span>
-            )}
           </Link>
 
           {/* Search Bar - Desktop */}
