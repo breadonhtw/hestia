@@ -9,17 +9,13 @@ interface PageLayoutProps {
 }
 
 export const PageLayout = ({ children }: PageLayoutProps) => {
-  const [open, setOpen] = useState(false);
-
   return (
-    <SidebarAceternity open={open} setOpen={setOpen}>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <TopSearchBar />
-        <SidebarContentWrapper>
-          {children}
-        </SidebarContentWrapper>
-      </div>
-    </SidebarAceternity>
+    <div className="min-h-screen flex w-full bg-background">
+      <AppSidebar />
+      <TopSearchBar />
+      <SidebarContentWrapper>
+        {children}
+      </SidebarContentWrapper>
+    </div>
   );
 };
