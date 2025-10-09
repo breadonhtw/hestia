@@ -90,7 +90,7 @@ const Index = () => {
 
         <div 
           ref={bentoReveal.ref}
-          className={`grid grid-cols-1 md:grid-cols-12 gap-6 scroll-reveal ${bentoReveal.isVisible ? 'visible' : ''}`}
+          className={`grid grid-cols-1 md:grid-cols-12 gap-6`}
         >
           {/* Large Featured Creator Tile */}
           {featuredCreator && (
@@ -183,16 +183,10 @@ const Index = () => {
 
         <div 
           ref={artisansReveal.ref}
-          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-12 scroll-reveal ${artisansReveal.isVisible ? 'visible' : ''}`}
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-12`}
         >
           {exploreCreators.map((creator, index) => (
-            <div 
-              key={creator.id}
-              style={{ transitionDelay: `${index * 100}ms` }}
-              className="scroll-reveal"
-            >
-              <CreatorCard creator={creator} index={index} />
-            </div>
+            <CreatorCard key={creator.id} creator={creator} index={index} />
           ))}
         </div>
 
@@ -220,14 +214,13 @@ const Index = () => {
 
           <div 
             ref={categoriesReveal.ref}
-            className={`grid grid-cols-2 md:grid-cols-4 gap-6 scroll-reveal ${categoriesReveal.isVisible ? 'visible' : ''}`}
+            className={`grid grid-cols-2 md:grid-cols-4 gap-6`}
           >
-            {Object.entries(categoryIcons).map(([category, Icon], index) => (
+            {Object.entries(categoryIcons).map(([category, Icon]) => (
               <Link
                 key={category}
                 to="/browse"
                 className="bg-card rounded-xl p-6 text-center hover:shadow-lift transition-all duration-300 card-lift border-2 border-transparent hover:border-primary group"
-                style={{ transitionDelay: `${index * 50}ms` }}
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all group-hover:rotate-12">
                   <Icon className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />

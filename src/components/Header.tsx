@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, Flame, Heart } from "lucide-react";
+import { Search, Menu, Flame, Sun, Moon, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -112,13 +112,11 @@ export const Header = () => {
               className="rounded-full hover:bg-primary/10"
               aria-label="Toggle theme"
             >
-              <Flame
-                className={`h-5 w-5 transition-all duration-500 ${
-                  isDark 
-                    ? "text-primary animate-pulse-glow rotate-12" 
-                    : "text-primary/70 rotate-0"
-                }`}
-              />
+              {isDark ? (
+                <Sun className="h-5 w-5 text-primary transition-all duration-300" />
+              ) : (
+                <Moon className="h-5 w-5 text-primary transition-all duration-300" />
+              )}
             </Button>
 
             {/* Mobile Menu */}
