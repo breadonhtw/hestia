@@ -11,7 +11,6 @@ export default function PageNotFound({ onGoBack, onGoHome }: PageNotFoundProps) 
   return (
     <div className="w-full h-screen bg-background overflow-x-hidden flex justify-center items-center relative">
       <MessageDisplay onGoBack={onGoBack} onGoHome={onGoHome} />
-      <CharactersAnimation />
       <CircleAnimation />
     </div>
   );
@@ -47,7 +46,7 @@ function MessageDisplay({ onGoBack, onGoHome }: MessageDisplayProps) {
         <div className="text-[80px] font-serif font-bold text-primary m-[1%]">
           404
         </div>
-        <div className="text-[15px] w-1/2 min-w-[40%] text-center text-muted-foreground m-[1%]">
+        <div className="text-[15px] w-1/2 min-w-[40%] text-center text-foreground m-[1%]">
           The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
         </div>
         <div className="flex gap-6 mt-8">
@@ -74,126 +73,7 @@ function MessageDisplay({ onGoBack, onGoHome }: MessageDisplayProps) {
   );
 }
 
-// 2. Characters Animation Component
-type StickFigure = {
-  top?: string;
-  bottom?: string;
-  src: string;
-  transform?: string;
-  speedX: number;
-  speedRotation?: number;
-};
-
-function CharactersAnimation() {
-  const charactersRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Define stick figures with their properties
-    const stickFigures: StickFigure[] = [
-      {
-        top: '0%',
-        src: 'https://raw.githubusercontent.com/RicardoYare/imagenes/9ef29f5bbe075b1d1230a996d87bca313b9b6a63/sticks/stick0.svg',
-        transform: 'rotateZ(-90deg)',
-        speedX: 1500,
-      },
-      {
-        top: '10%',
-        src: 'https://raw.githubusercontent.com/RicardoYare/imagenes/9ef29f5bbe075b1d1230a996d87bca313b9b6a63/sticks/stick1.svg',
-        speedX: 3000,
-        speedRotation: 2000,
-      },
-      {
-        top: '20%',
-        src: 'https://raw.githubusercontent.com/RicardoYare/imagenes/9ef29f5bbe075b1d1230a996d87bca313b9b6a63/sticks/stick2.svg',
-        speedX: 5000,
-        speedRotation: 1000,
-      },
-      {
-        top: '25%',
-        src: 'https://raw.githubusercontent.com/RicardoYare/imagenes/9ef29f5bbe075b1d1230a996d87bca313b9b6a63/sticks/stick0.svg',
-        speedX: 2500,
-        speedRotation: 1500,
-      },
-      {
-        top: '35%',
-        src: 'https://raw.githubusercontent.com/RicardoYare/imagenes/9ef29f5bbe075b1d1230a996d87bca313b9b6a63/sticks/stick0.svg',
-        speedX: 2000,
-        speedRotation: 300,
-      },
-      {
-        bottom: '5%',
-        src: 'https://raw.githubusercontent.com/RicardoYare/imagenes/9ef29f5bbe075b1d1230a996d87bca313b9b6a63/sticks/stick3.svg',
-        speedX: 0,
-      },
-    ];
-
-    if (charactersRef.current) {
-      charactersRef.current.innerHTML = '';
-    }
-
-    stickFigures.forEach((figure, index) => {
-      const stick = document.createElement('img');
-      stick.classList.add('characters');
-      stick.style.position = 'absolute';
-      stick.style.width = '18%';
-      stick.style.height = '18%';
-      stick.style.opacity = '0.15';
-      stick.style.filter = 'brightness(0) saturate(100%) invert(66%) sepia(13%) saturate(1032%) hue-rotate(358deg) brightness(92%) contrast(88%)';
-
-      if (figure.top) stick.style.top = figure.top;
-      if (figure.bottom) stick.style.bottom = figure.bottom;
-      
-      stick.src = figure.src;
-      
-      if (figure.transform) stick.style.transform = figure.transform;
-
-      charactersRef.current?.appendChild(stick);
-
-      if (index === 5) return;
-
-      stick.animate(
-        [{ left: '100%' }, { left: '-20%' }],
-        { duration: figure.speedX, easing: 'linear', fill: 'forwards' }
-      );
-
-      if (index === 0) return;
-
-      if (figure.speedRotation) {
-        stick.animate(
-          [{ transform: 'rotate(0deg)' }, { transform: 'rotate(-360deg)' }],
-          { duration: figure.speedRotation, iterations: Infinity, easing: 'linear' }
-        );
-      }
-    });
-
-    return () => {
-      if (charactersRef.current) {
-        charactersRef.current.innerHTML = '';
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (charactersRef.current) {
-        charactersRef.current.innerHTML = '';
-        charactersRef.current.dispatchEvent(new Event('contentchanged'));
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return (
-    <div
-      ref={charactersRef}
-      className="absolute w-[99%] h-[95%]"
-    />
-  );
-}
-
-// 3. Circle Animation Component
+// 2. Circle Animation Component
 interface Circulo {
   x: number;
   y: number;
@@ -240,8 +120,8 @@ function CircleAnimation() {
     const distanceX = canvas.width / 80;
     const growthRate = canvas.width / 1000;
     
-    // Use warm gold color with opacity
-    context.fillStyle = 'rgba(184, 151, 106, 0.4)';
+    // Use warm gold color at 100% opacity
+    context.fillStyle = '#B8976A';
     context.clearRect(0, 0, canvas.width, canvas.height);
     
     circulosRef.current.forEach((circulo) => {
