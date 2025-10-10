@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   signIn: (emailOrUsername: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string, username: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, username: string, role?: 'artisan' | 'community_member') => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
   checkUsernameAvailability: (username: string) => Promise<boolean>;
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, username: string) => {
+  const signUp = async (email: string, password: string, fullName: string, username: string, role: 'artisan' | 'community_member' = 'community_member') => {
     // Validate password strength
     const passwordCheck = validatePasswordStrength(password);
     if (!passwordCheck.isValid) {
@@ -73,6 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         data: {
           full_name: fullName,
           username: username.toLowerCase(),
+          role: role
         }
       }
     });

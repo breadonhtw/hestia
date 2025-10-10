@@ -347,6 +347,49 @@ export type Database = {
         }
         Relationships: []
       }
+      user_favorites: {
+        Row: {
+          artisan_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          artisan_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          artisan_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorites_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "artisans_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
