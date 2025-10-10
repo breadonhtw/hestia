@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, Flame, Sun, Moon, Heart } from "lucide-react";
+import { Search, Menu, Flame, Sun, Moon, Heart, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,7 @@ export const Header = () => {
   });
   const navigate = useNavigate();
   const { favoritesCount } = useFavorites();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,7 +42,6 @@ export const Header = () => {
   const menuItems = [
     { label: "About Hestia", path: "/about" },
     { label: "Browse Creators", path: "/browse" },
-    { label: "Join as Creator", path: "/join" },
     { label: "Contact Us", path: "/contact" },
     { label: "Sign In", path: "/auth" },
   ];
@@ -97,6 +98,18 @@ export const Header = () => {
                     {favoritesCount}
                   </Badge>
                 )}
+              </Button>
+            </Link>
+
+            {/* Profile Icon */}
+            <Link to={user ? "/profile" : "/auth"}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-primary/10"
+                aria-label="Profile"
+              >
+                <User className="h-5 w-5 text-primary" />
               </Button>
             </Link>
 
