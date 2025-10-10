@@ -12,26 +12,15 @@ interface CreatorCardProps {
   isPlaceholder?: boolean;
 }
 
-export const CreatorCard = ({ 
-  creator, 
-  index = 0, 
+export const CreatorCard = ({
+  creator,
+  index = 0,
   onClick,
-  isPlaceholder = false 
+  isPlaceholder = false,
 }: CreatorCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isAnimating, setIsAnimating] = useState(false);
-  
-  // Random rotation for organic feel
-  const baseRotation = (index % 3 - 1) * 1.5; // -1.5, 0, or 1.5 degrees
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -43,21 +32,18 @@ export const CreatorCard = ({
 
   return (
     <div
-      className={`creator-card relative bg-[#F5F0E8] dark:bg-[#2A5A54] rounded-[20px] p-6 transition-all duration-300 cursor-pointer ${
-        isPlaceholder 
-          ? "dimmed-placeholder" 
-          : isHovered 
-            ? "hovered" 
-            : ""
+      className={`relative bg-card dark:bg-card-dark border border-border rounded-xl p-6 transition-all duration-300 cursor-pointer ${
+        isPlaceholder ? "opacity-30 pointer-events-none" : ""
       }`}
       style={{
-        transform: isHovered ? "translateY(-4px) rotate(0deg)" : `rotate(${baseRotation}deg)`,
-        boxShadow: isHovered 
-          ? "0 6px 20px rgba(184, 151, 106, 0.3)" 
-          : "0 2px 12px rgba(0, 0, 0, 0.08)",
+        animation: "fade-in-up 0.6s ease-out forwards",
+        animationDelay: `${index * 0.05}s`,
+        opacity: 0,
+        transform: isHovered ? "translateY(-6px)" : "translateY(0px)",
+        boxShadow: isHovered ? "var(--shadow-lift)" : "var(--shadow-soft)",
       }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
     >
       {/* Favorite Button */}
@@ -65,42 +51,53 @@ export const CreatorCard = ({
         variant="ghost"
         size="icon"
         onClick={handleFavoriteClick}
-        className="absolute top-4 right-4 z-10 rounded-full hover:bg-primary/10"
+        className="absolute top-4 right-4 z-10 rounded-full bg-background/60 backdrop-blur-sm"
       >
         <Heart
           className={`h-5 w-5 transition-all ${
             isFavorite(creator.id)
               ? "fill-primary text-primary"
-              : "text-muted-foreground dark:text-[#C4B5A5]"
+              : "text-muted-foreground"
           } ${isAnimating ? "animate-heart-beat" : ""}`}
         />
       </Button>
 
-      {/* Creator Photo */}
-      <div className="mb-4 flex justify-center">
-        <div className="relative w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-primary/10">
+      {/* Left-Aligned Content */}
+      <div className="flex items-center gap-5">
+        <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-background flex-shrink-0 shadow-inner">
           <img
             src={creator.image}
             alt={creator.name}
             className="w-full h-full object-cover"
           />
         </div>
+
+        <div className="space-y-1">
+          <h3 className="font-serif text-xl font-semibold text-foreground">
+            {creator.name}
+          </h3>
+          <Badge variant="secondary">{creator.craftType}</Badge>
+          <p className="text-sm flex items-center gap-1.5 pt-1 text-muted-foreground">
+            <MapPin className="h-3 w-3" />
+            {creator.location}
+          </p>
+        </div>
       </div>
 
-      {/* Creator Info */}
-      <div className="text-center space-y-2">
-        <h3 className="font-serif text-2xl font-semibold text-[#2A5A54] dark:text-[#F5F0E8]">
-          {creator.name}
-        </h3>
-        <Badge
-          className="bg-secondary text-white text-xs rounded-full px-3 py-1"
+      {/* Hover-reveal button for a clear CTA */}
+      <div
+        className={`absolute bottom-6 right-6 transition-all duration-300 ${
+          isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+        }`}
+      >
+        <Button
+          size="sm"
+          onClick={onClick}
+          variant="default"
+          className="shadow-lg"
         >
-          {creator.craftType}
-        </Badge>
-        <p className="text-sm flex items-center justify-center gap-1 text-[#7A8A86] dark:text-[#C4B5A5]">
-          <MapPin className="h-3 w-3" style={{ color: '#B8976A' }} />
-          {creator.location}
-        </p>
+          View Profile
+        </Button>
       </div>
     </div>
   );
