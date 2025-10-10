@@ -7,7 +7,7 @@ import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { creators } from "@/data/creators";
-
+import { HeroShadow } from "@/components/HeroShadow";
 import { GradientText } from "@/components/ui/gradient-text";
 import { FloatingOrbs } from "@/components/ui/floating-orbs";
 
@@ -37,31 +37,33 @@ const Index = () => {
         <ScrollProgress />
           <ScrollProgress />
 
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Hero Section with Ethereal Shadow */}
+      <HeroShadow variant="sage" intensity="medium">
         <FloatingOrbs count={6} />
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
-            Discover the Makers Behind Your Neighborhood's Hidden Treasures
-          </h1>
-          <p className="font-sans text-xl md:text-2xl text-foreground mb-8 animate-fade-in-up drop-shadow-md" style={{ animationDelay: "0.1s" }}>
-            Connect with local artisans crafting beauty from home
-          </p>
-          <Link to="/browse" className="relative z-20">
-            <Button
-              size="lg"
-              className="relative z-20 bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up"
-              style={{ animationDelay: "0.2s" }}
-            >
-              Explore Creators
-            </Button>
-          </Link>
-        </div>
+        <section className="h-screen flex items-center justify-center overflow-hidden">
+          <div className="text-center px-4 max-w-4xl mx-auto">
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
+              Discover the Makers Behind Your Neighborhood's Hidden Treasures
+            </h1>
+            <p className="font-sans text-xl md:text-2xl text-foreground mb-8 animate-fade-in-up drop-shadow-md" style={{ animationDelay: "0.1s" }}>
+              Connect with local artisans crafting beauty from home
+            </p>
+            <Link to="/browse">
+              <Button
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up"
+                style={{ animationDelay: "0.2s" }}
+              >
+                Explore Creators
+              </Button>
+            </Link>
+          </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20">
-          <ChevronDown className="h-8 w-8 text-muted-foreground drop-shadow-md" />
-        </div>
-      </section>
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20">
+            <ChevronDown className="h-8 w-8 text-muted-foreground drop-shadow-md" />
+          </div>
+        </section>
+      </HeroShadow>
 
       {/* This Week at Hestia - Bento Grid with Scroll Reveal */}
       <section className="container mx-auto px-4 lg:px-8 py-24">
@@ -169,7 +171,7 @@ const Index = () => {
 
         <div 
           ref={artisansReveal.ref}
-          className={`relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-12`}
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-12`}
         >
           {exploreCreators.map((creator, index) => (
             <CreatorCard 
@@ -205,13 +207,13 @@ const Index = () => {
 
           <div 
             ref={categoriesReveal.ref}
-            className={`relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6`}
+            className={`grid grid-cols-2 md:grid-cols-4 gap-6`}
           >
             {Object.entries(categoryIcons).map(([category, Icon]) => (
               <Link
                 key={category}
                 to="/browse"
-                className="relative z-10 bg-card rounded-xl p-6 text-center hover:shadow-lift transition-all duration-300 card-lift border-2 border-transparent hover:border-primary group"
+                className="bg-card rounded-xl p-6 text-center hover:shadow-lift transition-all duration-300 card-lift border-2 border-transparent hover:border-primary group"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all group-hover:rotate-12">
                   <Icon className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
