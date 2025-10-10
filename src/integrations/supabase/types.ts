@@ -327,6 +327,7 @@ export type Database = {
           full_name: string
           id: string
           updated_at: string
+          username: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -334,6 +335,7 @@ export type Database = {
           full_name: string
           id: string
           updated_at?: string
+          username?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -341,6 +343,7 @@ export type Database = {
           full_name?: string
           id?: string
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -431,6 +434,10 @@ export type Database = {
         Args: { _artisan_id: string }
         Returns: number
       }
+      get_user_id_by_username: {
+        Args: { _username: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -444,6 +451,10 @@ export type Database = {
       }
       is_following: {
         Args: { _artisan_id: string; _user_id: string }
+        Returns: boolean
+      }
+      validate_password_strength: {
+        Args: { password: string }
         Returns: boolean
       }
     }

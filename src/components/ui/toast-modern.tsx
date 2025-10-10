@@ -107,17 +107,17 @@ const ToasterModern = forwardRef<ToasterRef, { defaultPosition?: Position }>(
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeOut' }}
               className={cn(
-                'flex items-center justify-between w-full max-w-xs p-3 rounded-xl border shadow-md',
+                'flex items-center justify-between w-full max-w-md p-4 rounded-xl border shadow-md',
                 variantStyles[variant]
               )}
             >
               <div className="flex items-start gap-2">
-                <Icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', iconColor[variant])} />
+                <Icon className={cn('h-5 w-5 mt-0.5 flex-shrink-0', iconColor[variant])} />
                 <div className="space-y-0.5">
                   {title && (
                     <h3
                       className={cn(
-                        'text-xs font-medium leading-none',
+                        'text-sm font-medium leading-none',
                         titleColor[variant],
                         highlightTitle && titleColor['success']
                       )}
@@ -125,7 +125,7 @@ const ToasterModern = forwardRef<ToasterRef, { defaultPosition?: Position }>(
                       {title}
                     </h3>
                   )}
-                  <p className="text-xs text-muted-foreground">{message}</p>
+                  <p className="text-sm text-muted-foreground">{message}</p>
                 </div>
               </div>
 

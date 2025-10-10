@@ -1,14 +1,16 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { validatePasswordStrength, validateUsername } from '@/lib/password-validation';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
+  signIn: (emailOrUsername: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, username: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
+  checkUsernameAvailability: (username: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,7 +40,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, username: string) => {
+    // Validate password strength
+    const passwordCheck = validatePasswordStrength(password);
+    if (!passwordCheck.isValid) {
+      return { 
+        error: { 
+          message: `Password requirements not met: ${passwordCheck.feedback.join(', ')}` 
+        } 
+      };
+    }
+
+    // Validate username format
+    const usernameCheck = validateUsername(username);
+    if (!usernameCheck.isValid) {
+      return { error: { message: usernameCheck.error } };
+    }
+
+    // Check username availability
+    const isAvailable = await checkUsernameAvailability(username);
+    if (!isAvailable) {
+      return { error: { message: 'Username is already taken' } };
+    }
+
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -47,7 +71,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          full_name: fullName
+          full_name: fullName,
+          username: username.toLowerCase(),
         }
       }
     });
@@ -55,7 +80,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (emailOrUsername: string, password: string) => {
+    let email = emailOrUsername;
+
+    // Check if input is username (no @ symbol)
+    if (!emailOrUsername.includes('@')) {
+      // Look up user by username
+      const { data, error: lookupError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', emailOrUsername.toLowerCase())
+        .single();
+
+      if (lookupError || !data) {
+        return { error: { message: 'Invalid username or password' } };
+      }
+
+      // Get the auth user to find their email
+      const { data: { user }, error: userError } = await supabase.auth.admin.getUserById(data.id);
+      
+      if (userError || !user?.email) {
+        return { error: { message: 'Invalid username or password' } };
+      }
+
+      email = user.email;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -64,12 +114,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error };
   };
 
+  const checkUsernameAvailability = async (username: string): Promise<boolean> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('username', username.toLowerCase())
+      .maybeSingle();
+
+    return !data && !error;
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut, loading }}>
+    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut, loading, checkUsernameAvailability }}>
       {children}
     </AuthContext.Provider>
   );
