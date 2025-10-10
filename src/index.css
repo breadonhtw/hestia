@@ -173,37 +173,6 @@ All colors MUST be HSL.
     }
   }
 
-  /* Gradient shift animations for auth pages */
-  @keyframes gradient-shift {
-    0%, 100% {
-      transform: translate(0%, 0%) scale(1);
-      opacity: 0.6;
-    }
-    33% {
-      transform: translate(10%, -10%) scale(1.1);
-      opacity: 0.8;
-    }
-    66% {
-      transform: translate(-10%, 10%) scale(0.9);
-      opacity: 0.5;
-    }
-  }
-
-  @keyframes gradient-shift-reverse {
-    0%, 100% {
-      transform: translate(0%, 0%) scale(1);
-      opacity: 0.5;
-    }
-    33% {
-      transform: translate(-15%, 15%) scale(1.15);
-      opacity: 0.7;
-    }
-    66% {
-      transform: translate(15%, -15%) scale(0.85);
-      opacity: 0.6;
-    }
-  }
-
   /* Texture overlay */
   .texture-overlay::before {
     content: "";
