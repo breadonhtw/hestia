@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      artisan_applications: {
+        Row: {
+          craft_type: string
+          created_at: string | null
+          email: string
+          id: string
+          instagram: string | null
+          location: string
+          name: string
+          phone: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          specialty: string | null
+          status: string | null
+          story: string
+          website: string | null
+        }
+        Insert: {
+          craft_type: string
+          created_at?: string | null
+          email: string
+          id?: string
+          instagram?: string | null
+          location: string
+          name: string
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          specialty?: string | null
+          status?: string | null
+          story: string
+          website?: string | null
+        }
+        Update: {
+          craft_type?: string
+          created_at?: string | null
+          email?: string
+          id?: string
+          instagram?: string | null
+          location?: string
+          name?: string
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          specialty?: string | null
+          status?: string | null
+          story?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       artisans: {
         Row: {
           bio: string

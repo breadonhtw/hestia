@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { joinFormSchema } from "@/lib/validations";
+import { supabase } from "@/integrations/supabase/client";
 
 const Join = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ const Join = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
 
@@ -45,6 +46,29 @@ const Join = () => {
       });
       setErrors(fieldErrors);
       toast.error("Please fix the form errors");
+      return;
+    }
+
+    // Save application to database
+    const { error } = await supabase
+      .from('artisan_applications')
+      .insert({
+        name: result.data.name,
+        email: result.data.email,
+        location: result.data.location,
+        craft_type: result.data.craftType,
+        story: result.data.story,
+        specialty: result.data.specialty || null,
+        website: result.data.website || null,
+        instagram: result.data.instagram || null,
+        phone: result.data.phone || null,
+      });
+    
+    if (error) {
+      console.error("Application submission error:", error);
+      toast.error("Submission failed", {
+        description: "Please try again or contact support if the issue persists."
+      });
       return;
     }
 

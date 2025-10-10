@@ -42,6 +42,7 @@ export const Header = () => {
     { label: "Browse Creators", path: "/browse" },
     { label: "Join as Creator", path: "/join" },
     { label: "Contact Us", path: "/contact" },
+    { label: "Sign In", path: "/auth" },
   ];
 
   return (
