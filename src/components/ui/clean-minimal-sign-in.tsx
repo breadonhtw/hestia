@@ -5,7 +5,7 @@ import { useState } from "react";
 import { LogIn, Lock, Mail, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { showToast } from "@/hooks/use-toast-modern";
 import { supabase } from "@/integrations/supabase/client";
 
 const CleanMinimalSignIn = () => {
@@ -23,14 +23,35 @@ const CleanMinimalSignIn = () => {
   const handleSignIn = async () => {
     if (!email || !password) {
       setError("Please enter both email and password.");
+      showToast({
+        title: "Missing Information",
+        message: "Please enter both email and password.",
+        variant: "warning",
+        position: "bottom-right",
+        duration: 4000,
+      });
       return;
     }
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
+      showToast({
+        title: "Invalid Email",
+        message: "Please enter a valid email address.",
+        variant: "error",
+        position: "bottom-right",
+        duration: 4000,
+      });
       return;
     }
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
+      showToast({
+        title: "Password Too Short",
+        message: "Password must be at least 6 characters.",
+        variant: "warning",
+        position: "bottom-right",
+        duration: 4000,
+      });
       return;
     }
 
@@ -40,15 +61,26 @@ const CleanMinimalSignIn = () => {
     const { error: signInError } = await signIn(email, password);
 
     if (signInError) {
-      toast.error("Sign in failed", {
-        description: signInError.message,
+      showToast({
+        title: "Sign In Failed",
+        message: signInError.message || "Invalid email or password. Please try again.",
+        variant: "error",
+        position: "bottom-right",
+        duration: 5000,
       });
       setError(signInError.message);
       setIsLoading(false);
       return;
     }
 
-    toast.success("Welcome to Hestia!");
+    showToast({
+      title: "Welcome to Hestia!",
+      message: "You've successfully signed in.",
+      variant: "success",
+      position: "bottom-right",
+      duration: 3000,
+      highlightTitle: true,
+    });
     navigate("/");
   };
 
@@ -62,8 +94,12 @@ const CleanMinimalSignIn = () => {
     });
 
     if (error) {
-      toast.error("Google sign in failed", {
-        description: error.message,
+      showToast({
+        title: "Google Sign In Failed",
+        message: error.message,
+        variant: "error",
+        position: "bottom-right",
+        duration: 5000,
       });
       setIsLoading(false);
     }
