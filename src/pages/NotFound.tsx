@@ -1,11 +1,10 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import PageNotFound from "@/components/ui/page-not-found";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error(
@@ -14,33 +13,16 @@ const NotFound = () => {
     );
   }, [location.pathname]);
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  const handleGoHome = () => {
+    navigate("/");
+  };
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <div className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <h1 className="font-serif text-6xl font-bold text-foreground mb-4">
-            404
-          </h1>
-          <p className="text-2xl text-muted-foreground mb-8">
-            Lost your way home?
-          </p>
-          <p className="text-muted-foreground mb-8">
-            This page seems to have wandered off. Let's get you back to the
-            hearth.
-          </p>
-          <Link to="/">
-            <Button
-              size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              Return to Home
-            </Button>
-          </Link>
-        </div>
-      </div>
-      <Footer />
-    </div>
+    <PageNotFound onGoBack={handleGoBack} onGoHome={handleGoHome} />
   );
 };
 
