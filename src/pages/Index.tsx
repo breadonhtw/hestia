@@ -38,9 +38,9 @@ const Index = () => {
           <ScrollProgress />
 
       {/* Hero Section with Ethereal Shadow */}
-      <HeroShadow variant="sage" intensity="medium">
+      <HeroShadow variant="sage" intensity="medium" className="pointer-events-none">
         <FloatingOrbs count={6} />
-        <section className="h-screen flex items-center justify-center overflow-hidden">
+        <section className="h-screen flex items-center justify-center overflow-hidden pointer-events-auto">
           <div className="text-center px-4 max-w-4xl mx-auto">
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
               Discover the Makers Behind Your Neighborhood's Hidden Treasures
@@ -66,7 +66,7 @@ const Index = () => {
       </HeroShadow>
 
       {/* This Week at Hestia - Bento Grid with Scroll Reveal */}
-      <section className="container mx-auto px-4 lg:px-8 py-24">
+      <section className="relative z-10 container mx-auto px-4 lg:px-8 py-24">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
             This Week at Hestia
@@ -159,7 +159,7 @@ const Index = () => {
       </section>
 
       {/* Explore Our Artisans - Uniform Grid with Scroll Reveal */}
-      <section className="container mx-auto px-4 lg:px-8 py-24">
+      <section className="relative z-10 container mx-auto px-4 lg:px-8 py-24">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
             Explore Our Artisans
@@ -197,7 +197,7 @@ const Index = () => {
       </section>
 
       {/* Browse by Craft Categories with Custom Icons */}
-      <section className="bg-primary/5 py-24">
+      <section className="relative z-10 bg-primary/5 py-24">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
