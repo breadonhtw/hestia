@@ -43,7 +43,7 @@ function MessageDisplay({ onGoBack, onGoHome }: MessageDisplayProps) {
         <div className="text-[35px] font-sans font-semibold text-foreground m-[1%]">
           Page Not Found
         </div>
-        <div className="text-[80px] font-serif font-bold text-primary m-[1%]">
+        <div className="text-[80px] font-serif font-bold text-foreground m-[1%]">
           404
         </div>
         <div className="text-[15px] w-1/2 min-w-[40%] text-center text-foreground m-[1%]">
