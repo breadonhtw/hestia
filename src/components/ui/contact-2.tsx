@@ -76,7 +76,7 @@ export const Contact2 = ({
                 </li>
                 {web && (
                   <li>
-                    <span className="font-bold">Web: </span>
+                    <span className="font-bold">Instagram: </span>
                     <a href={web.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors">
                       {web.label}
                     </a>
