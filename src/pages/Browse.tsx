@@ -244,7 +244,7 @@ const Browse = () => {
                       index={index}
                       onClick={() => setSelectedCreator(creator)}
                       isPlaceholder={selectedCreator?.id === creator.id}
-                      variant="expanded"
+                      variant="compact"
                     />
                   ))}
                 </div>
