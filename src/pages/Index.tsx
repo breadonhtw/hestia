@@ -45,7 +45,7 @@ const Index = () => {
 
   return (
     <PageLayout>
-      <div className="w-full max-w-[1920px]">
+      <div className="w-full">
         <ScrollProgress />
         <ScrollProgress />
 
@@ -57,7 +57,7 @@ const Index = () => {
         >
           <FloatingOrbs count={6} />
           <section className="min-h-screen flex items-center justify-center overflow-hidden pointer-events-auto pt-20">
-            <div className="text-center px-4 max-w-4xl mx-auto">
+            <div className="text-center max-w-4xl mx-auto px-4">
               <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
                 Discover the Makers Behind Your Neighborhood's Hidden Treasures
               </h1>
