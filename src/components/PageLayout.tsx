@@ -45,7 +45,7 @@ export const PageLayout = ({ children }: PageLayoutProps) => {
         )}
       </button>
 
-      <main className="relative z-0 pt-28 pb-20">{children}</main>
+      <main className="relative z-0">{children}</main>
     </div>
   );
 };
