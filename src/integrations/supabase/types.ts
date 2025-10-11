@@ -67,6 +67,7 @@ export type Database = {
       }
       artisans: {
         Row: {
+          accepting_orders: boolean | null
           bio: string
           craft_type: string
           created_at: string
@@ -77,12 +78,14 @@ export type Database = {
           latitude: number | null
           location: string
           longitude: number | null
+          open_for_commissions: boolean | null
           story: string | null
           updated_at: string
           user_id: string
           website: string | null
         }
         Insert: {
+          accepting_orders?: boolean | null
           bio: string
           craft_type: string
           created_at?: string
@@ -93,12 +96,14 @@ export type Database = {
           latitude?: number | null
           location: string
           longitude?: number | null
+          open_for_commissions?: boolean | null
           story?: string | null
           updated_at?: string
           user_id: string
           website?: string | null
         }
         Update: {
+          accepting_orders?: boolean | null
           bio?: string
           craft_type?: string
           created_at?: string
@@ -109,6 +114,7 @@ export type Database = {
           latitude?: number | null
           location?: string
           longitude?: number | null
+          open_for_commissions?: boolean | null
           story?: string | null
           updated_at?: string
           user_id?: string
@@ -423,43 +429,22 @@ export type Database = {
     Views: {
       artisans_public: {
         Row: {
+          accepting_orders: boolean | null
+          avatar_url: string | null
           bio: string | null
           craft_type: string | null
           created_at: string | null
           featured: boolean | null
+          full_name: string | null
           id: string | null
           instagram: string | null
           location: string | null
+          open_for_commissions: boolean | null
           story: string | null
           updated_at: string | null
           user_id: string | null
+          username: string | null
           website: string | null
-        }
-        Insert: {
-          bio?: string | null
-          craft_type?: string | null
-          created_at?: string | null
-          featured?: boolean | null
-          id?: string | null
-          instagram?: string | null
-          location?: string | null
-          story?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          website?: string | null
-        }
-        Update: {
-          bio?: string | null
-          craft_type?: string | null
-          created_at?: string | null
-          featured?: boolean | null
-          id?: string | null
-          instagram?: string | null
-          location?: string | null
-          story?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          website?: string | null
         }
         Relationships: [
           {
