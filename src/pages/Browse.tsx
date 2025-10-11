@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
@@ -20,15 +21,35 @@ import { Creator } from "@/types/creator";
 import { Filter } from "lucide-react";
 const Browse = () => {
   const { data: artisansData, isLoading } = useArtisans();
+  const [searchParams] = useSearchParams();
+  
+  // Pending filters (what user is selecting)
+  const [pendingCrafts, setPendingCrafts] = useState<string[]>([]);
+  const [pendingLocation, setPendingLocation] = useState<string>("all");
+  const [pendingAcceptingOrders, setPendingAcceptingOrders] = useState(false);
+  const [pendingOpenForCommissions, setPendingOpenForCommissions] = useState(false);
+  const [pendingNewlyJoined, setPendingNewlyJoined] = useState(false);
+  
+  // Applied filters (actually used for filtering)
   const [selectedCrafts, setSelectedCrafts] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("featured");
   const [acceptingOrders, setAcceptingOrders] = useState(false);
   const [openForCommissions, setOpenForCommissions] = useState(false);
   const [newlyJoined, setNewlyJoined] = useState(false);
+  
+  const [sortBy, setSortBy] = useState<string>("featured");
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  
+  // Initialize from URL params on mount
+  useEffect(() => {
+    const craftParam = searchParams.get('craft');
+    if (craftParam) {
+      setPendingCrafts([craftParam]);
+      setSelectedCrafts([craftParam]);
+    }
+  }, [searchParams]);
 
-  // Transform artisan data to Creator format
+  // Transform artisan data to Creator format (include created_at for "New" badge)
   const creators: Creator[] = artisansData?.map(artisan => ({
     id: artisan.id,
     name: artisan.full_name || 'Artisan',
@@ -41,14 +62,17 @@ const Browse = () => {
     story: artisan.story || undefined,
     website: artisan.website || undefined,
     instagram: artisan.instagram || undefined,
-  })) || [];
+    created_at: artisan.created_at,
+  } as any)) || [];
   const craftTypes = [
     "Pottery & Ceramics",
     "Textiles & Fiber Arts",
     "Woodworking",
-    "Baked Goods & Preserves",
-    "Jewelry & Accessories",
+    "Baked Goods",
+    "Jewelry",
     "Art & Illustration",
+    "Plants & Florals",
+    "Home Decor",
   ];
   const locations = [
     "All Locations",
@@ -60,11 +84,25 @@ const Browse = () => {
     "North End",
   ];
   const handleCraftToggle = (craft: string) => {
-    setSelectedCrafts((prev) =>
+    setPendingCrafts((prev) =>
       prev.includes(craft) ? prev.filter((c) => c !== craft) : [...prev, craft]
     );
   };
+  
+  const applyFilters = () => {
+    setSelectedCrafts(pendingCrafts);
+    setSelectedLocation(pendingLocation);
+    setAcceptingOrders(pendingAcceptingOrders);
+    setOpenForCommissions(pendingOpenForCommissions);
+    setNewlyJoined(pendingNewlyJoined);
+  };
+  
   const clearFilters = () => {
+    setPendingCrafts([]);
+    setPendingLocation("all");
+    setPendingAcceptingOrders(false);
+    setPendingOpenForCommissions(false);
+    setPendingNewlyJoined(false);
     setSelectedCrafts([]);
     setSelectedLocation("all");
     setAcceptingOrders(false);
@@ -114,7 +152,7 @@ const Browse = () => {
                       <div key={craft} className="flex items-center space-x-2">
                         <Checkbox
                           id={craft}
-                          checked={selectedCrafts.includes(craft)}
+                          checked={pendingCrafts.includes(craft)}
                           onCheckedChange={() => handleCraftToggle(craft)}
                           className="focus-terracotta"
                         />
@@ -135,8 +173,8 @@ const Browse = () => {
                     Location
                   </h3>
                   <Select
-                    value={selectedLocation}
-                    onValueChange={setSelectedLocation}
+                    value={pendingLocation}
+                    onValueChange={setPendingLocation}
                   >
                     <SelectTrigger className="w-full bg-background dark:bg-[rgba(245,240,232,0.08)] focus-terracotta">
                       <SelectValue placeholder="Select location" />
@@ -171,8 +209,8 @@ const Browse = () => {
                       </Label>
                       <Switch
                         id="accepting-orders"
-                        checked={acceptingOrders}
-                        onCheckedChange={setAcceptingOrders}
+                        checked={pendingAcceptingOrders}
+                        onCheckedChange={setPendingAcceptingOrders}
                         className="focus-terracotta"
                       />
                     </div>
@@ -185,8 +223,8 @@ const Browse = () => {
                       </Label>
                       <Switch
                         id="open-commissions"
-                        checked={openForCommissions}
-                        onCheckedChange={setOpenForCommissions}
+                        checked={pendingOpenForCommissions}
+                        onCheckedChange={setPendingOpenForCommissions}
                         className="focus-terracotta"
                       />
                     </div>
@@ -204,8 +242,8 @@ const Browse = () => {
                     </Label>
                     <Switch
                       id="newly-joined"
-                      checked={newlyJoined}
-                      onCheckedChange={setNewlyJoined}
+                      checked={pendingNewlyJoined}
+                      onCheckedChange={setPendingNewlyJoined}
                       className="focus-terracotta"
                     />
                   </div>
@@ -223,6 +261,7 @@ const Browse = () => {
 
                 {/* Apply Filters Button */}
                 <Button
+                  onClick={applyFilters}
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   size="lg"
                 >

@@ -13,6 +13,7 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { EditCommunityForm } from './EditCommunityForm';
 import { GalleryManager } from './GalleryManager';
+import { Switch } from '@/components/ui/switch';
 
 const artisanSchema = z.object({
   craft_type: z.string().min(1, 'Please select a craft type'),
@@ -194,20 +195,18 @@ export const EditArtisanForm = ({ fullName, avatarUrl }: EditArtisanFormProps) =
             <h4 className="font-medium">Availability</h4>
             <div className="flex items-center justify-between">
               <Label htmlFor="accepting_orders" className="cursor-pointer">Accepting Orders</Label>
-              <input
-                type="checkbox"
+              <Switch
                 id="accepting_orders"
-                {...register('accepting_orders')}
-                className="h-4 w-4"
+                checked={watch('accepting_orders')}
+                onCheckedChange={(checked) => setValue('accepting_orders', checked)}
               />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="open_for_commissions" className="cursor-pointer">Open for Commissions</Label>
-              <input
-                type="checkbox"
+              <Switch
                 id="open_for_commissions"
-                {...register('open_for_commissions')}
-                className="h-4 w-4"
+                checked={watch('open_for_commissions')}
+                onCheckedChange={(checked) => setValue('open_for_commissions', checked)}
               />
             </div>
           </div>

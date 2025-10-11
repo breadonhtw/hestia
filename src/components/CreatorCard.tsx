@@ -24,6 +24,10 @@ export const CreatorCard = ({
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isAnimating, setIsAnimating] = useState(false);
   const baseRotation = ((index % 3) - 1) * 1.5; // -1.5, 0, or 1.5 degrees
+  
+  // Check if artisan is newly joined (within 30 days)
+  const isNew = (creator as any).created_at && 
+    new Date((creator as any).created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -59,6 +63,13 @@ export const CreatorCard = ({
         onMouseLeave={handleMouseLeave}
         onClick={onClick}
       >
+        {/* New Badge */}
+        {isNew && (
+          <Badge className="absolute top-4 left-4 z-10 bg-accent text-accent-foreground">
+            New
+          </Badge>
+        )}
+        
         {/* Favorite Button */}
         <Button
           variant="ghost"
@@ -82,6 +93,9 @@ export const CreatorCard = ({
               src={creator.image}
               alt={creator.name}
               className="w-full h-full object-cover"
+              loading="lazy"
+              width={120}
+              height={120}
             />
           </div>
         </div>
@@ -118,6 +132,13 @@ export const CreatorCard = ({
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
     >
+      {/* New Badge */}
+      {isNew && (
+        <Badge className="absolute top-4 left-4 z-10 bg-accent text-accent-foreground">
+          New
+        </Badge>
+      )}
+      
       {/* Favorite Button */}
       <Button
         variant="ghost"
@@ -141,6 +162,9 @@ export const CreatorCard = ({
             src={creator.image}
             alt={creator.name}
             className="w-full h-full object-cover"
+            loading="lazy"
+            width={160}
+            height={160}
           />
         </div>
       </div>
@@ -182,6 +206,9 @@ export const CreatorCard = ({
                   src={work.image}
                   alt={work.title}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  width={64}
+                  height={64}
                 />
               </div>
             ))}

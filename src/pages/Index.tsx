@@ -261,10 +261,10 @@ const Index = () => {
               ref={categoriesReveal.ref}
               className={`grid grid-cols-2 md:grid-cols-4 gap-6`}
             >
-              {Object.entries(categoryIcons).map(([category, Icon]) => (
+            {Object.entries(categoryIcons).map(([category, Icon]) => (
                 <Link
                   key={category}
-                  to="/browse"
+                  to={`/browse?craft=${encodeURIComponent(category)}`}
                   className="bg-card rounded-xl p-6 text-center hover:shadow-lift transition-all duration-300 card-lift border-2 border-transparent hover:border-primary group"
                 >
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all group-hover:rotate-12">
