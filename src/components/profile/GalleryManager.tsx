@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { uploadGalleryImage, deleteGalleryImage } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Upload, Loader2, Trash2 } from 'lucide-react';
+import { ImagePlus, X, Upload as UploadIcon, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useImageUpload } from '@/hooks/use-image-upload';
+import { cn } from '@/lib/utils';
 
 interface GalleryManagerProps {
   artisanId: string;
@@ -16,6 +17,16 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  
+  const {
+    previewUrl,
+    fileName,
+    fileInputRef,
+    handleThumbnailClick,
+    handleFileChange: handleImagePreview,
+    handleRemove: handlePreviewRemove,
+  } = useImageUpload();
 
   const { data: images, isLoading } = useQuery({
     queryKey: ['gallery', artisanId],
@@ -52,34 +63,73 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
     }
   });
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+
+      const file = e.dataTransfer.files?.[0];
+      if (file && file.type.startsWith("image/") && fileInputRef.current) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        fileInputRef.current.files = dataTransfer.files;
+        
+        const event = new Event('change', { bubbles: true });
+        fileInputRef.current.dispatchEvent(event);
+      }
+    },
+    [fileInputRef],
+  );
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleImagePreview(e);
+  };
+
+  const handleUploadConfirm = async () => {
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) return;
 
     setUploading(true);
     try {
-      for (const file of Array.from(files)) {
-        const url = await uploadGalleryImage(artisanId, file);
-        
-        await supabase
-          .from('gallery_images')
-          .insert({
-            artisan_id: artisanId,
-            image_url: url,
-            title: file.name,
-            display_order: (images?.length || 0) + 1
-          });
-      }
+      const url = await uploadGalleryImage(artisanId, file);
+      
+      await supabase
+        .from('gallery_images')
+        .insert({
+          artisan_id: artisanId,
+          image_url: url,
+          title: file.name,
+          display_order: (images?.length || 0) + 1
+        });
       
       queryClient.invalidateQueries({ queryKey: ['gallery', artisanId] });
       toast({
-        title: 'Images uploaded',
-        description: `${files.length} image(s) added to your gallery.`
+        title: 'Image uploaded',
+        description: 'Image added to your gallery.'
       });
+      handlePreviewRemove();
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to upload images. Please try again.',
+        description: 'Failed to upload image. Please try again.',
         variant: 'destructive'
       });
     } finally {
@@ -88,33 +138,103 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Gallery Images</h3>
-        <Label htmlFor="gallery-upload" className="cursor-pointer">
-          <div className="flex items-center gap-2 px-4 py-2 border rounded-md hover:bg-accent transition-colors">
-            {uploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4" />
-            )}
-            <span>Upload Images</span>
-          </div>
-          <Input
-            id="gallery-upload"
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            onChange={handleImageUpload}
-            disabled={uploading}
-          />
-        </Label>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h3 className="text-lg font-medium">Gallery Images</h3>
+        <p className="text-sm text-muted-foreground">
+          Supported formats: JPG, PNG, GIF
+        </p>
       </div>
+
+      <Input
+        type="file"
+        accept="image/*"
+        className="hidden"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+      />
+
+      {!previewUrl ? (
+        <div
+          onClick={handleThumbnailClick}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={cn(
+            "flex h-64 cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:bg-muted",
+            isDragging && "border-primary/50 bg-primary/5",
+          )}
+        >
+          <div className="rounded-full bg-background p-3 shadow-sm">
+            <ImagePlus className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-medium">Click to select</p>
+            <p className="text-xs text-muted-foreground">
+              or drag and drop file here
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="relative">
+          <div className="group relative h-64 overflow-hidden rounded-lg border">
+            <img
+              src={previewUrl}
+              alt="Preview"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={handleThumbnailClick}
+                className="h-9 w-9 p-0"
+              >
+                <UploadIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={handlePreviewRemove}
+                className="h-9 w-9 p-0"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          {fileName && (
+            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="truncate">{fileName}</span>
+              <button
+                onClick={handlePreviewRemove}
+                className="ml-auto rounded-full p-1 hover:bg-muted"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+          <Button 
+            onClick={handleUploadConfirm} 
+            disabled={uploading}
+            className="w-full mt-4"
+          >
+            {uploading ? (
+              <>
+                <UploadIcon className="mr-2 h-4 w-4 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              'Confirm Upload'
+            )}
+          </Button>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex justify-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin" />
+          <UploadIcon className="h-8 w-8 animate-spin" />
         </div>
       ) : images && images.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
@@ -136,11 +256,7 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
             </div>
           ))}
         </div>
-      ) : (
-        <div className="text-center p-8 border border-dashed rounded-lg">
-          <p className="text-muted-foreground">No images yet. Upload your first gallery image!</p>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 };

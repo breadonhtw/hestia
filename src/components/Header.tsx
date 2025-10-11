@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Search, Menu, Flame, Sun, Moon, Heart, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,10 @@ export const Header = () => {
     return document.documentElement.classList.contains('dark');
   });
   const navigate = useNavigate();
+  const location = useLocation();
   const { favoritesCount } = useFavorites();
   const { user } = useAuth();
+  const isProfilePage = location.pathname === '/profile';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,16 +73,18 @@ export const Header = () => {
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search creators, crafts, locations..."
-                className="pl-10 bg-card border-border focus:border-primary focus:ring-primary rounded-xl"
-              />
+          {!isProfilePage && (
+            <div className="hidden md:flex flex-1 max-w-md mx-8">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search creators, crafts, locations..."
+                  className="pl-10 bg-card border-border focus:border-primary focus:ring-primary rounded-xl"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Right Icons */}
           <div className="flex items-center gap-4">
@@ -142,14 +146,16 @@ export const Header = () => {
               <SheetContent className="bg-background border-border">
                 <nav className="flex flex-col gap-6 mt-8">
                   {/* Mobile Search */}
-                  <div className="md:hidden relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Search..."
-                      className="pl-10 bg-card border-border rounded-xl"
-                    />
-                  </div>
+                  {!isProfilePage && (
+                    <div className="md:hidden relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="search"
+                        placeholder="Search..."
+                        className="pl-10 bg-card border-border rounded-xl"
+                      />
+                    </div>
+                  )}
 
                   {menuItems.map((item) => (
                     <Link

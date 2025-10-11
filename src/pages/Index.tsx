@@ -18,13 +18,33 @@ import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { creators } from "@/data/creators";
+import { useArtisans } from "@/hooks/useArtisans";
 import { HeroShadow } from "@/components/HeroShadow";
+import { SkeletonCard } from "@/components/SkeletonCard";
+import type { Creator } from "@/types/creator";
 import { GradientText } from "@/components/ui/gradient-text";
 import { FloatingOrbs } from "@/components/ui/floating-orbs";
 
 const Index = () => {
-  const featuredCreator = creators.find((c) => c.featured);
+  const { data: artisansData, isLoading } = useArtisans();
+
+  // Transform artisan data to Creator format
+  const creators: Creator[] = (artisansData || []).map((artisan) => ({
+    id: artisan.id,
+    name: artisan.full_name || 'Anonymous',
+    craftType: artisan.craft_type,
+    location: artisan.location,
+    bio: artisan.bio,
+    story: artisan.story || '',
+    image: artisan.avatar_url || '/placeholder.svg',
+    works: [],
+    featured: artisan.featured || false,
+    instagram: artisan.instagram,
+    website: artisan.website,
+    username: artisan.username || artisan.id
+  }));
+
+  const featuredCreator = creators.find((c) => c.featured) || creators[0];
   const exploreCreators = creators.slice(0, 6);
 
   // Scroll reveal hooks for different sections
@@ -196,17 +216,23 @@ const Index = () => {
             ref={artisansReveal.ref}
             className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-12`}
           >
-            {exploreCreators.map((creator, index) => (
-              <CreatorCard
-                key={creator.id}
-                creator={creator}
-                index={index}
-                onClick={() =>
-                  (window.location.href = `/creator/${creator.id}`)
-                }
-                variant="compact"
-              />
-            ))}
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))
+            ) : (
+              exploreCreators.map((creator, index) => (
+                <CreatorCard
+                  key={creator.id}
+                  creator={creator}
+                  index={index}
+                  onClick={() =>
+                    (window.location.href = `/creator/${creator.id}`)
+                  }
+                  variant="compact"
+                />
+              ))
+            )}
           </div>
 
           <div className="text-center">

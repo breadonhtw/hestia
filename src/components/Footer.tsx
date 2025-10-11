@@ -41,14 +41,6 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/join"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Join as Creator
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/contact"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >

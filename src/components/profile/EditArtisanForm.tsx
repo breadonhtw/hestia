@@ -17,12 +17,12 @@ import { GalleryManager } from './GalleryManager';
 const artisanSchema = z.object({
   craft_type: z.string().min(1, 'Please select a craft type'),
   location: z.string().min(2, 'Location required'),
-  bio: z.string().max(200, 'Bio must be less than 200 characters'),
+  bio: z.string().max(200, 'Bio must be less than 200 characters').optional().or(z.literal('')),
   story: z.string().max(500, 'Story must be less than 500 characters').optional().or(z.literal('')),
   instagram: z.string().regex(/^@?[A-Za-z0-9._]{1,30}$/, 'Invalid Instagram handle').optional().or(z.literal('')),
   website: z.string().url('Invalid URL format').optional().or(z.literal('')),
-  accepting_orders: z.boolean(),
-  open_for_commissions: z.boolean()
+  accepting_orders: z.boolean().optional(),
+  open_for_commissions: z.boolean().optional()
 });
 
 type ArtisanFormData = z.infer<typeof artisanSchema>;

@@ -27,7 +27,6 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
-          <Toaster />
           <Sonner 
             position="bottom-center" 
             expand={false} 
@@ -45,7 +44,7 @@ const App = () => {
             <Route path="/artisan/:username" element={<CreatorProfile />} />
             <Route path="/creator/:id" element={<CreatorProfile />} />
             <Route path="/about" element={<About />} />
-            <Route path="/join" element={<Join />} />
+            
             <Route path="/contact" element={<Contact />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
