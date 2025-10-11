@@ -3,19 +3,52 @@ import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CreatorCard } from "@/components/CreatorCard";
-import { creators } from "@/data/creators";
-import { MapPin, Instagram, Globe, Mail } from "lucide-react";
+import { MapPin, Instagram, Globe, Loader2 } from "lucide-react";
 import {
   sanitizeUrl,
-  sanitizeEmail,
   sanitizeInstagramHandle,
 } from "@/lib/sanitize";
+import {
+  useArtisanById,
+  useArtisanByUsername,
+  useArtisans,
+} from "@/hooks/useArtisans";
+import type { Creator } from "@/types/creator";
 
 const CreatorProfile = () => {
-  const { id } = useParams();
-  const creator = creators.find((c) => c.id === id);
+  const { id, username } = useParams();
 
-  if (!creator) {
+  // Fetch the specific artisan
+  const {
+    data: artisanById,
+    isLoading: isLoadingById,
+  } = useArtisanById(id ?? "");
+  const {
+    data: artisanByUsername,
+    isLoading: isLoadingByUsername,
+  } = useArtisanByUsername(username ?? "");
+
+  const artisan = artisanById ?? artisanByUsername;
+  const isLoading = isLoadingById || isLoadingByUsername;
+  
+
+  // Fetch all artisans for "similar creators"
+  const { data: allArtisans } = useArtisans();
+
+  if (isLoading) {
+    return (
+      <PageLayout>
+        <div className="w-full max-w-[1920px]">
+          <div className="container mx-auto px-4 py-24 text-center">
+            <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+          </div>
+          <Footer />
+        </div>
+      </PageLayout>
+    );
+  }
+
+  if (!artisan) {
     return (
       <PageLayout>
         <div className="w-full max-w-[1920px]">
@@ -33,24 +66,42 @@ const CreatorProfile = () => {
     );
   }
 
-  const similarCreators = creators
-    .filter((c) => c.id !== creator.id && c.craftType === creator.craftType)
-    .slice(0, 3);
+  // Transform artisan to Creator format
+  const creator: Creator = {
+    id: artisan.id,
+    name: artisan.full_name || "Anonymous",
+    craftType: artisan.craft_type,
+    location: artisan.location,
+    bio: artisan.bio,
+    image: artisan.avatar_url || "/placeholder.svg",
+    works: [], // TODO: Fetch gallery images
+    featured: artisan.featured || false,
+    story: artisan.story || "",
+    instagram: artisan.instagram || undefined,
+    website: artisan.website || undefined,
+    username: artisan.username || undefined,
+  };
+
+  // Find similar creators
+  const similarCreators: Creator[] = (allArtisans || [])
+    .filter((a) => a.id !== artisan.id && a.craft_type === artisan.craft_type)
+    .slice(0, 3)
+    .map((a) => ({
+      id: a.id,
+      name: a.full_name || "Anonymous",
+      craftType: a.craft_type,
+      location: a.location,
+      bio: a.bio,
+      image: a.avatar_url || "/placeholder.svg",
+      works: [],
+      featured: a.featured || false,
+    }));
 
   return (
     <PageLayout>
       <div className="w-full max-w-[1920px]">
-        {/* Hero Section with Cover */}
+        {/* Hero Section */}
         <section className="relative h-96 bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
-          <div className="absolute inset-0">
-            {creator.works[0] && (
-              <img
-                src={creator.works[0].image}
-                alt="Studio"
-                className="w-full h-full object-cover opacity-30"
-              />
-            )}
-          </div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
 
           <div className="container mx-auto px-4 relative h-full flex items-end pb-8">
@@ -105,14 +156,6 @@ const CreatorProfile = () => {
                   <Globe className="h-5 w-5 text-foreground hover:text-primary-foreground" />
                 </a>
               )}
-              {creator.email && (
-                <a
-                  href={`mailto:${sanitizeEmail(creator.email)}`}
-                  className="w-10 h-10 rounded-full bg-background hover:bg-primary flex items-center justify-center transition-all hover:scale-110 shadow-soft"
-                >
-                  <Mail className="h-5 w-5 text-foreground hover:text-primary-foreground" />
-                </a>
-              )}
             </div>
           </div>
         </section>
@@ -130,93 +173,6 @@ const CreatorProfile = () => {
               <p className="text-lg text-foreground leading-relaxed">
                 {creator.story}
               </p>
-            )}
-          </div>
-        </section>
-
-        {/* Featured Creations - Bento Grid */}
-        <section className="container mx-auto px-4 lg:px-8 py-16">
-          <h2 className="font-serif text-3xl font-bold text-foreground mb-8">
-            From {creator.name.split(" ")[0]}'s Workshop
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            {/* Hero Work */}
-            {creator.works[0] && (
-              <div className="md:col-span-8 md:row-span-2 bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift group cursor-pointer">
-                <div className="h-96 relative">
-                  <img
-                    src={creator.works[0].image}
-                    alt={creator.works[0].title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/80 transition-all flex items-center justify-center">
-                    <div className="text-center opacity-0 group-hover:opacity-100 transition-opacity p-6">
-                      <h3 className="font-serif text-2xl font-bold text-background mb-2">
-                        {creator.works[0].title}
-                      </h3>
-                      <p className="text-background/90">
-                        {creator.works[0].description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Supporting Works */}
-            {creator.works.slice(1).map((work, idx) => (
-              <div
-                key={work.id}
-                className={`${
-                  idx === 0
-                    ? "md:col-span-4"
-                    : idx === 1
-                    ? "md:col-span-4"
-                    : "md:col-span-8"
-                } bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift group cursor-pointer`}
-              >
-                <div className="h-48 relative">
-                  <img
-                    src={work.image}
-                    alt={work.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/80 transition-all flex items-center justify-center">
-                    <div className="text-center opacity-0 group-hover:opacity-100 transition-opacity p-4">
-                      <h3 className="font-serif text-xl font-bold text-background mb-1">
-                        {work.title}
-                      </h3>
-                      <p className="text-sm text-background/90">
-                        {work.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Connect Section */}
-        <section className="bg-primary/5 py-16">
-          <div className="container mx-auto px-4 text-center max-w-2xl">
-            <h2 className="font-serif text-3xl font-bold text-foreground mb-4">
-              Want to Connect with {creator.name.split(" ")[0]}?
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Reach out to discuss commissions, ask questions, or just say hello
-            </p>
-            {creator.email && (
-              <a href={`mailto:${sanitizeEmail(creator.email)}`}>
-                <Button
-                  size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
-                >
-                  <Mail className="mr-2 h-5 w-5" />
-                  Send Email
-                </Button>
-              </a>
             )}
           </div>
         </section>
