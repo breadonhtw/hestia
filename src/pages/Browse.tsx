@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { SkeletonCard } from "@/components/SkeletonCard";
 import {
   Select,
   SelectContent,
@@ -14,18 +15,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { creators } from "@/data/creators";
+import { useArtisans } from "@/hooks/useArtisans";
 import { Creator } from "@/types/creator";
 import { Filter } from "lucide-react";
 const Browse = () => {
+  const { data: artisansData, isLoading } = useArtisans();
   const [selectedCrafts, setSelectedCrafts] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("featured");
   const [acceptingOrders, setAcceptingOrders] = useState(false);
   const [openForCommissions, setOpenForCommissions] = useState(false);
-  const [justBrowsing, setJustBrowsing] = useState(false);
   const [newlyJoined, setNewlyJoined] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+
+  // Transform artisan data to Creator format
+  const creators: Creator[] = artisansData?.map(artisan => ({
+    id: artisan.id,
+    name: artisan.full_name || 'Artisan',
+    craftType: artisan.craft_type,
+    location: artisan.location,
+    bio: artisan.bio || '',
+    image: artisan.avatar_url || '',
+    works: [],
+    featured: artisan.featured,
+    story: artisan.story || undefined,
+    website: artisan.website || undefined,
+    instagram: artisan.instagram || undefined,
+  })) || [];
   const craftTypes = [
     "Pottery & Ceramics",
     "Textiles & Fiber Arts",
@@ -53,7 +69,6 @@ const Browse = () => {
     setSelectedLocation("all");
     setAcceptingOrders(false);
     setOpenForCommissions(false);
-    setJustBrowsing(false);
     setNewlyJoined(false);
   };
 
@@ -62,8 +77,18 @@ const Browse = () => {
     const craftMatch =
       selectedCrafts.length === 0 || selectedCrafts.includes(creator.craftType);
     const locationMatch =
-      selectedLocation === "all" || creator.location === selectedLocation;
-    return craftMatch && locationMatch;
+      selectedLocation === "all" || creator.location.toLowerCase().includes(selectedLocation.toLowerCase());
+    
+    // Availability filters - only if data exists
+    const artisan = artisansData?.find(a => a.id === creator.id);
+    const acceptingOrdersMatch = !acceptingOrders || artisan?.accepting_orders;
+    const openForCommissionsMatch = !openForCommissions || artisan?.open_for_commissions;
+    
+    // Newly joined filter (within last 30 days)
+    const newlyJoinedMatch = !newlyJoined || (artisan?.created_at && 
+      new Date(artisan.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+    
+    return craftMatch && locationMatch && acceptingOrdersMatch && openForCommissionsMatch && newlyJoinedMatch;
   });
   return (
     <PageLayout>
@@ -235,7 +260,13 @@ const Browse = () => {
               </div>
 
               {/* Creator Grid */}
-              {filteredCreators.length > 0 ? (
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <SkeletonCard key={i} />
+                  ))}
+                </div>
+              ) : filteredCreators.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredCreators.map((creator, index) => (
                     <CreatorCard

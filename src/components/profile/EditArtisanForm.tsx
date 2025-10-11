@@ -20,7 +20,9 @@ const artisanSchema = z.object({
   bio: z.string().max(200, 'Bio must be less than 200 characters'),
   story: z.string().max(500, 'Story must be less than 500 characters').optional().or(z.literal('')),
   instagram: z.string().regex(/^@?[A-Za-z0-9._]{1,30}$/, 'Invalid Instagram handle').optional().or(z.literal('')),
-  website: z.string().url('Invalid URL format').optional().or(z.literal(''))
+  website: z.string().url('Invalid URL format').optional().or(z.literal('')),
+  accepting_orders: z.boolean(),
+  open_for_commissions: z.boolean()
 });
 
 type ArtisanFormData = z.infer<typeof artisanSchema>;
@@ -48,7 +50,7 @@ export const EditArtisanForm = ({ fullName, avatarUrl }: EditArtisanFormProps) =
     }
   });
 
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<ArtisanFormData>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ArtisanFormData>({
     resolver: zodResolver(artisanSchema),
     values: artisan ? {
       craft_type: artisan.craft_type,
@@ -56,7 +58,9 @@ export const EditArtisanForm = ({ fullName, avatarUrl }: EditArtisanFormProps) =
       bio: artisan.bio,
       story: artisan.story || '',
       instagram: artisan.instagram || '',
-      website: artisan.website || ''
+      website: artisan.website || '',
+      accepting_orders: artisan.accepting_orders || false,
+      open_for_commissions: artisan.open_for_commissions || false
     } : undefined
   });
 
@@ -126,7 +130,7 @@ export const EditArtisanForm = ({ fullName, avatarUrl }: EditArtisanFormProps) =
               <Input
                 id="location"
                 {...register('location')}
-                placeholder="City, Country"
+                placeholder="ie. Bishan"
               />
               {errors.location && (
                 <p className="text-sm text-destructive">{errors.location.message}</p>
@@ -183,6 +187,28 @@ export const EditArtisanForm = ({ fullName, avatarUrl }: EditArtisanFormProps) =
               {errors.website && (
                 <p className="text-sm text-destructive">{errors.website.message}</p>
               )}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h4 className="font-medium">Availability</h4>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="accepting_orders" className="cursor-pointer">Accepting Orders</Label>
+              <input
+                type="checkbox"
+                id="accepting_orders"
+                {...register('accepting_orders')}
+                className="h-4 w-4"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="open_for_commissions" className="cursor-pointer">Open for Commissions</Label>
+              <input
+                type="checkbox"
+                id="open_for_commissions"
+                {...register('open_for_commissions')}
+                className="h-4 w-4"
+              />
             </div>
           </div>
 

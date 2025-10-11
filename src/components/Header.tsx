@@ -85,16 +85,16 @@ export const Header = () => {
           {/* Right Icons */}
           <div className="flex items-center gap-4">
             {/* Favorites */}
-            <Link to="/browse">
+            <Link to="/profile?tab=favorites">
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full hover:bg-primary/10 relative"
+                className="rounded-full hover:bg-primary/10 relative h-9 w-9"
                 aria-label="Favorites"
               >
-                <Heart className="h-5 w-5 text-primary" />
+                <Heart className="h-4 w-4 text-primary" />
                 {favoritesCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary">
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-primary">
                     {favoritesCount}
                   </Badge>
                 )}

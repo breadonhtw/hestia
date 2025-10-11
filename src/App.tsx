@@ -28,7 +28,13 @@ const App = () => {
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
+          <Sonner 
+            position="bottom-center" 
+            expand={false} 
+            richColors 
+            toastOptions={{ duration: 2000 }} 
+            visibleToasts={3}
+          />
           <ToasterModern ref={toasterRef} />
           <BrowserRouter>
           <ScrollToTop />

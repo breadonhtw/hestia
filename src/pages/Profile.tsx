@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,6 +17,8 @@ const Profile = () => {
   const { user, loading: authLoading } = useAuth();
   const { role, isLoading: roleLoading } = useUserRole();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'edit');
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile', user?.id],
@@ -64,12 +66,13 @@ const Profile = () => {
         role={role}
       />
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <Tabs defaultValue="edit" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="edit">Edit Profile</TabsTrigger>
-            <TabsTrigger value="favorites">My Favorites</TabsTrigger>
-          </TabsList>
+      <div className="w-full max-w-[1920px]">
+        <div className="container mx-auto px-4 lg:px-8 py-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-4xl mx-auto">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="edit">Edit Profile</TabsTrigger>
+              <TabsTrigger value="favorites">My Favorites</TabsTrigger>
+            </TabsList>
 
           <TabsContent value="edit" className="space-y-6">
             {role === 'artisan' ? (
@@ -85,10 +88,11 @@ const Profile = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="favorites">
-            <FavoritesList />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="favorites">
+              <FavoritesList />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
 
       <Footer />
