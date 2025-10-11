@@ -272,6 +272,114 @@ const Browse = () => {
 
             {/* Main Content */}
             <main className="flex-1">
+              {/* Active Filters Display */}
+              {(selectedCrafts.length > 0 || selectedLocation !== 'all' || acceptingOrders || openForCommissions || newlyJoined) && (
+                <div className="mb-6 p-4 bg-[#F5F0E8] dark:bg-[rgba(245,240,232,0.08)] rounded-lg border border-[rgba(160,97,58,0.2)] dark:border-[rgba(245,240,232,0.1)]">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-medium text-[#2A5A54] dark:text-[#E8DFD3]">Active Filters</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={clearFilters}
+                      className="h-auto p-1 text-xs hover:bg-[rgba(160,97,58,0.1)]"
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedCrafts.map((craft) => (
+                      <div
+                        key={craft}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-[rgba(160,97,58,0.15)] dark:bg-[rgba(212,175,122,0.15)] text-[#A0613A] dark:text-[#D4AF7A] rounded-full text-sm"
+                      >
+                        <span>{craft}</span>
+                        <button
+                          onClick={() => {
+                            const newCrafts = selectedCrafts.filter(c => c !== craft);
+                            setSelectedCrafts(newCrafts);
+                            setPendingCrafts(newCrafts);
+                          }}
+                          className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
+                          aria-label={`Remove ${craft} filter`}
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                    {selectedLocation !== 'all' && (
+                      <div className="inline-flex items-center gap-1 px-3 py-1 bg-[rgba(160,97,58,0.15)] dark:bg-[rgba(212,175,122,0.15)] text-[#A0613A] dark:text-[#D4AF7A] rounded-full text-sm">
+                        <span>Location: {selectedLocation}</span>
+                        <button
+                          onClick={() => {
+                            setSelectedLocation('all');
+                            setPendingLocation('all');
+                          }}
+                          className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
+                          aria-label="Remove location filter"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                    {acceptingOrders && (
+                      <div className="inline-flex items-center gap-1 px-3 py-1 bg-[rgba(160,97,58,0.15)] dark:bg-[rgba(212,175,122,0.15)] text-[#A0613A] dark:text-[#D4AF7A] rounded-full text-sm">
+                        <span>Accepting Orders</span>
+                        <button
+                          onClick={() => {
+                            setAcceptingOrders(false);
+                            setPendingAcceptingOrders(false);
+                          }}
+                          className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
+                          aria-label="Remove accepting orders filter"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                    {openForCommissions && (
+                      <div className="inline-flex items-center gap-1 px-3 py-1 bg-[rgba(160,97,58,0.15)] dark:bg-[rgba(212,175,122,0.15)] text-[#A0613A] dark:text-[#D4AF7A] rounded-full text-sm">
+                        <span>Open for Commissions</span>
+                        <button
+                          onClick={() => {
+                            setOpenForCommissions(false);
+                            setPendingOpenForCommissions(false);
+                          }}
+                          className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
+                          aria-label="Remove open for commissions filter"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                    {newlyJoined && (
+                      <div className="inline-flex items-center gap-1 px-3 py-1 bg-[rgba(160,97,58,0.15)] dark:bg-[rgba(212,175,122,0.15)] text-[#A0613A] dark:text-[#D4AF7A] rounded-full text-sm">
+                        <span>Newly Joined (30 days)</span>
+                        <button
+                          onClick={() => {
+                            setNewlyJoined(false);
+                            setPendingNewlyJoined(false);
+                          }}
+                          className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
+                          aria-label="Remove newly joined filter"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Top Bar */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <p className="text-[#5A6F6B] dark:text-[#C4B5A5]">

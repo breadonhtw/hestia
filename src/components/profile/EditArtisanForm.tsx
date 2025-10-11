@@ -67,9 +67,18 @@ export const EditArtisanForm = ({ fullName, avatarUrl }: EditArtisanFormProps) =
 
   const updateArtisan = useMutation({
     mutationFn: async (data: ArtisanFormData) => {
+      // Transform empty strings to null to avoid database constraint violations
+      const cleanedData = {
+        ...data,
+        instagram: data.instagram?.trim() || null,
+        website: data.website?.trim() || null,
+        bio: data.bio?.trim() || null,
+        story: data.story?.trim() || null,
+      };
+      
       const { error } = await supabase
         .from('artisans')
-        .update(data)
+        .update(cleanedData)
         .eq('user_id', user!.id);
       
       if (error) throw error;
