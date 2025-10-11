@@ -11,6 +11,7 @@ export interface Creator {
   website?: string;
   instagram?: string;
   email?: string;
+  username?: string;
 }
 
 export interface Work {

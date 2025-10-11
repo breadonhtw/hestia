@@ -5,26 +5,22 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import hestiaLogo from "@/assets/hestia-logo.svg";
 import { useFavorites } from "@/hooks/useFavorites";
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem('hestia-theme');
-    if (stored) return stored === 'dark';
-    return document.documentElement.classList.contains('dark');
+    const stored = localStorage.getItem("hestia-theme");
+    if (stored) return stored === "dark";
+    return document.documentElement.classList.contains("dark");
   });
   const navigate = useNavigate();
   const location = useLocation();
   const { favoritesCount } = useFavorites();
   const { user } = useAuth();
-  const isProfilePage = location.pathname === '/profile';
+  const isProfilePage = location.pathname === "/profile";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +34,7 @@ export const Header = () => {
     const newTheme = !isDark;
     document.documentElement.classList.toggle("dark");
     setIsDark(newTheme);
-    localStorage.setItem('hestia-theme', newTheme ? 'dark' : 'light');
+    localStorage.setItem("hestia-theme", newTheme ? "dark" : "light");
   };
 
   const menuItems = [
@@ -59,10 +55,7 @@ export const Header = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-3 group"
-          >
+          <Link to="/" className="flex items-center gap-3 group">
             <img
               src={hestiaLogo}
               alt="Hestia"
@@ -90,14 +83,20 @@ export const Header = () => {
           <div className="flex items-center gap-4">
             {/* Favorites */}
             <Link to="/profile?tab=favorites" className="relative">
-              <div className="hover:bg-primary/10 rounded-full p-2 transition-colors">
-                <Heart className="h-4 w-4 text-primary" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-primary/10 relative"
+                aria-label="My Favorites"
+              >
+                <Heart className="h-5 w-5 text-primary" />{" "}
+                {/* ✅ Larger icon */}
                 {favoritesCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-primary">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-primary text-primary-foreground">
                     {favoritesCount}
                   </Badge>
                 )}
-              </div>
+              </Button>
             </Link>
 
             {/* Profile Icon */}
