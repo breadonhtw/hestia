@@ -132,7 +132,7 @@ export const SignInCard = ({ onFlipToSignUp }: SignInCardProps) => {
             Signing in...
           </>
         ) : (
-          "Get Started"
+          "Login"
         )}
       </button>
       <div className="flex items-center w-full my-2">
