@@ -59,6 +59,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Check username availability
     const isAvailable = await checkUsernameAvailability(username);
+    console.log(`Username "${username}" availability:`, isAvailable);
+    
     if (!isAvailable) {
       return { error: { message: 'Username is already taken' } };
     }
@@ -77,6 +79,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     });
+    
+    // Add detailed error logging
+    if (error) {
+      console.error('Signup error details:', {
+        message: error.message,
+        status: error.status,
+        name: error.name
+      });
+    }
     
     return { error };
   };
@@ -116,13 +127,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const checkUsernameAvailability = async (username: string): Promise<boolean> => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('username', username.toLowerCase())
-      .maybeSingle();
-
-    return !data && !error;
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username.toLowerCase())
+        .maybeSingle();
+      
+      // If there's a database error, log it and assume unavailable (safe default)
+      if (error) {
+        console.error('Error checking username availability:', error);
+        return false;
+      }
+      
+      // If data exists, username is taken
+      // If data is null, username is available
+      return data === null;
+    } catch (err) {
+      console.error('Exception checking username availability:', err);
+      return false; // Safe default: assume unavailable on error
+    }
   };
 
   const signOut = async () => {

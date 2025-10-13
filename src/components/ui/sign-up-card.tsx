@@ -16,6 +16,7 @@ export const SignUpCard = ({ onFlipToSignIn }: SignUpCardProps) => {
   const [role, setRole] = useState<'artisan' | 'community_member'>('community_member');
   const [isLoading, setIsLoading] = useState(false);
   const [showPasswordReqs, setShowPasswordReqs] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const { signUp, checkUsernameAvailability } = useAuth();
 
   const passwordStrength = validatePasswordStrength(password);
@@ -99,6 +100,8 @@ export const SignUpCard = ({ onFlipToSignIn }: SignUpCardProps) => {
   const handleUsernameBlur = async () => {
     if (username && usernameValidation.isValid) {
       const isAvailable = await checkUsernameAvailability(username);
+      setIsUsernameAvailable(isAvailable);
+      
       if (!isAvailable) {
         showToast({
           title: "Username Taken",
@@ -200,7 +203,7 @@ export const SignUpCard = ({ onFlipToSignIn }: SignUpCardProps) => {
           />
           {username && (
             <span className="absolute right-3 top-1/2 -translate-y-1/2">
-              {usernameValidation.isValid ? (
+              {usernameValidation.isValid && isUsernameAvailable !== false ? (
                 <CheckCircle className="w-4 h-4 text-green-500" />
               ) : (
                 <XCircle className="w-4 h-4 text-destructive" />
@@ -248,7 +251,7 @@ export const SignUpCard = ({ onFlipToSignIn }: SignUpCardProps) => {
 
       <button
         onClick={handleSignUp}
-        disabled={isLoading}
+        disabled={isLoading || (username && isUsernameAvailable === false)}
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2 rounded-xl shadow hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mb-4 mt-2 flex items-center justify-center"
       >
         {isLoading ? (
