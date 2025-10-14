@@ -1,8 +1,8 @@
 {
   "ci": {
     "collect": {
-      "staticDistDir": "dist",
-      "url": ["/", "/browse"],
+      "startServerCommand": "npx http-server ./dist -p 4173 -s",
+      "url": ["http://localhost:4173/", "http://localhost:4173/browse"],
       "settings": { "preset": "desktop" }
     },
     "assert": {
