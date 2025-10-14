@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
@@ -22,27 +23,28 @@ import { Filter } from "lucide-react";
 const Browse = () => {
   const { data: artisansData, isLoading } = useArtisans();
   const [searchParams] = useSearchParams();
-  
+
   // Pending filters (what user is selecting)
   const [pendingCrafts, setPendingCrafts] = useState<string[]>([]);
   const [pendingLocation, setPendingLocation] = useState<string>("all");
   const [pendingAcceptingOrders, setPendingAcceptingOrders] = useState(false);
-  const [pendingOpenForCommissions, setPendingOpenForCommissions] = useState(false);
+  const [pendingOpenForCommissions, setPendingOpenForCommissions] =
+    useState(false);
   const [pendingNewlyJoined, setPendingNewlyJoined] = useState(false);
-  
+
   // Applied filters (actually used for filtering)
   const [selectedCrafts, setSelectedCrafts] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [acceptingOrders, setAcceptingOrders] = useState(false);
   const [openForCommissions, setOpenForCommissions] = useState(false);
   const [newlyJoined, setNewlyJoined] = useState(false);
-  
+
   const [sortBy, setSortBy] = useState<string>("featured");
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
-  
+
   // Initialize from URL params on mount
   useEffect(() => {
-    const craftParam = searchParams.get('craft');
+    const craftParam = searchParams.get("craft");
     if (craftParam) {
       setPendingCrafts([craftParam]);
       setSelectedCrafts([craftParam]);
@@ -50,20 +52,24 @@ const Browse = () => {
   }, [searchParams]);
 
   // Transform artisan data to Creator format (include created_at for "New" badge)
-  const creators: Creator[] = artisansData?.map(artisan => ({
-    id: artisan.id,
-    name: artisan.full_name || 'Artisan',
-    craftType: artisan.craft_type,
-    location: artisan.location,
-    bio: artisan.bio || '',
-    image: artisan.avatar_url || '',
-    works: [],
-    featured: artisan.featured,
-    story: artisan.story || undefined,
-    website: artisan.website || undefined,
-    instagram: artisan.instagram || undefined,
-    created_at: artisan.created_at,
-  } as any)) || [];
+  const creators: Creator[] =
+    artisansData?.map(
+      (artisan) =>
+        ({
+          id: artisan.id,
+          name: artisan.full_name || "Artisan",
+          craftType: artisan.craft_type,
+          location: artisan.location,
+          bio: artisan.bio || "",
+          image: artisan.avatar_url || "",
+          works: [],
+          featured: artisan.featured,
+          story: artisan.story || undefined,
+          website: artisan.website || undefined,
+          instagram: artisan.instagram || undefined,
+          created_at: artisan.created_at,
+        } as any)
+    ) || [];
   const craftTypes = [
     "Pottery & Ceramics",
     "Textiles & Fiber Arts",
@@ -88,7 +94,7 @@ const Browse = () => {
       prev.includes(craft) ? prev.filter((c) => c !== craft) : [...prev, craft]
     );
   };
-  
+
   const applyFilters = () => {
     setSelectedCrafts(pendingCrafts);
     setSelectedLocation(pendingLocation);
@@ -96,7 +102,7 @@ const Browse = () => {
     setOpenForCommissions(pendingOpenForCommissions);
     setNewlyJoined(pendingNewlyJoined);
   };
-  
+
   const clearFilters = () => {
     setPendingCrafts([]);
     setPendingLocation("all");
@@ -115,22 +121,41 @@ const Browse = () => {
     const craftMatch =
       selectedCrafts.length === 0 || selectedCrafts.includes(creator.craftType);
     const locationMatch =
-      selectedLocation === "all" || creator.location.toLowerCase().includes(selectedLocation.toLowerCase());
-    
+      selectedLocation === "all" ||
+      creator.location.toLowerCase().includes(selectedLocation.toLowerCase());
+
     // Availability filters - only if data exists
-    const artisan = artisansData?.find(a => a.id === creator.id);
+    const artisan = artisansData?.find((a) => a.id === creator.id);
     const acceptingOrdersMatch = !acceptingOrders || artisan?.accepting_orders;
-    const openForCommissionsMatch = !openForCommissions || artisan?.open_for_commissions;
-    
+    const openForCommissionsMatch =
+      !openForCommissions || artisan?.open_for_commissions;
+
     // Newly joined filter (within last 30 days)
-    const newlyJoinedMatch = !newlyJoined || (artisan?.created_at && 
-      new Date(artisan.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
-    
-    return craftMatch && locationMatch && acceptingOrdersMatch && openForCommissionsMatch && newlyJoinedMatch;
+    const newlyJoinedMatch =
+      !newlyJoined ||
+      (artisan?.created_at &&
+        new Date(artisan.created_at) >
+          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+
+    return (
+      craftMatch &&
+      locationMatch &&
+      acceptingOrdersMatch &&
+      openForCommissionsMatch &&
+      newlyJoinedMatch
+    );
   });
   return (
     <PageLayout>
       <div className="w-full max-w-[1920px]">
+        <Helmet>
+          <title>Browse Artisans | Hestia</title>
+          <meta
+            name="description"
+            content="Discover local artisans by craft and location. Explore pottery, textiles, woodwork, jewelry, and more."
+          />
+          <link rel="canonical" href={`https://www.hestia.sg/browse`} />
+        </Helmet>
         <div className="container mx-auto px-4 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar Filters */}
@@ -273,12 +298,18 @@ const Browse = () => {
             {/* Main Content */}
             <main className="flex-1">
               {/* Active Filters Display */}
-              {(selectedCrafts.length > 0 || selectedLocation !== 'all' || acceptingOrders || openForCommissions || newlyJoined) && (
+              {(selectedCrafts.length > 0 ||
+                selectedLocation !== "all" ||
+                acceptingOrders ||
+                openForCommissions ||
+                newlyJoined) && (
                 <div className="mb-6 p-4 bg-[#F5F0E8] dark:bg-[rgba(245,240,232,0.08)] rounded-lg border border-[rgba(160,97,58,0.2)] dark:border-[rgba(245,240,232,0.1)]">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-medium text-[#2A5A54] dark:text-[#E8DFD3]">Active Filters</h3>
-                    <Button 
-                      variant="ghost" 
+                    <h3 className="text-sm font-medium text-[#2A5A54] dark:text-[#E8DFD3]">
+                      Active Filters
+                    </h3>
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={clearFilters}
                       className="h-auto p-1 text-xs hover:bg-[rgba(160,97,58,0.1)]"
@@ -295,32 +326,54 @@ const Browse = () => {
                         <span>{craft}</span>
                         <button
                           onClick={() => {
-                            const newCrafts = selectedCrafts.filter(c => c !== craft);
+                            const newCrafts = selectedCrafts.filter(
+                              (c) => c !== craft
+                            );
                             setSelectedCrafts(newCrafts);
                             setPendingCrafts(newCrafts);
                           }}
                           className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
                           aria-label={`Remove ${craft} filter`}
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </div>
                     ))}
-                    {selectedLocation !== 'all' && (
+                    {selectedLocation !== "all" && (
                       <div className="inline-flex items-center gap-1 px-3 py-1 bg-[rgba(160,97,58,0.15)] dark:bg-[rgba(212,175,122,0.15)] text-[#A0613A] dark:text-[#D4AF7A] rounded-full text-sm">
                         <span>Location: {selectedLocation}</span>
                         <button
                           onClick={() => {
-                            setSelectedLocation('all');
-                            setPendingLocation('all');
+                            setSelectedLocation("all");
+                            setPendingLocation("all");
                           }}
                           className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
                           aria-label="Remove location filter"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -336,8 +389,18 @@ const Browse = () => {
                           className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
                           aria-label="Remove accepting orders filter"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -353,8 +416,18 @@ const Browse = () => {
                           className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
                           aria-label="Remove open for commissions filter"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -370,8 +443,18 @@ const Browse = () => {
                           className="ml-1 hover:bg-[rgba(160,97,58,0.2)] dark:hover:bg-[rgba(212,175,122,0.2)] rounded-full p-0.5 transition-colors"
                           aria-label="Remove newly joined filter"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </div>

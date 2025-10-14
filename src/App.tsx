@@ -5,15 +5,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Index from "./pages/Index";
-import Browse from "./pages/Browse";
-import Search from "./pages/Search";
-import CreatorProfile from "./pages/CreatorProfile";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Auth from "./pages/Auth";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
+import React, { Suspense } from "react";
+const Index = React.lazy(() => import("./pages/Index"));
+const Browse = React.lazy(() => import("./pages/Browse"));
+const Search = React.lazy(() => import("./pages/Search"));
+const CreatorProfile = React.lazy(() => import("./pages/CreatorProfile"));
+const About = React.lazy(() => import("./pages/About"));
+const Contact = React.lazy(() => import("./pages/Contact"));
+const Auth = React.lazy(() => import("./pages/Auth"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -27,20 +28,21 @@ const App = () => {
           <ToasterModern ref={toasterRef} />
           <BrowserRouter>
             <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/browse" element={<Browse />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/artisan/:username" element={<CreatorProfile />} />
-              <Route path="/creator/:id" element={<CreatorProfile />} />
-              <Route path="/about" element={<About />} />
-
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/profile" element={<Profile />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<div />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/browse" element={<Browse />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/artisan/:username" element={<CreatorProfile />} />
+                <Route path="/creator/:id" element={<CreatorProfile />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/profile" element={<Profile />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

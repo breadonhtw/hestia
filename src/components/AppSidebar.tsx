@@ -1,14 +1,26 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Sun, Moon, Home, Users, LogOut, User } from "lucide-react";
-import { SidebarAceternity, SidebarBody, SidebarLink } from "@/components/ui/sidebar-aceternity";
+import {
+  SidebarAceternity,
+  SidebarBody,
+  SidebarLink,
+} from "@/components/ui/sidebar-aceternity";
 import hestiaLogo from "@/assets/hestia-logo.svg";
 import { motion } from "framer-motion";
 
 const Logo = () => {
   return (
     <Link to="/" className="flex items-center gap-3 group py-2">
-      <img src={hestiaLogo} alt="Hestia" className="h-10 w-10" />
+      <img
+        src={hestiaLogo}
+        alt="Hestia"
+        className="h-10 w-10"
+        loading="lazy"
+        decoding="async"
+        width={40}
+        height={40}
+      />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -23,7 +35,15 @@ const Logo = () => {
 const LogoIcon = () => {
   return (
     <Link to="/" className="flex items-center py-2">
-      <img src={hestiaLogo} alt="Hestia" className="h-10 w-10" />
+      <img
+        src={hestiaLogo}
+        alt="Hestia"
+        className="h-10 w-10"
+        loading="lazy"
+        decoding="async"
+        width={40}
+        height={40}
+      />
     </Link>
   );
 };
@@ -31,9 +51,9 @@ const LogoIcon = () => {
 export const AppSidebar = () => {
   const [open, setOpen] = useState(false);
   const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem('hestia-theme');
-    if (stored) return stored === 'dark';
-    return document.documentElement.classList.contains('dark');
+    const stored = localStorage.getItem("hestia-theme");
+    if (stored) return stored === "dark";
+    return document.documentElement.classList.contains("dark");
   });
   const location = useLocation();
 
@@ -41,7 +61,7 @@ export const AppSidebar = () => {
     const newTheme = !isDark;
     document.documentElement.classList.toggle("dark");
     setIsDark(newTheme);
-    localStorage.setItem('hestia-theme', newTheme ? 'dark' : 'light');
+    localStorage.setItem("hestia-theme", newTheme ? "dark" : "light");
   };
 
   const menuItems = [
@@ -57,9 +77,10 @@ export const AppSidebar = () => {
         {/* Navigation Links */}
         <div className="mt-8 flex flex-col gap-2">
           {menuItems.map((item, idx) => {
-            const isActive = item.path === "/" 
-              ? location.pathname === "/" 
-              : location.pathname.startsWith(item.path);
+            const isActive =
+              item.path === "/"
+                ? location.pathname === "/"
+                : location.pathname.startsWith(item.path);
             const IconComponent = item.Icon;
             return (
               <SidebarLink
@@ -67,9 +88,17 @@ export const AppSidebar = () => {
                 link={{
                   label: item.label,
                   href: item.path,
-                  icon: <IconComponent className={`h-5 w-5 transition-colors duration-200 ${isActive ? "text-primary" : "text-muted-foreground"}`} />,
+                  icon: (
+                    <IconComponent
+                      className={`h-5 w-5 transition-colors duration-200 ${
+                        isActive ? "text-primary" : "text-muted-foreground"
+                      }`}
+                    />
+                  ),
                 }}
-                className={`transition-all duration-200 ${isActive ? "bg-primary/10" : "hover:bg-muted/50"}`}
+                className={`transition-all duration-200 ${
+                  isActive ? "bg-primary/10" : "hover:bg-muted/50"
+                }`}
               />
             );
           })}
@@ -88,7 +117,11 @@ export const AppSidebar = () => {
           ) : (
             <Moon className="h-5 w-5 text-primary" />
           )}
-          {open && <span className="text-foreground text-sm">{isDark ? "Light Mode" : "Dark Mode"}</span>}
+          {open && (
+            <span className="text-foreground text-sm">
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </span>
+          )}
         </div>
 
         {/* Profile */}
@@ -99,8 +132,12 @@ export const AppSidebar = () => {
             </div>
             {open && (
               <div className="flex flex-col overflow-hidden">
-                <span className="text-foreground text-sm font-medium truncate">Guest User</span>
-                <span className="text-muted-foreground text-xs truncate">View Profile</span>
+                <span className="text-foreground text-sm font-medium truncate">
+                  Guest User
+                </span>
+                <span className="text-muted-foreground text-xs truncate">
+                  View Profile
+                </span>
               </div>
             )}
           </div>
