@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { EtherealShadow } from "@/components/ui/ethereal-shadow";
 
 interface HeroShadowProps {
   children: React.ReactNode;
@@ -19,6 +18,9 @@ export function HeroShadow({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [animationReady, setAnimationReady] = useState(!deferAnimation);
+  const [EtherealShadowComp, setEtherealShadowComp] = useState<
+    null | ((props: any) => JSX.Element)
+  >(null);
 
   useEffect(() => {
     // Check for reduced motion preference
@@ -54,6 +56,18 @@ export function HeroShadow({
     };
   }, [deferAnimation, animationReady]);
 
+  // Defer loading the animated background implementation until needed
+  useEffect(() => {
+    if (!animationReady || prefersReducedMotion || EtherealShadowComp) return;
+    let mounted = true;
+    import("@/components/ui/ethereal-shadow").then((m) => {
+      if (mounted) setEtherealShadowComp(() => m.EtherealShadow as any);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [animationReady, prefersReducedMotion, EtherealShadowComp]);
+
   // Hestia color palette
   const colors = {
     clay: "rgba(217, 125, 84, 0.8)",
@@ -81,13 +95,48 @@ export function HeroShadow({
 
   return (
     <div className={`relative min-h-screen ${className}`}>
-      <div className="absolute inset-0 pointer-events-none">
-        <EtherealShadow
-          color={colors[variant]}
-          animation={finalAnimation}
-          noise={{ opacity: 0.9, scale: 1.3 }}
-          sizing="fill"
-        />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ contain: "paint" }}
+      >
+        {EtherealShadowComp ? (
+          <EtherealShadowComp
+            color={colors[variant]}
+            animation={finalAnimation}
+            noise={{ opacity: 0.9, scale: 1.3 }}
+            sizing="fill"
+          />
+        ) : (
+          // Lightweight static fallback (same mask/noise visuals, no JS animation)
+          <>
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: colors[variant],
+                WebkitMaskImage: `url('/ethereal-mask.png')`,
+                maskImage: `url('/ethereal-mask.png')`,
+                WebkitMaskSize: "cover",
+                maskSize: "cover",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+                filter: "blur(4px)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundImage: `url('/ethereal-noise.png')`,
+                backgroundSize: 1.3 * 200,
+                backgroundRepeat: "repeat",
+                opacity: 0.45,
+              }}
+            />
+          </>
+        )}
       </div>
       <div className="relative z-10 min-h-screen">{children}</div>
     </div>

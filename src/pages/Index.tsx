@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/PageLayout";
-import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -25,19 +24,33 @@ import { HeroShadow } from "@/components/HeroShadow";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import type { Creator } from "@/types/creator";
 import { GradientText } from "@/components/ui/gradient-text";
-import { FloatingOrbs } from "@/components/ui/floating-orbs";
+// Floating effects and Footer are loaded on idle to reduce initial JS
 import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
   const { data: artisansData, isLoading } = useArtisans();
   const [showEffects, setShowEffects] = useState(false);
+  const [FloatingOrbsComp, setFloatingOrbsComp] = useState<
+    null | ((props: any) => JSX.Element)
+  >(null);
+  const [FooterComp, setFooterComp] = useState<
+    null | ((props: any) => JSX.Element)
+  >(null);
 
   useEffect(() => {
     const schedule = (cb: () => void) =>
       (window as any).requestIdleCallback
         ? (window as any).requestIdleCallback(cb)
         : setTimeout(cb, 200);
-    schedule(() => setShowEffects(true));
+    schedule(() => {
+      setShowEffects(true);
+      import("@/components/ui/floating-orbs").then((m) =>
+        setFloatingOrbsComp(() => m.FloatingOrbs as any)
+      );
+      import("@/components/Footer").then((m) =>
+        setFooterComp(() => m.Footer as any)
+      );
+    });
   }, []);
 
   // Transform artisan data to Creator format
@@ -73,6 +86,13 @@ const Index = () => {
     "Art & Illustration": Palette,
     "Plants & Florals": Flower,
     "Home Decor": Home,
+  };
+
+  // Prefetch creator profile route chunk on intent (hover/focus)
+  const prefetchCreatorProfile = () => {
+    try {
+      import("./CreatorProfile");
+    } catch {}
   };
 
   return (
@@ -118,7 +138,7 @@ const Index = () => {
           className="pointer-events-none min-h-screen"
           deferAnimation
         >
-          {showEffects && <FloatingOrbs count={6} />}
+          {showEffects && FloatingOrbsComp && <FloatingOrbsComp count={6} />}
           <section className="min-h-screen flex items-center justify-center overflow-hidden pointer-events-auto pt-20">
             <div className="text-center max-w-4xl mx-auto px-4">
               <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
@@ -216,23 +236,31 @@ const Index = () => {
             )}
 
             {/* Stat Card */}
-            <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center items-center text-center">
-              <Users className="h-12 w-12 text-primary mb-4" />
-              <div className="font-serif text-5xl font-bold text-primary mb-2">
-                125
+            {bentoReveal.isVisible ? (
+              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center items-center text-center">
+                <Users className="h-12 w-12 text-primary mb-4" />
+                <div className="font-serif text-5xl font-bold text-primary mb-2">
+                  125
+                </div>
+                <p className="text-lg text-muted-foreground">Local Artisans</p>
               </div>
-              <p className="text-lg text-muted-foreground">Local Artisans</p>
-            </div>
+            ) : (
+              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft" />
+            )}
 
             {/* Testimonial Card */}
-            <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center">
-              <Quote className="h-8 w-8 text-secondary mb-4" />
-              <p className="italic text-foreground mb-4">
-                "Finding Elena's pottery was like discovering a treasure in my
-                own neighborhood."
-              </p>
-              <p className="text-sm text-muted-foreground">— Sarah M.</p>
-            </div>
+            {bentoReveal.isVisible ? (
+              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center">
+                <Quote className="h-8 w-8 text-secondary mb-4" />
+                <p className="italic text-foreground mb-4">
+                  "Finding Elena's pottery was like discovering a treasure in my
+                  own neighborhood."
+                </p>
+                <p className="text-sm text-muted-foreground">— Sarah M.</p>
+              </div>
+            ) : (
+              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft" />
+            )}
 
             {/* Work Image Tiles */}
             {(
@@ -291,15 +319,20 @@ const Index = () => {
                   <SkeletonCard key={index} />
                 ))
               : exploreCreators.map((creator, index) => (
-                  <CreatorCard
+                  <div
                     key={creator.id}
-                    creator={creator}
-                    index={index}
-                    onClick={() =>
-                      (window.location.href = `/creator/${creator.id}`)
-                    }
-                    variant="compact"
-                  />
+                    onMouseEnter={prefetchCreatorProfile}
+                    onFocus={prefetchCreatorProfile}
+                  >
+                    <CreatorCard
+                      creator={creator}
+                      index={index}
+                      onClick={() =>
+                        (window.location.href = `/creator/${creator.id}`)
+                      }
+                      variant="compact"
+                    />
+                  </div>
                 ))}
           </div>
 
@@ -347,7 +380,7 @@ const Index = () => {
           </div>
         </section>
 
-        <Footer />
+        {FooterComp ? <FooterComp /> : null}
       </div>
     </PageLayout>
   );

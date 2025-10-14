@@ -22,6 +22,22 @@ import { Creator } from "@/types/creator";
 import { Filter } from "lucide-react";
 const Browse = () => {
   const { data: artisansData, isLoading } = useArtisans();
+  const [gridVisible, setGridVisible] = useState(false);
+  useEffect(() => {
+    const el = document.getElementById("browse-grid");
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setGridVisible(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const [searchParams] = useSearchParams();
 
   // Pending filters (what user is selecting)
@@ -145,6 +161,13 @@ const Browse = () => {
       newlyJoinedMatch
     );
   });
+
+  // Prefetch profile route on hover/focus intent
+  const prefetchCreatorProfile = () => {
+    try {
+      import("./CreatorProfile");
+    } catch {}
+  };
   return (
     <PageLayout>
       <div className="w-full max-w-[1920px]">
@@ -497,9 +520,20 @@ const Browse = () => {
                   ))}
                 </div>
               ) : filteredCreators.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredCreators.map((creator, index) => (
-                    <div key={creator.id} className="aspect-[4/5]">
+                <div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                  id="browse-grid"
+                >
+                  {(gridVisible
+                    ? filteredCreators
+                    : filteredCreators.slice(0, 6)
+                  ).map((creator, index) => (
+                    <div
+                      key={creator.id}
+                      className="aspect-[4/5]"
+                      onMouseEnter={prefetchCreatorProfile}
+                      onFocus={prefetchCreatorProfile}
+                    >
                       <CreatorCard
                         creator={creator}
                         index={index}
