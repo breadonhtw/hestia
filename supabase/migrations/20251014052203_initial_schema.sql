@@ -1,26 +1,12 @@
--- Create helper function to insert artisan profiles with elevated privileges
-CREATE OR REPLACE FUNCTION public.create_artisan_profile(
-  _user_id UUID,
-  _email TEXT
-)
-RETURNS VOID
+-- Fix artisan signup and username login issues
+
+-- 1. Fix the handle_new_user() function to remove automatic artisan record creation
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-BEGIN
-  INSERT INTO public.artisans (user_id, bio, location, craft_type, email)
-  VALUES (_user_id, '', '', '', _email);
-END;
-$$;
-
--- Update the handle_new_user trigger to use the helper function
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path TO 'public'
-AS $function$
 DECLARE
   user_role app_role;
 BEGIN
@@ -43,11 +29,23 @@ BEGIN
   INSERT INTO public.user_roles (user_id, role)
   VALUES (NEW.id, user_role);
 
-  -- If artisan role, create artisan record using helper function
-  IF user_role = 'artisan' THEN
-    PERFORM public.create_artisan_profile(NEW.id, NEW.email);
-  END IF;
+  -- Note: Removed automatic artisan record creation
+  -- Users will complete their artisan profile through the UI after signup
 
   RETURN NEW;
 END;
-$function$;
+$$;
+
+-- 2. Create function to get email by username for login
+CREATE OR REPLACE FUNCTION public.get_email_by_username(_username TEXT)
+RETURNS TEXT
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT u.email
+  FROM auth.users u
+  JOIN public.profiles p ON p.id = u.id
+  WHERE p.username = _username
+  LIMIT 1;
+$$;

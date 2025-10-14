@@ -71,14 +71,12 @@ export type Database = {
           bio: string
           craft_type: string
           created_at: string
-          email: string
           featured: boolean
           id: string
           instagram: string | null
-          latitude: number | null
           location: string
-          longitude: number | null
           open_for_commissions: boolean | null
+          profile_completed: boolean
           story: string | null
           updated_at: string
           user_id: string
@@ -89,14 +87,12 @@ export type Database = {
           bio: string
           craft_type: string
           created_at?: string
-          email: string
           featured?: boolean
           id?: string
           instagram?: string | null
-          latitude?: number | null
           location: string
-          longitude?: number | null
           open_for_commissions?: boolean | null
+          profile_completed?: boolean
           story?: string | null
           updated_at?: string
           user_id: string
@@ -107,14 +103,12 @@ export type Database = {
           bio?: string
           craft_type?: string
           created_at?: string
-          email?: string
           featured?: boolean
           id?: string
           instagram?: string | null
-          latitude?: number | null
           location?: string
-          longitude?: number | null
           open_for_commissions?: boolean | null
+          profile_completed?: boolean
           story?: string | null
           updated_at?: string
           user_id?: string
@@ -196,49 +190,6 @@ export type Database = {
         }
         Relationships: []
       }
-      followers: {
-        Row: {
-          created_at: string
-          follower_id: string
-          following_id: string
-          id: string
-        }
-        Insert: {
-          created_at?: string
-          follower_id: string
-          following_id: string
-          id?: string
-        }
-        Update: {
-          created_at?: string
-          follower_id?: string
-          following_id?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "followers_follower_id_fkey"
-            columns: ["follower_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "followers_following_id_fkey"
-            columns: ["following_id"]
-            isOneToOne: false
-            referencedRelation: "artisans"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "followers_following_id_fkey"
-            columns: ["following_id"]
-            isOneToOne: false
-            referencedRelation: "artisans_public"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       gallery_images: {
         Row: {
           artisan_id: string
@@ -284,54 +235,13 @@ export type Database = {
           },
         ]
       }
-      posts: {
-        Row: {
-          artisan_id: string
-          content: string
-          created_at: string
-          id: string
-          image_url: string | null
-          updated_at: string
-        }
-        Insert: {
-          artisan_id: string
-          content: string
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          updated_at?: string
-        }
-        Update: {
-          artisan_id?: string
-          content?: string
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "posts_artisan_id_fkey"
-            columns: ["artisan_id"]
-            isOneToOne: false
-            referencedRelation: "artisans"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "posts_artisan_id_fkey"
-            columns: ["artisan_id"]
-            isOneToOne: false
-            referencedRelation: "artisans_public"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
           full_name: string
           id: string
+          role: Database["public"]["Enums"]["app_role"]
           updated_at: string
           username: string | null
         }
@@ -340,6 +250,7 @@ export type Database = {
           created_at?: string
           full_name: string
           id: string
+          role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           username?: string | null
         }
@@ -348,6 +259,7 @@ export type Database = {
           created_at?: string
           full_name?: string
           id?: string
+          role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           username?: string | null
         }
@@ -396,35 +308,6 @@ export type Database = {
           },
         ]
       }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       artisans_public: {
@@ -458,15 +341,7 @@ export type Database = {
       }
     }
     Functions: {
-      create_artisan_profile: {
-        Args: { _email: string; _user_id: string }
-        Returns: undefined
-      }
-      get_artisan_follower_count: {
-        Args: { _artisan_id: string }
-        Returns: number
-      }
-      get_user_id_by_username: {
+      get_email_by_username: {
         Args: { _username: string }
         Returns: string
       }
@@ -477,16 +352,8 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_artisan_owner: {
+      is_artisan_profile_completed: {
         Args: { _artisan_id: string }
-        Returns: boolean
-      }
-      is_following: {
-        Args: { _artisan_id: string; _user_id: string }
-        Returns: boolean
-      }
-      validate_password_strength: {
-        Args: { password: string }
         Returns: boolean
       }
     }

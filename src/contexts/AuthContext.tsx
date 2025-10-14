@@ -1,13 +1,31 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-import { validatePasswordStrength, validateUsername } from '@/lib/password-validation';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { User, Session } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  validatePasswordStrength,
+  validateUsername,
+} from "@/lib/password-validation";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  signIn: (emailOrUsername: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string, username: string, role?: 'artisan' | 'community_member') => Promise<{ error: any }>;
+  signIn: (
+    emailOrUsername: string,
+    password: string
+  ) => Promise<{ error: any }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string,
+    username: string,
+    role?: "artisan" | "community_member"
+  ) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
   checkUsernameAvailability: (username: string) => Promise<boolean>;
@@ -22,13 +40,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -40,14 +58,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, username: string, role: 'artisan' | 'community_member' = 'community_member') => {
+  const signUp = async (
+    email: string,
+    password: string,
+    fullName: string,
+    username: string,
+    role: "artisan" | "community_member" = "community_member"
+  ) => {
     // Validate password strength
     const passwordCheck = validatePasswordStrength(password);
     if (!passwordCheck.isValid) {
-      return { 
-        error: { 
-          message: `Password requirements not met: ${passwordCheck.feedback.join(', ')}` 
-        } 
+      return {
+        error: {
+          message: `Password requirements not met: ${passwordCheck.feedback.join(
+            ", "
+          )}`,
+        },
       };
     }
 
@@ -60,13 +86,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Check username availability
     const isAvailable = await checkUsernameAvailability(username);
     console.log(`Username "${username}" availability:`, isAvailable);
-    
+
     if (!isAvailable) {
-      return { error: { message: 'Username is already taken' } };
+      return { error: { message: "Username is already taken" } };
     }
 
     const redirectUrl = `${window.location.origin}/`;
-    
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -75,20 +101,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         data: {
           full_name: fullName,
           username: username.toLowerCase(),
-          role: role
-        }
-      }
+          role: role,
+        },
+      },
     });
-    
+
     // Add detailed error logging
     if (error) {
-      console.error('Signup error details:', {
+      console.error("Signup error details:", {
         message: error.message,
         status: error.status,
-        name: error.name
+        name: error.name,
       });
     }
-    
+
     return { error };
   };
 
@@ -96,55 +122,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let email = emailOrUsername;
 
     // Check if input is username (no @ symbol)
-    if (!emailOrUsername.includes('@')) {
-      // Look up user by username
-      const { data, error: lookupError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username', emailOrUsername.toLowerCase())
-        .single();
+    if (!emailOrUsername.includes("@")) {
+      // Use the database function to get email by username
+      const { data, error: lookupError } = await supabase.rpc(
+        "get_email_by_username",
+        { _username: emailOrUsername.toLowerCase() }
+      );
 
       if (lookupError || !data) {
-        return { error: { message: 'Invalid username or password' } };
+        return { error: { message: "Invalid username or password" } };
       }
 
-      // Get the auth user to find their email
-      const { data: { user }, error: userError } = await supabase.auth.admin.getUserById(data.id);
-      
-      if (userError || !user?.email) {
-        return { error: { message: 'Invalid username or password' } };
-      }
-
-      email = user.email;
+      email = data;
     }
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
-    
+
     return { error };
   };
 
-  const checkUsernameAvailability = async (username: string): Promise<boolean> => {
+  const checkUsernameAvailability = async (
+    username: string
+  ): Promise<boolean> => {
     try {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('username', username.toLowerCase())
+        .from("profiles")
+        .select("username")
+        .eq("username", username.toLowerCase())
         .maybeSingle();
-      
+
       // If there's a database error, log it and assume unavailable (safe default)
       if (error) {
-        console.error('Error checking username availability:', error);
+        console.error("Error checking username availability:", error);
         return false;
       }
-      
+
       // If data exists, username is taken
       // If data is null, username is available
       return data === null;
     } catch (err) {
-      console.error('Exception checking username availability:', err);
+      console.error("Exception checking username availability:", err);
       return false; // Safe default: assume unavailable on error
     }
   };
@@ -154,7 +174,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut, loading, checkUsernameAvailability }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        signIn,
+        signUp,
+        signOut,
+        loading,
+        checkUsernameAvailability,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -163,7 +193,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
