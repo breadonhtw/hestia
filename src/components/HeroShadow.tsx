@@ -35,24 +35,17 @@ export function HeroShadow({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Defer enabling animation until user interacts or browser is idle
+  // Defer enabling animation until user interacts (no idle to keep CI/first view static)
   useEffect(() => {
     if (!deferAnimation || animationReady) return;
     const enable = () => setAnimationReady(true);
-    const idle = (cb: () => void) =>
-      (window as any).requestIdleCallback
-        ? (window as any).requestIdleCallback(cb)
-        : setTimeout(cb, 350);
-    idle(enable);
     window.addEventListener("pointerdown", enable, { once: true });
-    window.addEventListener("mousemove", enable, { once: true });
     window.addEventListener("touchstart", enable, { once: true });
-    window.addEventListener("scroll", enable, { once: true });
+    window.addEventListener("keydown", enable, { once: true });
     return () => {
       window.removeEventListener("pointerdown", enable);
-      window.removeEventListener("mousemove", enable);
       window.removeEventListener("touchstart", enable);
-      window.removeEventListener("scroll", enable);
+      window.removeEventListener("keydown", enable);
     };
   }, [deferAnimation, animationReady]);
 
