@@ -9,7 +9,15 @@ export const Footer = () => {
           {/* Logo & Tagline */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-4">
-              <img src={hestiaLogo} alt="Hestia" className="h-12" />
+              <img
+                src={hestiaLogo}
+                alt="Hestia"
+                className="h-12"
+                loading="lazy"
+                decoding="async"
+                width={48}
+                height={48}
+              />
             </Link>
             <p className="text-muted-foreground max-w-sm">
               Celebrating the makers behind your neighborhood's hidden

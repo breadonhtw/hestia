@@ -2,7 +2,13 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./index.html",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -61,9 +67,9 @@ export default {
         xl: "1.5rem",
       },
       boxShadow: {
-        'soft': 'var(--shadow-soft)',
-        'lift': 'var(--shadow-lift)',
-        'glow': 'var(--shadow-glow)',
+        soft: "var(--shadow-soft)",
+        lift: "var(--shadow-lift)",
+        glow: "var(--shadow-glow)",
       },
       keyframes: {
         aurora: {
@@ -92,16 +98,16 @@ export default {
             transform: "translateY(0)",
           },
         },
-        "float": {
+        float: {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-10px)" },
         },
         "pulse-glow": {
-          "0%, 100%": { 
+          "0%, 100%": {
             opacity: "1",
             filter: "drop-shadow(0 0 8px hsl(var(--primary)))",
           },
-          "50%": { 
+          "50%": {
             opacity: "0.8",
             filter: "drop-shadow(0 0 16px hsl(var(--primary)))",
           },
@@ -111,7 +117,7 @@ export default {
           "25%": { transform: "scale(1.2)" },
           "50%": { transform: "scale(1)" },
         },
-        "gradient": {
+        gradient: {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
@@ -121,22 +127,20 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in-up": "fade-in-up 0.6s ease-out",
-        "float": "float 3s ease-in-out infinite",
+        float: "float 3s ease-in-out infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "heart-beat": "heart-beat 0.6s ease-in-out",
-        "gradient": "gradient 8s linear infinite",
+        gradient: "gradient 8s linear infinite",
       },
     },
   },
-  plugins: [
-    require("tailwindcss-animate"),
-    addVariablesForColors,
-  ],
+  plugins: [require("tailwindcss-animate"), addVariablesForColors],
 } satisfies Config;
 
 // This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
 function addVariablesForColors({ addBase, theme }: any) {
-  const flattenColorPalette = require("tailwindcss/lib/util/flattenColorPalette").default;
+  const flattenColorPalette =
+    require("tailwindcss/lib/util/flattenColorPalette").default;
   let allColors = flattenColorPalette(theme("colors"));
   let newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])

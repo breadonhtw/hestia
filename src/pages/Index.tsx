@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import {
   ChevronDown,
@@ -31,17 +32,17 @@ const Index = () => {
   // Transform artisan data to Creator format
   const creators: Creator[] = (artisansData || []).map((artisan) => ({
     id: artisan.id,
-    name: artisan.full_name || 'Anonymous',
+    name: artisan.full_name || "Anonymous",
     craftType: artisan.craft_type,
     location: artisan.location,
     bio: artisan.bio,
-    story: artisan.story || '',
-    image: artisan.avatar_url || '/placeholder.svg',
+    story: artisan.story || "",
+    image: artisan.avatar_url || "/placeholder.svg",
     works: [],
     featured: artisan.featured || false,
     instagram: artisan.instagram,
     website: artisan.website,
-    username: artisan.username || artisan.id
+    username: artisan.username || artisan.id,
   }));
 
   const featuredCreator = creators.find((c) => c.featured) || creators[0];
@@ -66,6 +67,36 @@ const Index = () => {
   return (
     <PageLayout>
       <div className="w-full">
+        <Helmet>
+          <title>Hestia – Discover Local Artisans and Makers</title>
+          <meta
+            name="description"
+            content="Connect with talented home-based artisans in your neighborhood. Discover handcrafted pottery, textiles, woodwork, baked goods, and more from local creators."
+          />
+          <link rel="canonical" href="https://www.hestia.sg/" />
+          <meta
+            property="og:title"
+            content="Hestia – Discover Local Artisans in Singapore"
+          />
+          <meta
+            property="og:description"
+            content="Connect with talented home-based artisans and makers in your neighbourhood."
+          />
+          <meta property="og:type" content="website" />
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Hestia",
+              url: "https://www.hestia.sg",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://www.hestia.sg/search?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            })}
+          </script>
+        </Helmet>
         <ScrollProgress />
         <ScrollProgress />
 
@@ -127,6 +158,10 @@ const Index = () => {
                     src={featuredCreator.image}
                     alt={featuredCreator.name}
                     className="w-full h-full object-cover"
+                    loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
+                    sizes="100vw"
                   />
                 </div>
                 <div className="p-8">
@@ -189,6 +224,8 @@ const Index = () => {
                     src={work.image}
                     alt={work.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
                     <p className="text-background font-medium opacity-0 group-hover:opacity-100 transition-opacity">
@@ -216,23 +253,21 @@ const Index = () => {
             ref={artisansReveal.ref}
             className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-12`}
           >
-            {isLoading ? (
-              Array.from({ length: 6 }).map((_, index) => (
-                <SkeletonCard key={index} />
-              ))
-            ) : (
-              exploreCreators.map((creator, index) => (
-                <CreatorCard
-                  key={creator.id}
-                  creator={creator}
-                  index={index}
-                  onClick={() =>
-                    (window.location.href = `/creator/${creator.id}`)
-                  }
-                  variant="compact"
-                />
-              ))
-            )}
+            {isLoading
+              ? Array.from({ length: 6 }).map((_, index) => (
+                  <SkeletonCard key={index} />
+                ))
+              : exploreCreators.map((creator, index) => (
+                  <CreatorCard
+                    key={creator.id}
+                    creator={creator}
+                    index={index}
+                    onClick={() =>
+                      (window.location.href = `/creator/${creator.id}`)
+                    }
+                    variant="compact"
+                  />
+                ))}
           </div>
 
           <div className="text-center">
@@ -261,7 +296,7 @@ const Index = () => {
               ref={categoriesReveal.ref}
               className={`grid grid-cols-2 md:grid-cols-4 gap-6`}
             >
-            {Object.entries(categoryIcons).map(([category, Icon]) => (
+              {Object.entries(categoryIcons).map(([category, Icon]) => (
                 <Link
                   key={category}
                   to={`/browse?craft=${encodeURIComponent(category)}`}

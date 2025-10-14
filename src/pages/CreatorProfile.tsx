@@ -1,13 +1,11 @@
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CreatorCard } from "@/components/CreatorCard";
 import { MapPin, Instagram, Globe, Loader2 } from "lucide-react";
-import {
-  sanitizeUrl,
-  sanitizeInstagramHandle,
-} from "@/lib/sanitize";
+import { sanitizeUrl, sanitizeInstagramHandle } from "@/lib/sanitize";
 import {
   useArtisanById,
   useArtisanByUsername,
@@ -19,18 +17,14 @@ const CreatorProfile = () => {
   const { id, username } = useParams();
 
   // Fetch the specific artisan
-  const {
-    data: artisanById,
-    isLoading: isLoadingById,
-  } = useArtisanById(id ?? "");
-  const {
-    data: artisanByUsername,
-    isLoading: isLoadingByUsername,
-  } = useArtisanByUsername(username ?? "");
+  const { data: artisanById, isLoading: isLoadingById } = useArtisanById(
+    id ?? ""
+  );
+  const { data: artisanByUsername, isLoading: isLoadingByUsername } =
+    useArtisanByUsername(username ?? "");
 
   const artisan = artisanById ?? artisanByUsername;
   const isLoading = isLoadingById || isLoadingByUsername;
-  
 
   // Fetch all artisans for "similar creators"
   const { data: allArtisans } = useArtisans();
@@ -100,6 +94,31 @@ const CreatorProfile = () => {
   return (
     <PageLayout>
       <div className="w-full max-w-[1920px]">
+        <Helmet>
+          <title>{`${creator.name} | ${creator.craftType} | Hestia`}</title>
+          <meta
+            name="description"
+            content={
+              creator.bio?.slice(0, 160) ||
+              `${creator.name} – ${creator.craftType} in ${creator.location}`
+            }
+          />
+          <link
+            rel="canonical"
+            href={`https://www.hestia.sg/creator/${creator.id}`}
+          />
+          <meta
+            property="og:title"
+            content={`${creator.name} | ${creator.craftType} | Hestia`}
+          />
+          <meta
+            property="og:description"
+            content={
+              creator.bio?.slice(0, 160) ||
+              `${creator.name} – ${creator.craftType} in ${creator.location}`
+            }
+          />
+        </Helmet>
         {/* Hero Section */}
         <section className="relative h-96 bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
