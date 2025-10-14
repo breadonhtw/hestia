@@ -1,8 +1,10 @@
 {
   "ci": {
     "collect": {
-      "staticDistDir": "dist",
-      "url": ["/", "/browse"],
+      "startServerCommand": "npm run preview -- --port 4173 --strictPort",
+      "startServerReadyPattern": "Local:",
+      "startServerReadyTimeout": 120000,
+      "url": ["http://localhost:4173/", "http://localhost:4173/browse"],
       "settings": { "preset": "desktop" }
     },
     "assert": {

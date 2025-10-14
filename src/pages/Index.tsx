@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   ChevronDown,
   Users,
@@ -15,7 +16,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/components/PageLayout";
-import { Footer } from "@/components/Footer";
 import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -24,10 +24,34 @@ import { HeroShadow } from "@/components/HeroShadow";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import type { Creator } from "@/types/creator";
 import { GradientText } from "@/components/ui/gradient-text";
-import { FloatingOrbs } from "@/components/ui/floating-orbs";
+// Floating effects and Footer are loaded on idle to reduce initial JS
+import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
   const { data: artisansData, isLoading } = useArtisans();
+  const [showEffects, setShowEffects] = useState(false);
+  const [FloatingOrbsComp, setFloatingOrbsComp] = useState<
+    null | ((props: any) => JSX.Element)
+  >(null);
+  const [FooterComp, setFooterComp] = useState<
+    null | ((props: any) => JSX.Element)
+  >(null);
+
+  useEffect(() => {
+    const schedule = (cb: () => void) =>
+      (window as any).requestIdleCallback
+        ? (window as any).requestIdleCallback(cb)
+        : setTimeout(cb, 200);
+    schedule(() => {
+      setShowEffects(true);
+      import("@/components/ui/floating-orbs").then((m) =>
+        setFloatingOrbsComp(() => m.FloatingOrbs as any)
+      );
+      import("@/components/Footer").then((m) =>
+        setFooterComp(() => m.Footer as any)
+      );
+    });
+  }, []);
 
   // Transform artisan data to Creator format
   const creators: Creator[] = (artisansData || []).map((artisan) => ({
@@ -64,6 +88,13 @@ const Index = () => {
     "Home Decor": Home,
   };
 
+  // Prefetch creator profile route chunk on intent (hover/focus)
+  const prefetchCreatorProfile = () => {
+    try {
+      import("./CreatorProfile");
+    } catch {}
+  };
+
   return (
     <PageLayout>
       <div className="w-full">
@@ -83,6 +114,7 @@ const Index = () => {
             content="Connect with talented home-based artisans and makers in your neighbourhood."
           />
           <meta property="og:type" content="website" />
+          <link rel="preload" as="image" href={heroBackground} />
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -98,15 +130,15 @@ const Index = () => {
           </script>
         </Helmet>
         <ScrollProgress />
-        <ScrollProgress />
 
         {/* Hero Section with Ethereal Shadow */}
         <HeroShadow
           variant="sage"
           intensity="medium"
           className="pointer-events-none min-h-screen"
+          deferAnimation
         >
-          <FloatingOrbs count={6} />
+          {showEffects && FloatingOrbsComp && <FloatingOrbsComp count={6} />}
           <section className="min-h-screen flex items-center justify-center overflow-hidden pointer-events-auto pt-20">
             <div className="text-center max-w-4xl mx-auto px-4">
               <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
@@ -118,7 +150,7 @@ const Index = () => {
               >
                 Connect with local artisans crafting beauty from home
               </p>
-              <Link to="/browse">
+              <Link to="/browse" aria-label="Explore creators">
                 <Button
                   size="lg"
                   className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up pointer-events-auto"
@@ -150,18 +182,20 @@ const Index = () => {
             ref={bentoReveal.ref}
             className={`grid grid-cols-1 md:grid-cols-12 gap-6`}
           >
-            {/* Large Featured Creator Tile */}
-            {featuredCreator && (
+            {/* Large Featured Creator Tile (reserve space when loading) */}
+            {featuredCreator ? (
               <div className="md:col-span-8 md:row-span-2 bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift">
-                <div className="h-64 md:h-96">
+                <div className="aspect-[3/2] md:aspect-[16/9]">
                   <img
-                    src={featuredCreator.image}
+                    src={heroBackground}
                     alt={featuredCreator.name}
                     className="w-full h-full object-cover"
                     loading="eager"
                     decoding="async"
-                    fetchpriority="high"
+                    fetchPriority="high"
                     sizes="100vw"
+                    width={1200}
+                    height={800}
                   />
                 </div>
                 <div className="p-8">
@@ -190,48 +224,75 @@ const Index = () => {
                   </Link>
                 </div>
               </div>
+            ) : (
+              <div className="md:col-span-8 md:row-span-2 bg-card rounded-xl overflow-hidden shadow-soft transition-all">
+                <div className="h-64 md:h-96 shimmer-skeleton" />
+                <div className="p-8 space-y-4">
+                  <div className="h-4 w-32 bg-muted rounded shimmer-skeleton" />
+                  <div className="h-8 w-2/3 bg-muted rounded shimmer-skeleton" />
+                  <div className="h-4 w-1/2 bg-muted rounded shimmer-skeleton" />
+                </div>
+              </div>
             )}
 
             {/* Stat Card */}
-            <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center items-center text-center">
-              <Users className="h-12 w-12 text-primary mb-4" />
-              <div className="font-serif text-5xl font-bold text-primary mb-2">
-                125
+            {bentoReveal.isVisible ? (
+              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center items-center text-center">
+                <Users className="h-12 w-12 text-primary mb-4" />
+                <div className="font-serif text-5xl font-bold text-primary mb-2">
+                  125
+                </div>
+                <p className="text-lg text-muted-foreground">Local Artisans</p>
               </div>
-              <p className="text-lg text-muted-foreground">Local Artisans</p>
-            </div>
+            ) : (
+              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft" />
+            )}
 
             {/* Testimonial Card */}
-            <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center">
-              <Quote className="h-8 w-8 text-secondary mb-4" />
-              <p className="italic text-foreground mb-4">
-                "Finding Elena's pottery was like discovering a treasure in my
-                own neighborhood."
-              </p>
-              <p className="text-sm text-muted-foreground">— Sarah M.</p>
-            </div>
+            {bentoReveal.isVisible ? (
+              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center">
+                <Quote className="h-8 w-8 text-secondary mb-4" />
+                <p className="italic text-foreground mb-4">
+                  "Finding Elena's pottery was like discovering a treasure in my
+                  own neighborhood."
+                </p>
+                <p className="text-sm text-muted-foreground">— Sarah M.</p>
+              </div>
+            ) : (
+              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft" />
+            )}
 
             {/* Work Image Tiles */}
-            {featuredCreator?.works.slice(0, 2).map((work, idx) => (
+            {(
+              featuredCreator?.works?.slice(0, 2) || [undefined, undefined]
+            ).map((work, idx) => (
               <div
-                key={work.id}
+                key={work?.id ?? idx}
                 className={`${
                   idx === 0 ? "md:col-span-4" : "md:col-span-8"
                 } bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift group cursor-pointer`}
               >
-                <div className="relative h-48">
-                  <img
-                    src={work.image}
-                    alt={work.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
-                    <p className="text-background font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                      {work.title}
-                    </p>
-                  </div>
+                <div className="relative aspect-[4/3]">
+                  {work ? (
+                    <>
+                      <img
+                        src={work.image}
+                        alt={work.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        width={800}
+                        height={384}
+                      />
+                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
+                        <p className="text-background font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                          {work.title}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-full h-full shimmer-skeleton" />
+                  )}
                 </div>
               </div>
             ))}
@@ -258,15 +319,20 @@ const Index = () => {
                   <SkeletonCard key={index} />
                 ))
               : exploreCreators.map((creator, index) => (
-                  <CreatorCard
+                  <div
                     key={creator.id}
-                    creator={creator}
-                    index={index}
-                    onClick={() =>
-                      (window.location.href = `/creator/${creator.id}`)
-                    }
-                    variant="compact"
-                  />
+                    onMouseEnter={prefetchCreatorProfile}
+                    onFocus={prefetchCreatorProfile}
+                  >
+                    <CreatorCard
+                      creator={creator}
+                      index={index}
+                      onClick={() =>
+                        (window.location.href = `/creator/${creator.id}`)
+                      }
+                      variant="compact"
+                    />
+                  </div>
                 ))}
           </div>
 
@@ -314,7 +380,7 @@ const Index = () => {
           </div>
         </section>
 
-        <Footer />
+        {FooterComp ? <FooterComp /> : null}
       </div>
     </PageLayout>
   );

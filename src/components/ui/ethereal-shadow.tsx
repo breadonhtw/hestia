@@ -1,5 +1,9 @@
-import React, { useRef, useId, useEffect, CSSProperties } from 'react';
-import { animate, useMotionValue, AnimationPlaybackControls } from 'framer-motion';
+import React, { useRef, useId, useEffect, CSSProperties } from "react";
+import {
+  animate,
+  useMotionValue,
+  AnimationPlaybackControls,
+} from "framer-motion";
 
 // Type definitions
 interface ResponsiveImage {
@@ -20,10 +24,10 @@ interface NoiseConfig {
 }
 
 interface EtherealShadowProps {
-  type?: 'preset' | 'custom';
+  type?: "preset" | "custom";
   presetIndex?: number;
   customImage?: ResponsiveImage;
-  sizing?: 'fill' | 'stretch';
+  sizing?: "fill" | "stretch";
   color?: string;
   animation?: AnimationConfig;
   noise?: NoiseConfig;
@@ -54,13 +58,13 @@ const useInstanceId = (): string => {
 };
 
 export function EtherealShadow({
-  sizing = 'fill',
-  color = 'rgba(128, 128, 128, 1)',
+  sizing = "fill",
+  color = "rgba(128, 128, 128, 1)",
   animation,
   noise,
   style,
   className,
-  children
+  children,
 }: EtherealShadowProps) {
   const id = useInstanceId();
   const animationEnabled = animation && animation.scale > 0;
@@ -68,8 +72,12 @@ export function EtherealShadow({
   const hueRotateMotionValue = useMotionValue(180);
   const hueRotateAnimation = useRef<AnimationPlaybackControls | null>(null);
 
-  const displacementScale = animation ? mapRange(animation.scale, 1, 100, 20, 100) : 0;
-  const animationDuration = animation ? mapRange(animation.speed, 1, 100, 1000, 50) : 1;
+  const displacementScale = animation
+    ? mapRange(animation.scale, 1, 100, 20, 100)
+    : 0;
+  const animationDuration = animation
+    ? mapRange(animation.speed, 1, 100, 1000, 50)
+    : 1;
 
   useEffect(() => {
     if (feColorMatrixRef.current && animationEnabled) {
@@ -88,7 +96,7 @@ export function EtherealShadow({
           if (feColorMatrixRef.current) {
             feColorMatrixRef.current.setAttribute("values", String(value));
           }
-        }
+        },
       });
 
       return () => {
@@ -108,14 +116,14 @@ export function EtherealShadow({
         width: "100%",
         height: "100%",
         pointerEvents: "none",
-        ...style
+        ...style,
       }}
     >
       <div
         style={{
           position: "absolute",
           inset: -displacementScale,
-          filter: animationEnabled ? `url(#${id}) blur(4px)` : "none"
+          filter: animationEnabled ? `url(#${id}) blur(4px)` : "none",
         }}
       >
         {animationEnabled && (
@@ -125,7 +133,13 @@ export function EtherealShadow({
                 <feTurbulence
                   result="undulation"
                   numOctaves="2"
-                  baseFrequency={`${mapRange(animation.scale, 0, 100, 0.001, 0.0005)},${mapRange(animation.scale, 0, 100, 0.004, 0.002)}`}
+                  baseFrequency={`${mapRange(
+                    animation.scale,
+                    0,
+                    100,
+                    0.001,
+                    0.0005
+                  )},${mapRange(animation.scale, 0, 100, 0.004, 0.002)}`}
                   seed="0"
                   type="turbulence"
                 />
@@ -158,19 +172,21 @@ export function EtherealShadow({
           </svg>
         )}
         <div
-          style={{
-            backgroundColor: color,
-            WebkitMaskImage: `url('/ethereal-mask.png')`,
-            maskImage: `url('/ethereal-mask.png')`,
-            WebkitMaskSize: sizing === "stretch" ? "100% 100%" : "cover",
-            maskSize: sizing === "stretch" ? "100% 100%" : "cover",
-            WebkitMaskRepeat: "no-repeat",
-            maskRepeat: "no-repeat",
-            WebkitMaskPosition: "center",
-            maskPosition: "center",
-            width: "100%",
-            height: "100%"
-          } as React.CSSProperties}
+          style={
+            {
+              backgroundColor: color,
+              WebkitMaskImage: `url('/ethereal-mask.png')`,
+              maskImage: `url('/ethereal-mask.png')`,
+              WebkitMaskSize: sizing === "stretch" ? "100% 100%" : "cover",
+              maskSize: sizing === "stretch" ? "100% 100%" : "cover",
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+              width: "100%",
+              height: "100%",
+            } as React.CSSProperties
+          }
         />
       </div>
 
@@ -182,7 +198,7 @@ export function EtherealShadow({
             backgroundImage: `url('/ethereal-noise.png')`,
             backgroundSize: noise.scale * 200,
             backgroundRepeat: "repeat",
-            opacity: noise.opacity / 2
+            opacity: noise.opacity / 2,
           }}
         />
       )}

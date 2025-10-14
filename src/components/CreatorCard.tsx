@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { MapPin, Heart } from "lucide-react";
 import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
@@ -20,14 +20,17 @@ export const CreatorCard = ({
   isPlaceholder = false,
   variant = "compact",
 }: CreatorCardProps) => {
+  // Memoize derived values to avoid recalculation on parent renders
+  const baseRotation = useMemo(() => ((index % 3) - 1) * 1.5, [index]);
   const [isHovered, setIsHovered] = useState(false);
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isAnimating, setIsAnimating] = useState(false);
-  const baseRotation = ((index % 3) - 1) * 1.5; // -1.5, 0, or 1.5 degrees
-  
+
   // Check if artisan is newly joined (within 30 days)
-  const isNew = (creator as any).created_at && 
-    new Date((creator as any).created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const isNew =
+    (creator as any).created_at &&
+    new Date((creator as any).created_at) >
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -69,7 +72,7 @@ export const CreatorCard = ({
             New
           </Badge>
         )}
-        
+
         {/* Favorite Button */}
         <Button
           variant="ghost"
@@ -138,7 +141,7 @@ export const CreatorCard = ({
           New
         </Badge>
       )}
-      
+
       {/* Favorite Button */}
       <Button
         variant="ghost"

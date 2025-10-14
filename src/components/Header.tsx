@@ -82,7 +82,11 @@ export const Header = () => {
           {/* Right Icons */}
           <div className="flex items-center gap-4">
             {/* Favorites */}
-            <Link to="/profile?tab=favorites" className="relative">
+            <Link
+              to="/profile?tab=favorites"
+              className="relative"
+              aria-label="Favorites"
+            >
               <Button
                 variant="ghost"
                 size="icon"
@@ -100,7 +104,10 @@ export const Header = () => {
             </Link>
 
             {/* Profile Icon */}
-            <Link to={user ? "/profile" : "/auth"}>
+            <Link
+              to={user ? "/profile" : "/auth"}
+              aria-label={user ? "Profile" : "Sign in"}
+            >
               <Button
                 variant="ghost"
                 size="icon"
@@ -133,6 +140,7 @@ export const Header = () => {
                   variant="ghost"
                   size="icon"
                   className="rounded-full hover:bg-primary/10"
+                  aria-label="Open menu"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>

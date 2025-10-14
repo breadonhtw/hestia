@@ -7,7 +7,6 @@ import {
   SidebarLink,
 } from "@/components/ui/sidebar-aceternity";
 import hestiaLogo from "@/assets/hestia-logo.svg";
-import { motion } from "framer-motion";
 
 const Logo = () => {
   return (
@@ -21,13 +20,9 @@ const Logo = () => {
         width={40}
         height={40}
       />
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="font-serif text-xl font-bold text-foreground whitespace-pre"
-      >
+      <span className="font-serif text-xl font-bold text-foreground whitespace-pre animate-fade-in-up">
         Hestia
-      </motion.span>
+      </span>
     </Link>
   );
 };

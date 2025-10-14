@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
-import { Footer } from "@/components/Footer";
+const FooterLazy = lazy(() =>
+  import("@/components/Footer").then((m) => ({ default: m.Footer }))
+);
 import { CreatorCard } from "@/components/CreatorCard";
 import { CreatorOverlay } from "@/components/CreatorOverlay";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,22 @@ import { Creator } from "@/types/creator";
 import { Filter } from "lucide-react";
 const Browse = () => {
   const { data: artisansData, isLoading } = useArtisans();
+  const [gridVisible, setGridVisible] = useState(false);
+  useEffect(() => {
+    const el = document.getElementById("browse-grid");
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setGridVisible(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const [searchParams] = useSearchParams();
 
   // Pending filters (what user is selecting)
@@ -145,6 +163,13 @@ const Browse = () => {
       newlyJoinedMatch
     );
   });
+
+  // Prefetch profile route on hover/focus intent
+  const prefetchCreatorProfile = () => {
+    try {
+      import("./CreatorProfile");
+    } catch {}
+  };
   return (
     <PageLayout>
       <div className="w-full max-w-[1920px]">
@@ -497,30 +522,36 @@ const Browse = () => {
                   ))}
                 </div>
               ) : filteredCreators.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredCreators.map((creator, index) => (
-                    <CreatorCard
+                <div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                  id="browse-grid"
+                  style={{ contentVisibility: "auto" }}
+                >
+                  {(gridVisible
+                    ? filteredCreators
+                    : filteredCreators.slice(0, 6)
+                  ).map((creator, index) => (
+                    <div
                       key={creator.id}
-                      creator={creator}
-                      index={index}
-                      onClick={() => setSelectedCreator(creator)}
-                      isPlaceholder={selectedCreator?.id === creator.id}
-                      variant="expanded"
-                    />
+                      className="aspect-[4/5]"
+                      onMouseEnter={prefetchCreatorProfile}
+                      onFocus={prefetchCreatorProfile}
+                    >
+                      <CreatorCard
+                        creator={creator}
+                        index={index}
+                        onClick={() => setSelectedCreator(creator)}
+                        isPlaceholder={selectedCreator?.id === creator.id}
+                        variant="expanded"
+                      />
+                    </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-16">
-                  <p className="text-xl text-muted-foreground mb-4">
-                    No creators found matching your filters
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={clearFilters}
-                    className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
-                  >
-                    Clear Filters
-                  </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <SkeletonCard key={i} />
+                  ))}
                 </div>
               )}
             </main>
@@ -535,7 +566,9 @@ const Browse = () => {
           />
         )}
 
-        <Footer />
+        <Suspense fallback={<div aria-hidden="true" />}>
+          <FooterLazy />
+        </Suspense>
       </div>
     </PageLayout>
   );
