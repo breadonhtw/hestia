@@ -140,6 +140,7 @@ export const Header = () => {
                   variant="ghost"
                   size="icon"
                   className="rounded-full hover:bg-primary/10"
+                  aria-label="Open menu"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>

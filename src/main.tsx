@@ -42,10 +42,14 @@ if ((window as any).requestIdleCallback) {
   });
 }
 
+const isProdHost =
+  typeof window !== "undefined" &&
+  /(?:^|\.)hestia\.sg$/.test(window.location.hostname);
+
 createRoot(document.getElementById("root")!).render(
   <>
     <App />
-    <Analytics />
-    <SpeedInsights />
+    {isProdHost && <Analytics />}
+    {isProdHost && <SpeedInsights />}
   </>
 );

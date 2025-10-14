@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
-import { Footer } from "@/components/Footer";
+const FooterLazy = lazy(() =>
+  import("@/components/Footer").then((m) => ({ default: m.Footer }))
+);
 import { CreatorCard } from "@/components/CreatorCard";
 import { CreatorOverlay } from "@/components/CreatorOverlay";
 import { Button } from "@/components/ui/button";
@@ -523,6 +525,7 @@ const Browse = () => {
                 <div
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                   id="browse-grid"
+                  style={{ contentVisibility: "auto" }}
                 >
                   {(gridVisible
                     ? filteredCreators
@@ -545,17 +548,10 @@ const Browse = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-16">
-                  <p className="text-xl text-muted-foreground mb-4">
-                    No creators found matching your filters
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={clearFilters}
-                    className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
-                  >
-                    Clear Filters
-                  </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <SkeletonCard key={i} />
+                  ))}
                 </div>
               )}
             </main>
@@ -570,7 +566,9 @@ const Browse = () => {
           />
         )}
 
-        <Footer />
+        <Suspense fallback={<div aria-hidden="true" />}>
+          <FooterLazy />
+        </Suspense>
       </div>
     </PageLayout>
   );
