@@ -499,14 +499,15 @@ const Browse = () => {
               ) : filteredCreators.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredCreators.map((creator, index) => (
-                    <CreatorCard
-                      key={creator.id}
-                      creator={creator}
-                      index={index}
-                      onClick={() => setSelectedCreator(creator)}
-                      isPlaceholder={selectedCreator?.id === creator.id}
-                      variant="expanded"
-                    />
+                    <div key={creator.id} className="aspect-[4/5]">
+                      <CreatorCard
+                        creator={creator}
+                        index={index}
+                        onClick={() => setSelectedCreator(creator)}
+                        isPlaceholder={selectedCreator?.id === creator.id}
+                        variant="expanded"
+                      />
+                    </div>
                   ))}
                 </div>
               ) : (

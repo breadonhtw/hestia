@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   ChevronDown,
   Users,
@@ -25,9 +26,19 @@ import { SkeletonCard } from "@/components/SkeletonCard";
 import type { Creator } from "@/types/creator";
 import { GradientText } from "@/components/ui/gradient-text";
 import { FloatingOrbs } from "@/components/ui/floating-orbs";
+import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
   const { data: artisansData, isLoading } = useArtisans();
+  const [showEffects, setShowEffects] = useState(false);
+
+  useEffect(() => {
+    const schedule = (cb: () => void) =>
+      (window as any).requestIdleCallback
+        ? (window as any).requestIdleCallback(cb)
+        : setTimeout(cb, 200);
+    schedule(() => setShowEffects(true));
+  }, []);
 
   // Transform artisan data to Creator format
   const creators: Creator[] = (artisansData || []).map((artisan) => ({
@@ -83,6 +94,7 @@ const Index = () => {
             content="Connect with talented home-based artisans and makers in your neighbourhood."
           />
           <meta property="og:type" content="website" />
+          <link rel="preload" as="image" href={heroBackground} />
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -98,15 +110,15 @@ const Index = () => {
           </script>
         </Helmet>
         <ScrollProgress />
-        <ScrollProgress />
 
         {/* Hero Section with Ethereal Shadow */}
         <HeroShadow
           variant="sage"
           intensity="medium"
           className="pointer-events-none min-h-screen"
+          deferAnimation
         >
-          <FloatingOrbs count={6} />
+          {showEffects && <FloatingOrbs count={6} />}
           <section className="min-h-screen flex items-center justify-center overflow-hidden pointer-events-auto pt-20">
             <div className="text-center max-w-4xl mx-auto px-4">
               <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
@@ -150,18 +162,20 @@ const Index = () => {
             ref={bentoReveal.ref}
             className={`grid grid-cols-1 md:grid-cols-12 gap-6`}
           >
-            {/* Large Featured Creator Tile */}
-            {featuredCreator && (
+            {/* Large Featured Creator Tile (reserve space when loading) */}
+            {featuredCreator ? (
               <div className="md:col-span-8 md:row-span-2 bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift">
-                <div className="h-64 md:h-96">
+                <div className="aspect-[3/2] md:aspect-[16/9]">
                   <img
-                    src={featuredCreator.image}
+                    src={heroBackground}
                     alt={featuredCreator.name}
                     className="w-full h-full object-cover"
                     loading="eager"
                     decoding="async"
-                    fetchpriority="high"
+                    fetchPriority="high"
                     sizes="100vw"
+                    width={1200}
+                    height={800}
                   />
                 </div>
                 <div className="p-8">
@@ -190,6 +204,15 @@ const Index = () => {
                   </Link>
                 </div>
               </div>
+            ) : (
+              <div className="md:col-span-8 md:row-span-2 bg-card rounded-xl overflow-hidden shadow-soft transition-all">
+                <div className="h-64 md:h-96 shimmer-skeleton" />
+                <div className="p-8 space-y-4">
+                  <div className="h-4 w-32 bg-muted rounded shimmer-skeleton" />
+                  <div className="h-8 w-2/3 bg-muted rounded shimmer-skeleton" />
+                  <div className="h-4 w-1/2 bg-muted rounded shimmer-skeleton" />
+                </div>
+              </div>
             )}
 
             {/* Stat Card */}
@@ -212,26 +235,36 @@ const Index = () => {
             </div>
 
             {/* Work Image Tiles */}
-            {featuredCreator?.works.slice(0, 2).map((work, idx) => (
+            {(
+              featuredCreator?.works?.slice(0, 2) || [undefined, undefined]
+            ).map((work, idx) => (
               <div
-                key={work.id}
+                key={work?.id ?? idx}
                 className={`${
                   idx === 0 ? "md:col-span-4" : "md:col-span-8"
                 } bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift group cursor-pointer`}
               >
-                <div className="relative h-48">
-                  <img
-                    src={work.image}
-                    alt={work.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
-                    <p className="text-background font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                      {work.title}
-                    </p>
-                  </div>
+                <div className="relative aspect-[4/3]">
+                  {work ? (
+                    <>
+                      <img
+                        src={work.image}
+                        alt={work.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        width={800}
+                        height={384}
+                      />
+                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
+                        <p className="text-background font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                          {work.title}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-full h-full shimmer-skeleton" />
+                  )}
                 </div>
               </div>
             ))}

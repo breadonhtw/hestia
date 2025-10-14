@@ -131,6 +131,10 @@ const CreatorProfile = () => {
                   src={creator.image}
                   alt={creator.name}
                   className="w-full h-full object-cover"
+                  width={160}
+                  height={160}
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
 

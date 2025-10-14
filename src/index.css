@@ -189,6 +189,21 @@ All colors MUST be HSL.
     }
   }
 
+  /* Ethereal hue rotation (CSS-driven) */
+  @keyframes etherealHueRotate {
+    from {
+      --ethereal-hue: 0deg;
+    }
+    to {
+      --ethereal-hue: 360deg;
+    }
+  }
+  .animate-ethereal-hue {
+    animation-name: etherealHueRotate;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
   /* Texture overlay */
   .texture-overlay::before {
     content: "";
