@@ -81,6 +81,8 @@ export type Database = {
           updated_at: string;
           user_id: string;
           website: string | null;
+          status: string;
+          published_at: string | null;
           // New MVP fields
           categories: string[];
           tags: string[] | null;
@@ -90,22 +92,34 @@ export type Database = {
           email: string | null;
           phone: string | null;
           accepting_orders_expires_at: string | null;
+          // Pricing fields
+          pricing_model: Database["public"]["Enums"]["pricing_model_type"] | null;
+          price_min: number | null;
+          price_max: number | null;
+          currency: string | null;
+          // Additional contact fields
+          whatsapp_url: string | null;
+          external_shop_url: string | null;
+          lead_time_days: number | null;
+          hours: Json | null;
         };
         Insert: {
           accepting_orders?: boolean | null;
-          bio: string;
-          craft_type: string;
+          bio?: string;
+          craft_type?: string;
           created_at?: string;
           featured?: boolean;
           id?: string;
           instagram?: string | null;
-          location: string;
+          location?: string;
           open_for_commissions?: boolean | null;
           profile_completed?: boolean;
           story?: string | null;
           updated_at?: string;
           user_id: string;
           website?: string | null;
+          status?: string;
+          published_at?: string | null;
           // New MVP fields
           categories?: string[];
           tags?: string[] | null;
@@ -115,6 +129,16 @@ export type Database = {
           email?: string | null;
           phone?: string | null;
           accepting_orders_expires_at?: string | null;
+          // Pricing fields
+          pricing_model?: Database["public"]["Enums"]["pricing_model_type"] | null;
+          price_min?: number | null;
+          price_max?: number | null;
+          currency?: string | null;
+          // Additional contact fields
+          whatsapp_url?: string | null;
+          external_shop_url?: string | null;
+          lead_time_days?: number | null;
+          hours?: Json | null;
         };
         Update: {
           accepting_orders?: boolean | null;
@@ -131,6 +155,8 @@ export type Database = {
           updated_at?: string;
           user_id?: string;
           website?: string | null;
+          status?: string;
+          published_at?: string | null;
           // New MVP fields
           categories?: string[];
           tags?: string[] | null;
@@ -140,6 +166,16 @@ export type Database = {
           email?: string | null;
           phone?: string | null;
           accepting_orders_expires_at?: string | null;
+          // Pricing fields
+          pricing_model?: Database["public"]["Enums"]["pricing_model_type"] | null;
+          price_min?: number | null;
+          price_max?: number | null;
+          currency?: string | null;
+          // Additional contact fields
+          whatsapp_url?: string | null;
+          external_shop_url?: string | null;
+          lead_time_days?: number | null;
+          hours?: Json | null;
         };
         Relationships: [
           {
@@ -271,6 +307,7 @@ export type Database = {
           role: Database["public"]["Enums"]["app_role"];
           updated_at: string;
           username: string | null;
+          artisan_profile_id: string | null;
         };
         Insert: {
           avatar_url?: string | null;
@@ -280,6 +317,7 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"];
           updated_at?: string;
           username?: string | null;
+          artisan_profile_id?: string | null;
         };
         Update: {
           avatar_url?: string | null;
@@ -289,6 +327,7 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"];
           updated_at?: string;
           username?: string | null;
+          artisan_profile_id?: string | null;
         };
         Relationships: [];
       };
@@ -352,6 +391,7 @@ export type Database = {
           open_for_commissions: boolean | null;
           story: string | null;
           updated_at: string | null;
+          published_at: string | null;
           user_id: string | null;
           username: string | null;
           website: string | null;
@@ -366,6 +406,16 @@ export type Database = {
           email: string | null;
           phone: string | null;
           accepting_orders_expires_at: string | null;
+          // Pricing fields
+          pricing_model: Database["public"]["Enums"]["pricing_model_type"] | null;
+          price_min: number | null;
+          price_max: number | null;
+          currency: string | null;
+          // Additional contact fields
+          whatsapp_url: string | null;
+          external_shop_url: string | null;
+          lead_time_days: number | null;
+          hours: Json | null;
         };
         Relationships: [
           {
@@ -394,6 +444,18 @@ export type Database = {
         Args: { _artisan_id: string };
         Returns: boolean;
       };
+      create_artisan_profile: {
+        Args: { _user_id: string };
+        Returns: string;
+      };
+      publish_artisan_profile: {
+        Args: { _artisan_id: string; _user_id: string };
+        Returns: Json;
+      };
+      unpublish_artisan_profile: {
+        Args: { _artisan_id: string; _user_id: string };
+        Returns: boolean;
+      };
     };
     Enums: {
       app_role: "artisan" | "community_member" | "admin";
@@ -403,6 +465,7 @@ export type Database = {
         | "website"
         | "email"
         | "phone";
+      pricing_model_type: "fixed" | "range" | "contact";
     };
     CompositeTypes: {
       [_ in never]: never;
