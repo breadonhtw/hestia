@@ -63,14 +63,14 @@ const CreatorProfile = () => {
   // Transform artisan to Creator format
   const creator: Creator = {
     id: artisan.id,
-    name: artisan.full_name || "Anonymous",
+    name: artisan.username || artisan.full_name || "Anonymous",
     craftType: artisan.craft_type,
     location: artisan.location,
     bio: artisan.bio,
     image: artisan.avatar_url || "/placeholder.svg",
     works: [], // TODO: Fetch gallery images
     featured: artisan.featured || false,
-    story: artisan.story || "",
+    story: undefined,
     instagram: artisan.instagram || undefined,
     website: artisan.website || undefined,
     username: artisan.username || undefined,
@@ -82,7 +82,7 @@ const CreatorProfile = () => {
     .slice(0, 3)
     .map((a) => ({
       id: a.id,
-      name: a.full_name || "Anonymous",
+      name: a.username || a.full_name || "Anonymous",
       craftType: a.craft_type,
       location: a.location,
       bio: a.bio,

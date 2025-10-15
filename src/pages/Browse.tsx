@@ -75,14 +75,14 @@ const Browse = () => {
       (artisan) =>
         ({
           id: artisan.id,
-          name: artisan.full_name || "Artisan",
+          name: artisan.username || artisan.full_name || "Artisan",
           craftType: artisan.craft_type,
           location: artisan.location,
           bio: artisan.bio || "",
           image: artisan.avatar_url || "",
           works: [],
           featured: artisan.featured,
-          story: artisan.story || undefined,
+          story: undefined,
           website: artisan.website || undefined,
           instagram: artisan.instagram || undefined,
           created_at: artisan.created_at,
