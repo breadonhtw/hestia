@@ -1,8 +1,5 @@
 -- Storage RLS policies for gallery-images bucket
 
--- Ensure RLS stays enabled on storage.objects
-alter table storage.objects enable row level security;
-
 -- Public read of gallery images
 drop policy if exists "gallery public read" on storage.objects;
 create policy "gallery public read" on storage.objects

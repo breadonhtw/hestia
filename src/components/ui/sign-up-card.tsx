@@ -13,7 +13,6 @@ export const SignUpCard = ({ onFlipToSignIn }: SignUpCardProps) => {
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<'artisan' | 'community_member'>('community_member');
   const [isLoading, setIsLoading] = useState(false);
   const [showPasswordReqs, setShowPasswordReqs] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
@@ -70,7 +69,7 @@ export const SignUpCard = ({ onFlipToSignIn }: SignUpCardProps) => {
 
     setIsLoading(true);
 
-    const { error } = await signUp(email, password, fullName, username, role);
+    const { error } = await signUp(email, password, fullName, username, 'community_member');
 
     if (error) {
       showToast({
@@ -123,39 +122,9 @@ export const SignUpCard = ({ onFlipToSignIn }: SignUpCardProps) => {
         Join Hestia
       </h2>
       <p className="text-muted-foreground text-sm mb-6 text-center">
-        Start your journey as a creator or community member
+        Discover amazing artisans and handcrafted goods
       </p>
-      
-      {/* Role Selection */}
-      <div className="w-full mb-4 grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={() => setRole('community_member')}
-          className={`py-3 px-4 rounded-xl border-2 transition-all ${
-            role === 'community_member'
-              ? 'border-primary bg-primary/10 text-foreground'
-              : 'border-input bg-background text-muted-foreground'
-          }`}
-          disabled={isLoading}
-        >
-          <div className="font-medium text-sm">Community</div>
-          <div className="text-xs opacity-70">Discover artisans</div>
-        </button>
-        <button
-          type="button"
-          onClick={() => setRole('artisan')}
-          className={`py-3 px-4 rounded-xl border-2 transition-all ${
-            role === 'artisan'
-              ? 'border-primary bg-primary/10 text-foreground'
-              : 'border-input bg-background text-muted-foreground'
-          }`}
-          disabled={isLoading}
-        >
-          <div className="font-medium text-sm">Artisan</div>
-          <div className="text-xs opacity-70">Showcase work</div>
-        </button>
-      </div>
-      
+
       <div className="w-full flex flex-col gap-3 mb-2">
         {/* Full Name */}
         <div className="relative">

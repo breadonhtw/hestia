@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadAvatar } from '@/lib/storage';
@@ -11,7 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Upload, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Upload, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const communitySchema = z.object({
@@ -30,6 +32,7 @@ export const EditCommunityForm = ({ fullName, avatarUrl }: EditCommunityFormProp
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(avatarUrl);
 
@@ -100,7 +103,35 @@ export const EditCommunityForm = ({ fullName, avatarUrl }: EditCommunityFormProp
   };
 
   return (
-    <form onSubmit={handleSubmit((data) => updateProfile.mutate(data))} className="space-y-6">
+    <div className="space-y-8">
+      {/* Become an Artisan CTA */}
+      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <CardTitle className="text-xl font-serif">Become an Artisan</CardTitle>
+          </div>
+          <CardDescription>
+            Share your handcrafted work with the Hestia community
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            List your products, connect with customers, and grow your craft business.
+            Create your artisan profile in just a few minutes.
+          </p>
+          <Button
+            onClick={() => navigate('/become-artisan')}
+            className="w-full sm:w-auto"
+          >
+            Get Started
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Community Profile Form */}
+      <form onSubmit={handleSubmit((data) => updateProfile.mutate(data))} className="space-y-6">
       <div className="flex items-center gap-6">
         <Avatar className="h-24 w-24">
           <AvatarImage src={previewUrl || ''} alt={fullName} />
@@ -164,5 +195,6 @@ export const EditCommunityForm = ({ fullName, avatarUrl }: EditCommunityFormProp
         Save Changes
       </Button>
     </form>
+    </div>
   );
 };
