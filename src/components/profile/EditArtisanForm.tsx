@@ -20,18 +20,37 @@ import { useToast } from "@/hooks/use-toast";
 import { EditCommunityForm } from "./EditCommunityForm";
 import { GalleryManager } from "./GalleryManager";
 import { Switch } from "@/components/ui/switch";
+import { CRAFT_CATEGORIES } from "@/data/categories";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+
+const contactChannelEnum = z.enum([
+  "chat",
+  "instagram",
+  "website",
+  "email",
+  "phone",
+]);
 
 const artisanSchema = z.object({
   craft_type: z.string().min(1, "Please select a craft type"),
   location: z.string().min(2, "Location required"),
   bio: z
     .string()
-    .max(200, "Bio must be less than 200 characters")
-    .optional()
-    .or(z.literal("")),
-  story: z
-    .string()
-    .max(500, "Story must be less than 500 characters")
+    .max(500, "Bio must be less than 500 characters")
     .optional()
     .or(z.literal("")),
   instagram: z
@@ -40,8 +59,19 @@ const artisanSchema = z.object({
     .optional()
     .or(z.literal("")),
   website: z.string().url("Invalid URL format").optional().or(z.literal("")),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  phone: z
+    .string()
+    .regex(/^[0-9+()\-\s]{7,20}$/, "Invalid phone format")
+    .optional()
+    .or(z.literal("")),
   accepting_orders: z.boolean().optional(),
   open_for_commissions: z.boolean().optional(),
+  // New MVP fields
+  categories: z.array(z.string()).min(1, "Select at least one category"),
+  tags: z.array(z.string()).optional().default([]),
+  contact_channel: contactChannelEnum.default("chat"),
+  accepting_orders_expires_at: z.string().optional().or(z.literal("")),
 });
 
 type ArtisanFormData = z.infer<typeof artisanSchema>;
@@ -90,11 +120,17 @@ export const EditArtisanForm = ({
           craft_type: artisan.craft_type,
           location: artisan.location,
           bio: artisan.bio || "",
-          story: artisan.story || "",
           instagram: artisan.instagram || "",
           website: artisan.website || "",
+          email: (artisan as any).email || "",
+          phone: (artisan as any).phone || "",
           accepting_orders: artisan.accepting_orders || false,
           open_for_commissions: artisan.open_for_commissions || false,
+          categories: (artisan as any).categories || [],
+          tags: (artisan as any).tags || [],
+          contact_channel: (artisan as any).contact_channel || "chat",
+          accepting_orders_expires_at:
+            (artisan as any).accepting_orders_expires_at || "",
         }
       : undefined,
   });
@@ -102,30 +138,103 @@ export const EditArtisanForm = ({
   const updateArtisan = useMutation({
     mutationFn: async (data: ArtisanFormData) => {
       // Transform empty strings to null to avoid database constraint violations
-      const cleanedData = {
-        ...data,
-        instagram: data.instagram?.trim() || null,
-        website: data.website?.trim() || null,
-        bio: data.bio?.trim() || null,
-        story: data.story?.trim() || null,
+      const normalizeInstagram = (val?: string | null) => {
+        if (!val) return null;
+        const cleaned = val.replace(/^@/, "").trim();
+        return cleaned ? cleaned : null;
+      };
+      const normalizeUrl = (val?: string | null) => {
+        if (!val) return null;
+        const trimmed = val.trim();
+        if (!trimmed) return null;
+        if (!/^https?:\/\//i.test(trimmed)) return `https://${trimmed}`;
+        try {
+          const url = new URL(trimmed);
+          url.search = ""; // strip query/utm
+          return url.toString();
+        } catch {
+          return trimmed;
+        }
       };
 
-      const { error } = await supabase
-        .from("artisans")
-        .update(cleanedData)
-        .eq("user_id", user!.id);
+      const expiresAt = () => {
+        if (!data.accepting_orders) return null;
+        if (data.accepting_orders_expires_at)
+          return data.accepting_orders_expires_at;
+        const d = new Date();
+        d.setDate(d.getDate() + 30);
+        return d.toISOString();
+      };
+
+      const cleanedData: any = {
+        ...data,
+        instagram: normalizeInstagram(data.instagram),
+        website: normalizeUrl(data.website),
+        email: data.email?.trim() || null,
+        phone: data.phone?.trim() || null,
+        bio: (data.bio ?? "").trim(),
+        contact_value: null,
+        accepting_orders_expires_at: expiresAt(),
+      };
+
+      // Duplicate detection for instagram/phone (warn & block)
+      const normalizedInstagram = normalizeInstagram(data.instagram);
+      const normalizedPhone = (data as any).phone?.trim() || null;
+      if (normalizedInstagram || normalizedPhone) {
+        const { data: dupes, error: dupErr } = await supabase
+          .from("artisans_public")
+          .select("id, username, instagram, phone")
+          .or(
+            `instagram.eq.${normalizedInstagram ?? ""},phone.eq.${
+              normalizedPhone ?? ""
+            }`
+          );
+        if (!dupErr) {
+          const conflict = (dupes || []).find(
+            (d) => d && d.id !== (artisan as any)?.id
+          );
+          if (conflict) {
+            throw new Error("DUPLICATE_CONTACT");
+          }
+        }
+      }
+
+      let error: any = null;
+      if (artisan) {
+        const { error: updateError } = await supabase
+          .from("artisans")
+          .update(cleanedData)
+          .eq("user_id", user!.id);
+        error = updateError;
+      } else {
+        const insertPayload = { user_id: user!.id, ...cleanedData };
+        const { error: insertError } = await supabase
+          .from("artisans")
+          .insert(insertPayload);
+        error = insertError;
+      }
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artisan"] });
+      queryClient.invalidateQueries({ queryKey: ["artisan", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["artisans-public"] });
       toast({
         title: "Success!",
         description: "Your artisan profile has been updated successfully.",
       });
     },
-    onError: () => {
+    onError: (err: any) => {
+      if (err?.message === "DUPLICATE_CONTACT") {
+        toast({
+          title: "Duplicate contact",
+          description:
+            "Instagram handle or phone is already used by another profile.",
+          variant: "destructive",
+        });
+        return;
+      }
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
@@ -164,12 +273,22 @@ export const EditArtisanForm = ({
                   <SelectValue placeholder="Select a craft" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Pottery">Pottery</SelectItem>
-                  <SelectItem value="Woodwork">Woodwork</SelectItem>
-                  <SelectItem value="Textiles">Textiles</SelectItem>
+                  <SelectItem value="Pottery & Ceramics">
+                    Pottery & Ceramics
+                  </SelectItem>
+                  <SelectItem value="Woodworking">Woodworking</SelectItem>
+                  <SelectItem value="Textiles & Fiber Arts">
+                    Textiles & Fiber Arts
+                  </SelectItem>
                   <SelectItem value="Jewelry">Jewelry</SelectItem>
-                  <SelectItem value="Painting">Painting</SelectItem>
-                  <SelectItem value="Baking">Baking</SelectItem>
+                  <SelectItem value="Art & Illustration">
+                    Art & Illustration
+                  </SelectItem>
+                  <SelectItem value="Baked Goods">Baked Goods</SelectItem>
+                  <SelectItem value="Plants & Florals">
+                    Plants & Florals
+                  </SelectItem>
+                  <SelectItem value="Home Decor">Home Decor</SelectItem>
                 </SelectContent>
               </Select>
               {errors.craft_type && (
@@ -207,18 +326,111 @@ export const EditArtisanForm = ({
             )}
           </div>
 
+          {/* Categories (scoped to craft_type) */}
           <div className="space-y-2">
-            <Label htmlFor="story">Your Story</Label>
-            <Textarea
-              id="story"
-              {...register("story")}
-              placeholder="Tell your story as an artisan..."
-              rows={4}
-            />
-            {errors.story && (
-              <p className="text-sm text-destructive">{errors.story.message}</p>
+            <Label>Categories</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-between",
+                    !watch("categories")?.length && "text-muted-foreground"
+                  )}
+                >
+                  {watch("categories")?.length
+                    ? `${watch("categories")?.length} selected`
+                    : "Select categories"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[320px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search categories..." />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup>
+                      {(CRAFT_CATEGORIES[watch("craft_type")] || []).map(
+                        (category) => {
+                          const selected = (watch("categories") || []).includes(
+                            category
+                          );
+                          return (
+                            <CommandItem
+                              key={category}
+                              onSelect={() => {
+                                const current = new Set(
+                                  watch("categories") || []
+                                );
+                                if (current.has(category))
+                                  current.delete(category);
+                                else current.add(category);
+                                setValue("categories", Array.from(current));
+                              }}
+                            >
+                              <span className={cn(selected && "font-medium")}>
+                                {category}
+                              </span>
+                            </CommandItem>
+                          );
+                        }
+                      )}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            {errors.categories && (
+              <p className="text-sm text-destructive">
+                {errors.categories.message}
+              </p>
             )}
+            {/* Selected categories chips */}
+            {watch("categories")?.length ? (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {watch("categories")!.map((cat) => (
+                  <Badge
+                    key={cat}
+                    variant="secondary"
+                    className="flex items-center gap-2"
+                  >
+                    {cat}
+                    <button
+                      type="button"
+                      aria-label={`Remove ${cat}`}
+                      onClick={() => {
+                        const next = (watch("categories") || []).filter(
+                          (c) => c !== cat
+                        );
+                        setValue("categories", next);
+                      }}
+                      className="rounded-md px-1 hover:bg-muted"
+                    >
+                      ×
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
           </div>
+
+          {/* Tags (comma separated) */}
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags/keywords</Label>
+            <Input
+              id="tags"
+              placeholder="e.g. handmade, minimalist, rustic"
+              value={(watch("tags") || []).join(", ")}
+              onChange={(e) => {
+                const tokens = e.target.value
+                  .split(",")
+                  .map((t) => t.trim())
+                  .filter(Boolean);
+                setValue("tags", tokens);
+              }}
+            />
+          </div>
+
+          {/* Languages removed per spec */}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -248,6 +460,57 @@ export const EditArtisanForm = ({
                 </p>
               )}
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                {...register("email")}
+                placeholder="you@example.com"
+              />
+              {errors.email && (
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                {...register("phone")}
+                placeholder="+65 8888 8888"
+              />
+              {errors.phone && (
+                <p className="text-sm text-destructive">
+                  {errors.phone.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Contact method (no extra field) */}
+          <div className="space-y-2">
+            <Label htmlFor="contact_channel">Preferred Contact</Label>
+            <Select
+              onValueChange={(value) =>
+                setValue("contact_channel", value as any)
+              }
+              value={watch("contact_channel")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select contact method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="chat">On-platform chat</SelectItem>
+                <SelectItem value="instagram">Instagram</SelectItem>
+                <SelectItem value="website">Website</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="phone">Phone</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-4">

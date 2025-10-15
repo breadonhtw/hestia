@@ -56,11 +56,11 @@ const Index = () => {
   // Transform artisan data to Creator format
   const creators: Creator[] = (artisansData || []).map((artisan) => ({
     id: artisan.id,
-    name: artisan.full_name || "Anonymous",
+    name: artisan.username || artisan.full_name || "Anonymous",
     craftType: artisan.craft_type,
     location: artisan.location,
     bio: artisan.bio,
-    story: artisan.story || "",
+    story: undefined,
     image: artisan.avatar_url || "/placeholder.svg",
     works: [],
     featured: artisan.featured || false,
@@ -212,9 +212,13 @@ const Index = () => {
                     {featuredCreator.craftType}
                   </p>
                   <p className="text-muted-foreground mb-6">
-                    {featuredCreator.story}
+                    {featuredCreator.bio?.slice(0, 200)}
                   </p>
-                  <Link to={`/creator/${featuredCreator.id}`}>
+                  <Link
+                    to={`/creator/${
+                      featuredCreator.username || featuredCreator.id
+                    }`}
+                  >
                     <Button
                       variant="link"
                       className="text-primary p-0 h-auto font-semibold"

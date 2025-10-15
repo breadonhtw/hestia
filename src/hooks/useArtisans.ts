@@ -9,7 +9,7 @@ export const useArtisans = () => {
       const { data, error } = await supabase
         .from("artisans_public")
         .select(
-          "id, user_id, craft_type, location, bio, story, instagram, website, avatar_url, full_name, username, featured, accepting_orders, open_for_commissions, created_at, updated_at"
+          "id, user_id, craft_type, location, bio, story, instagram, website, avatar_url, full_name, username, featured, accepting_orders, open_for_commissions, created_at, updated_at, categories, tags, estate, contact_channel, contact_value, email, phone, accepting_orders_expires_at"
         )
         .order("created_at", { ascending: false });
 
