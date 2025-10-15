@@ -126,13 +126,13 @@ export const SignUpCard = ({ onFlipToSignIn }: SignUpCardProps) => {
       </p>
 
       <div className="w-full flex flex-col gap-3 mb-2">
-        {/* Full Name */}
+        {/* Display Name */}
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
             <User className="w-4 h-4" />
           </span>
           <input
-            placeholder="Full Name"
+            placeholder="Display Name"
             type="text"
             value={fullName}
             className="w-full pl-10 pr-3 py-2 rounded-xl border border-input focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground text-sm"

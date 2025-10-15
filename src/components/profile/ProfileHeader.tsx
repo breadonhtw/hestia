@@ -57,11 +57,13 @@ export const ProfileHeader = ({
             <Avatar className="h-20 w-20">
               <AvatarImage src={avatarUrl || ""} alt={fullName} />
               <AvatarFallback className="text-2xl">
-                {fullName.charAt(0).toUpperCase()}
+                {fullName?.charAt(0)?.toUpperCase() || "?"}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">{fullName}</h1>
+              <h1 className="text-2xl font-bold text-foreground">
+                {fullName || "Unknown User"}
+              </h1>
               {username && <p className="text-muted-foreground">@{username}</p>}
               <div className="mt-2 flex items-center gap-2">
                 {getRoleBadge()}

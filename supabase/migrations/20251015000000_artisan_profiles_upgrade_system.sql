@@ -163,9 +163,7 @@ BEGIN
     _errors := _errors || '["Location is required"]'::jsonb;
   END IF;
 
-  IF _artisan.categories IS NULL OR array_length(_artisan.categories, 1) = 0 THEN
-    _errors := _errors || '["At least one category is required"]'::jsonb;
-  END IF;
+  -- Categories validation removed - craft_type is used instead
 
   -- Check minimum media count
   SELECT COUNT(*) INTO _gallery_count
@@ -173,7 +171,7 @@ BEGIN
   WHERE artisan_id = _artisan_id;
 
   IF _gallery_count < 3 THEN
-    _errors := _errors || jsonb_build_array(format('At least 3 images required (currently: %s)', _gallery_count));
+    _errors := _errors || jsonb_build_array('At least 3 images required (currently: ' || _gallery_count || ')');
   END IF;
 
   -- Check pricing model consistency
@@ -234,7 +232,7 @@ SELECT
   a.website,
   a.featured,
   a.accepting_orders,
-  a.open_for_commissions,
+  a.open_for_commissions, 
   a.created_at,
   a.updated_at,
   a.published_at,

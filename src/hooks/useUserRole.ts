@@ -9,14 +9,47 @@ export const useUserRole = () => {
     queryKey: ["userRole", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      // CHANGED: Query profiles table instead of user_roles
-      const { data } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user!.id)
-        .maybeSingle();
+      try {
+        // First try to get role from user_roles table
+        const { data: roleData, error: roleError } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user!.id)
+          .maybeSingle();
 
-      return data?.role as "artisan" | "community_member" | "admin" | null;
+        if (!roleError && roleData) {
+          return roleData.role as "artisan" | "community_member" | "admin";
+        }
+
+        // Fallback: try to get role from profiles table (for backward compatibility)
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user!.id)
+          .maybeSingle();
+
+        if (!profileError && profileData?.role) {
+          return profileData.role as "artisan" | "community_member" | "admin";
+        }
+
+        // Final fallback: check if user has an artisan profile
+        const { data: artisanData } = await supabase
+          .from("artisans")
+          .select("id")
+          .eq("user_id", user!.id)
+          .maybeSingle();
+
+        if (artisanData) {
+          return "artisan" as const;
+        }
+
+        // Default fallback
+        return "community_member" as const;
+      } catch (error) {
+        console.error("Exception fetching user role:", error);
+        // Fallback to community_member on exception
+        return "community_member" as const;
+      }
     },
   });
 
