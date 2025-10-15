@@ -93,13 +93,16 @@ export type Database = {
           phone: string | null;
           accepting_orders_expires_at: string | null;
           // Pricing fields
-          pricing_model: Database["public"]["Enums"]["pricing_model_type"] | null;
+          pricing_model:
+            | Database["public"]["Enums"]["pricing_model_type"]
+            | null;
           price_min: number | null;
           price_max: number | null;
           currency: string | null;
           // Additional contact fields
           whatsapp_url: string | null;
           external_shop_url: string | null;
+          telegram: string | null;
           lead_time_days: number | null;
           hours: Json | null;
         };
@@ -130,13 +133,16 @@ export type Database = {
           phone?: string | null;
           accepting_orders_expires_at?: string | null;
           // Pricing fields
-          pricing_model?: Database["public"]["Enums"]["pricing_model_type"] | null;
+          pricing_model?:
+            | Database["public"]["Enums"]["pricing_model_type"]
+            | null;
           price_min?: number | null;
           price_max?: number | null;
           currency?: string | null;
           // Additional contact fields
           whatsapp_url?: string | null;
           external_shop_url?: string | null;
+          telegram?: string | null;
           lead_time_days?: number | null;
           hours?: Json | null;
         };
@@ -167,13 +173,16 @@ export type Database = {
           phone?: string | null;
           accepting_orders_expires_at?: string | null;
           // Pricing fields
-          pricing_model?: Database["public"]["Enums"]["pricing_model_type"] | null;
+          pricing_model?:
+            | Database["public"]["Enums"]["pricing_model_type"]
+            | null;
           price_min?: number | null;
           price_max?: number | null;
           currency?: string | null;
           // Additional contact fields
           whatsapp_url?: string | null;
           external_shop_url?: string | null;
+          telegram?: string | null;
           lead_time_days?: number | null;
           hours?: Json | null;
         };
@@ -331,6 +340,38 @@ export type Database = {
         };
         Relationships: [];
       };
+      user_roles: {
+        Row: {
+          id: string;
+          user_id: string;
+          role: Database["public"]["Enums"]["app_role"];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          role?: Database["public"]["Enums"]["app_role"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          role?: Database["public"]["Enums"]["app_role"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       user_favorites: {
         Row: {
           artisan_id: string;
@@ -407,13 +448,16 @@ export type Database = {
           phone: string | null;
           accepting_orders_expires_at: string | null;
           // Pricing fields
-          pricing_model: Database["public"]["Enums"]["pricing_model_type"] | null;
+          pricing_model:
+            | Database["public"]["Enums"]["pricing_model_type"]
+            | null;
           price_min: number | null;
           price_max: number | null;
           currency: string | null;
           // Additional contact fields
           whatsapp_url: string | null;
           external_shop_url: string | null;
+          telegram: string | null;
           lead_time_days: number | null;
           hours: Json | null;
         };

@@ -20,17 +20,40 @@ const Profile = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "edit");
 
-  const { data: profile, isLoading: profileLoading } = useQuery({
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useQuery({
     queryKey: ["profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase
+      console.log("Fetching profile for user:", user?.id);
+      const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user!.id)
         .single();
+
+      if (error) {
+        console.error("Profile query error:", error);
+        throw error;
+      }
+
+      console.log("Profile data:", data);
       return data;
     },
+  });
+
+  // Debug logging
+  console.log("Profile component render:", {
+    user: !!user,
+    authLoading,
+    role,
+    roleLoading,
+    profile: !!profile,
+    profileLoading,
+    profileError,
   });
 
   const { data: favorites } = useQuery({
@@ -64,58 +87,98 @@ const Profile = () => {
   }
 
   if (!user || !profile || !role) {
-    return null;
+    console.log("Profile page missing data:", {
+      user: !!user,
+      profile: !!profile,
+      role,
+    });
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="text-center">
+            <p className="text-muted-foreground">Loading profile data...</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              User: {user ? "✓" : "✗"} | Profile: {profile ? "✓" : "✗"} | Role:{" "}
+              {role ? "✓" : "✗"}
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
+  try {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
 
-      <ProfileHeader
-        fullName={profile.full_name}
-        username={profile.username}
-        avatarUrl={profile.avatar_url}
-        role={role}
-        createdAt={profile.created_at}
-        favoritesCount={favorites?.length}
-      />
+        <ProfileHeader
+          fullName={profile.full_name}
+          username={profile.username}
+          avatarUrl={profile.avatar_url}
+          role={role}
+          createdAt={profile.created_at}
+          favoritesCount={favorites?.length}
+        />
 
-      <div className="w-full max-w-[1920px]">
-        <div className="container mx-auto px-4 lg:px-8 py-8">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full max-w-4xl mx-auto"
-          >
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="edit">Edit Profile</TabsTrigger>
-              <TabsTrigger value="favorites">My Favorites</TabsTrigger>
-            </TabsList>
+        <div className="w-full max-w-[1920px]">
+          <div className="container mx-auto px-4 lg:px-8 py-8">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full max-w-4xl mx-auto"
+            >
+              <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsTrigger value="edit">Edit Profile</TabsTrigger>
+                <TabsTrigger value="favorites">My Favorites</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="edit" className="space-y-6">
-              {role === "artisan" ? (
-                <EditArtisanForm
-                  fullName={profile.full_name}
-                  avatarUrl={profile.avatar_url}
-                />
-              ) : (
-                <EditCommunityForm
-                  fullName={profile.full_name}
-                  avatarUrl={profile.avatar_url}
-                />
-              )}
-            </TabsContent>
+              <TabsContent value="edit" className="space-y-6">
+                {role === "artisan" ? (
+                  <EditArtisanForm
+                    fullName={profile.full_name}
+                    avatarUrl={profile.avatar_url}
+                  />
+                ) : (
+                  <EditCommunityForm
+                    displayName={profile.full_name}
+                    avatarUrl={profile.avatar_url}
+                  />
+                )}
+              </TabsContent>
 
-            <TabsContent value="favorites">
-              <FavoritesList />
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="favorites">
+                <FavoritesList />
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
-      </div>
 
-      <Footer />
-    </div>
-  );
+        <Footer />
+      </div>
+    );
+  } catch (error) {
+    console.error("Profile component error:", error);
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">Profile Error</h2>
+            <p className="text-muted-foreground">
+              Something went wrong loading your profile.
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Error: {error instanceof Error ? error.message : "Unknown error"}
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 };
 
 export default Profile;

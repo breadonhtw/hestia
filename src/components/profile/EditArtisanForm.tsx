@@ -253,7 +253,7 @@ export const EditArtisanForm = ({
 
   return (
     <div className="space-y-8">
-      <EditCommunityForm fullName={fullName} avatarUrl={avatarUrl} />
+      <EditCommunityForm displayName={fullName} avatarUrl={avatarUrl} />
 
       <div className="border-t pt-8">
         <h3 className="text-lg font-semibold mb-4">Artisan Details</h3>

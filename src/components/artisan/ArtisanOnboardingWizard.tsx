@@ -1,17 +1,34 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useArtisanUpgrade, ArtisanProfileDraft } from "@/hooks/useArtisanUpgrade";
+import {
+  useArtisanUpgrade,
+  ArtisanProfileDraft,
+} from "@/hooks/useArtisanUpgrade";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, ArrowRight, Check, Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Upload,
+  X,
+  Loader2,
+  Image as ImageIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 
 type WizardStep = 1 | 2 | 3 | 4 | 5;
@@ -22,22 +39,76 @@ interface ArtisanOnboardingWizardProps {
 }
 
 const SINGAPORE_LOCATIONS = [
-  "Admiralty", "Ang Mo Kio", "Bedok", "Bishan", "Boon Lay", "Braddell",
-  "Bukit Batok", "Bukit Gombak", "Bukit Merah", "Bukit Panjang", "Bukit Timah",
-  "Bugis", "Changi", "Chinatown", "City Hall", "Clarke Quay", "Clementi",
-  "Commonwealth", "Dhoby Ghaut", "Dover", "Eunos", "Geylang", "Hillview",
-  "Holland Village", "Hougang", "Jurong East", "Jurong West", "Katong",
-  "Khatib", "Kovan", "Mandai", "Marine Parade", "Marina Bay", "Novena",
-  "Orchard", "Outram Park", "Pasir Panjang", "Pasir Ris", "Paya Lebar",
-  "Pioneer", "Punggol", "Queenstown", "Raffles Place", "Redhill", "River Valley",
-  "Sembawang", "Seletar", "Sengkang", "Serangoon", "Siglap", "Tampines",
-  "Tanglin", "Tanjong Pagar", "Telok Blangah", "Thomson", "Toa Payoh",
-  "Tuas", "West Coast", "Woodlands", "Yio Chu Kang", "Yishun"
+  "Admiralty",
+  "Ang Mo Kio",
+  "Bedok",
+  "Bishan",
+  "Boon Lay",
+  "Braddell",
+  "Bukit Batok",
+  "Bukit Gombak",
+  "Bukit Merah",
+  "Bukit Panjang",
+  "Bukit Timah",
+  "Bugis",
+  "Changi",
+  "Chinatown",
+  "City Hall",
+  "Clarke Quay",
+  "Clementi",
+  "Commonwealth",
+  "Dhoby Ghaut",
+  "Dover",
+  "Eunos",
+  "Geylang",
+  "Hillview",
+  "Holland Village",
+  "Hougang",
+  "Jurong East",
+  "Jurong West",
+  "Katong",
+  "Khatib",
+  "Kovan",
+  "Mandai",
+  "Marine Parade",
+  "Marina Bay",
+  "Novena",
+  "Orchard",
+  "Outram Park",
+  "Pasir Panjang",
+  "Pasir Ris",
+  "Paya Lebar",
+  "Pioneer",
+  "Punggol",
+  "Queenstown",
+  "Raffles Place",
+  "Redhill",
+  "River Valley",
+  "Sembawang",
+  "Seletar",
+  "Sengkang",
+  "Serangoon",
+  "Siglap",
+  "Tampines",
+  "Tanglin",
+  "Tanjong Pagar",
+  "Telok Blangah",
+  "Thomson",
+  "Toa Payoh",
+  "Tuas",
+  "West Coast",
+  "Woodlands",
+  "Yio Chu Kang",
+  "Yishun",
 ];
 
-export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboardingWizardProps) {
+export function ArtisanOnboardingWizard({
+  onComplete,
+  onCancel,
+}: ArtisanOnboardingWizardProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const {
     isLoading,
     createArtisanProfile,
@@ -71,29 +142,24 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
   });
 
   const [formData, setFormData] = useState<ArtisanProfileDraft>({
-    displayName: '',
-    category: '',
-    bio: '',
-    location: '',
-    instagram: '',
-    whatsappUrl: '',
-    telegram: '',
-    externalShopUrl: '',
-    contactChannel: 'instagram',
-    contactValue: '',
-    email: '',
-    phone: '',
+    displayName: "",
+    category: "",
+    bio: "",
+    location: "",
+    instagram: "",
+    whatsappUrl: "",
+    telegram: "",
+    externalShopUrl: "",
+    contactChannel: "instagram",
+    contactValue: "",
+    email: "",
+    phone: "",
     acceptingOrders: false,
     tags: [],
-    galleryImages: []
+    galleryImages: [],
   });
 
-  // Initialize profile data when profile loads
-  useEffect(() => {
-    if (profile?.full_name && !formData.displayName) {
-      setFormData(prev => ({ ...prev, displayName: profile.full_name }));
-    }
-  }, [profile]);
+  // Profile data will be initialized through loadDraftProfile function
 
   // Load existing draft or create new one
   useEffect(() => {
@@ -131,8 +197,16 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
     // Skip auto-save until data has been loaded initially
     if (!artisanId || !hasLoadedData.current) return;
 
-    const timeoutId = setTimeout(() => {
-      updateDraftProfile(artisanId, formData);
+    const timeoutId = setTimeout(async () => {
+      try {
+        const success = await updateDraftProfile(artisanId, formData);
+        if (!success) {
+          console.warn("Auto-save failed silently");
+        }
+      } catch (error) {
+        console.error("Auto-save error:", error);
+        // Don't show toast for auto-save failures to avoid spam
+      }
     }, 1000); // Auto-save after 1 second of inactivity
 
     return () => clearTimeout(timeoutId);
@@ -159,6 +233,10 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
     const result = await publishArtisanProfile(artisanId);
 
     if (result.success) {
+      // Invalidate role and profile queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ["userRole"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+
       toast.success("Your artisan profile is now live!");
       onComplete?.();
       navigate("/profile");
@@ -166,7 +244,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
       // Show validation errors
       const errors = result.errors || [];
       toast.error("Please complete all required fields", {
-        description: errors.join(", ")
+        description: errors.join(", "),
       });
     }
   };
@@ -190,7 +268,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
       const result = await uploadGalleryImage(artisanId, file);
 
       if (result.success && result.url) {
-        setGalleryImages(prev => [...prev, result.url!]);
+        setGalleryImages((prev) => [...prev, result.url!]);
         toast.success(`Image ${i + 1} uploaded successfully`);
       } else {
         toast.error(result.error || "Failed to upload image");
@@ -199,7 +277,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
 
     setUploadingImage(false);
     // Reset input
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const handleDeleteImage = async (imageUrl: string) => {
@@ -207,7 +285,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
 
     const success = await deleteGalleryImage(artisanId, imageUrl);
     if (success) {
-      setGalleryImages(prev => prev.filter(url => url !== imageUrl));
+      setGalleryImages((prev) => prev.filter((url) => url !== imageUrl));
       toast.success("Image deleted");
     } else {
       toast.error("Failed to delete image");
@@ -215,7 +293,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
   };
 
   const updateField = (field: keyof ArtisanProfileDraft, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   if (!user) {
@@ -239,8 +317,12 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
           {/* Progress Bar */}
           <div className="mb-8">
             <div className="flex justify-between mb-2">
-              <span className="text-sm font-medium">Step {currentStep} of {totalSteps}</span>
-              <span className="text-sm text-muted-foreground">{Math.round(progress)}% complete</span>
+              <span className="text-sm font-medium">
+                Step {currentStep} of {totalSteps}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {Math.round(progress)}% complete
+              </span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
@@ -251,8 +333,12 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
             {currentStep === 1 && (
               <>
                 <div>
-                  <h2 className="text-2xl font-serif font-semibold mb-2">Let's start with the basics</h2>
-                  <p className="text-muted-foreground">Tell us about your craft and where you're based</p>
+                  <h2 className="text-2xl font-serif font-semibold mb-2">
+                    Let's start with the basics
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Tell us about your craft and where you're based
+                  </p>
                 </div>
 
                 <div className="space-y-6">
@@ -261,7 +347,9 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                     <Input
                       id="displayName"
                       value={formData.displayName}
-                      onChange={(e) => updateField('displayName', e.target.value)}
+                      onChange={(e) =>
+                        updateField("displayName", e.target.value)
+                      }
                       placeholder="How should we display your name?"
                       className="bg-background"
                     />
@@ -271,19 +359,31 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                     <Label htmlFor="category">Primary Craft Type *</Label>
                     <Select
                       value={formData.category}
-                      onValueChange={(value) => updateField('category', value)}
+                      onValueChange={(value) => updateField("category", value)}
                     >
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select your primary craft" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Pottery & Ceramics">Pottery & Ceramics</SelectItem>
-                        <SelectItem value="Textiles & Fiber Arts">Textiles & Fiber Arts</SelectItem>
+                        <SelectItem value="Pottery & Ceramics">
+                          Pottery & Ceramics
+                        </SelectItem>
+                        <SelectItem value="Textiles & Fiber Arts">
+                          Textiles & Fiber Arts
+                        </SelectItem>
                         <SelectItem value="Woodworking">Woodworking</SelectItem>
-                        <SelectItem value="Baked Goods & Preserves">Baked Goods & Preserves</SelectItem>
-                        <SelectItem value="Jewelry & Accessories">Jewelry & Accessories</SelectItem>
-                        <SelectItem value="Art & Illustration">Art & Illustration</SelectItem>
-                        <SelectItem value="Plants & Florals">Plants & Florals</SelectItem>
+                        <SelectItem value="Baked Goods & Preserves">
+                          Baked Goods & Preserves
+                        </SelectItem>
+                        <SelectItem value="Jewelry & Accessories">
+                          Jewelry & Accessories
+                        </SelectItem>
+                        <SelectItem value="Art & Illustration">
+                          Art & Illustration
+                        </SelectItem>
+                        <SelectItem value="Plants & Florals">
+                          Plants & Florals
+                        </SelectItem>
                         <SelectItem value="Home Decor">Home Decor</SelectItem>
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
@@ -291,11 +391,13 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                   </div>
 
                   <div>
-                    <Label htmlFor="bio">Short Bio (100-500 characters) *</Label>
+                    <Label htmlFor="bio">
+                      Short Bio (100-500 characters) *
+                    </Label>
                     <Textarea
                       id="bio"
                       value={formData.bio}
-                      onChange={(e) => updateField('bio', e.target.value)}
+                      onChange={(e) => updateField("bio", e.target.value)}
                       placeholder="Tell people about your craft and what makes it special..."
                       maxLength={500}
                       rows={4}
@@ -310,14 +412,16 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                     <Label htmlFor="location">Location (Singapore) *</Label>
                     <Select
                       value={formData.location}
-                      onValueChange={(value) => updateField('location', value)}
+                      onValueChange={(value) => updateField("location", value)}
                     >
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select your neighborhood" />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px]">
                         {SINGAPORE_LOCATIONS.map((loc) => (
-                          <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                          <SelectItem key={loc} value={loc}>
+                            {loc}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -330,9 +434,12 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
             {currentStep === 2 && (
               <>
                 <div>
-                  <h2 className="text-2xl font-serif font-semibold mb-2">Showcase Your Work</h2>
+                  <h2 className="text-2xl font-serif font-semibold mb-2">
+                    Showcase Your Work
+                  </h2>
                   <p className="text-muted-foreground">
-                    Upload at least 3 high-quality images of your work (Required)
+                    Upload at least 3 high-quality images of your work
+                    (Required)
                   </p>
                 </div>
 
@@ -341,7 +448,10 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                   {galleryImages.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                       {galleryImages.map((imageUrl, index) => (
-                        <div key={imageUrl} className="relative aspect-square rounded-lg overflow-hidden border group">
+                        <div
+                          key={imageUrl}
+                          className="relative aspect-square rounded-lg overflow-hidden border group"
+                        >
                           <img
                             src={imageUrl}
                             alt={`Gallery ${index + 1}`}
@@ -380,8 +490,14 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                         <br />
                         Recommended: Square images, min 800x800px, max 5MB
                       </p>
-                      <Button variant="outline" disabled={uploadingImage} asChild>
-                        <span>{uploadingImage ? "Uploading..." : "Choose Files"}</span>
+                      <Button
+                        variant="outline"
+                        disabled={uploadingImage}
+                        asChild
+                      >
+                        <span>
+                          {uploadingImage ? "Uploading..." : "Choose Files"}
+                        </span>
                       </Button>
                     </label>
                   </div>
@@ -389,7 +505,9 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                   <div className="text-xs text-muted-foreground">
                     <p>• Currently uploaded: {galleryImages.length} image(s)</p>
                     <p>• Minimum 3 images required to publish</p>
-                    <p>• Images will be automatically compressed and optimized</p>
+                    <p>
+                      • Images will be automatically compressed and optimized
+                    </p>
                     <p>• Supported formats: JPG, PNG, WebP</p>
                   </div>
                 </div>
@@ -400,7 +518,9 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
             {currentStep === 3 && (
               <>
                 <div>
-                  <h2 className="text-2xl font-serif font-semibold mb-2">Contact & Links</h2>
+                  <h2 className="text-2xl font-serif font-semibold mb-2">
+                    Contact & Links
+                  </h2>
                   <p className="text-muted-foreground">
                     How should customers reach you? (At least one required)
                   </p>
@@ -408,10 +528,14 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="contactChannel">Preferred Contact Method *</Label>
+                    <Label htmlFor="contactChannel">
+                      Preferred Contact Method *
+                    </Label>
                     <Select
                       value={formData.contactChannel}
-                      onValueChange={(value: any) => updateField('contactChannel', value)}
+                      onValueChange={(value: any) =>
+                        updateField("contactChannel", value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -431,7 +555,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                       type="email"
                       id="email"
                       value={formData.email}
-                      onChange={(e) => updateField('email', e.target.value)}
+                      onChange={(e) => updateField("email", e.target.value)}
                       placeholder="your@email.com"
                     />
                   </div>
@@ -442,7 +566,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                       type="tel"
                       id="phone"
                       value={formData.phone}
-                      onChange={(e) => updateField('phone', e.target.value)}
+                      onChange={(e) => updateField("phone", e.target.value)}
                       placeholder="+65 9123 4567"
                     />
                   </div>
@@ -452,7 +576,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                     <Input
                       id="instagram"
                       value={formData.instagram}
-                      onChange={(e) => updateField('instagram', e.target.value)}
+                      onChange={(e) => updateField("instagram", e.target.value)}
                       placeholder="@yourusername"
                     />
                   </div>
@@ -462,7 +586,9 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                     <Input
                       id="whatsappUrl"
                       value={formData.whatsappUrl}
-                      onChange={(e) => updateField('whatsappUrl', e.target.value)}
+                      onChange={(e) =>
+                        updateField("whatsappUrl", e.target.value)
+                      }
                       placeholder="https://wa.me/65..."
                     />
                   </div>
@@ -472,7 +598,7 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                     <Input
                       id="telegram"
                       value={formData.telegram}
-                      onChange={(e) => updateField('telegram', e.target.value)}
+                      onChange={(e) => updateField("telegram", e.target.value)}
                       placeholder="@yourusername"
                     />
                   </div>
@@ -482,7 +608,9 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                     <Input
                       id="externalShopUrl"
                       value={formData.externalShopUrl}
-                      onChange={(e) => updateField('externalShopUrl', e.target.value)}
+                      onChange={(e) =>
+                        updateField("externalShopUrl", e.target.value)
+                      }
                       placeholder="https://yourwebsite.com"
                     />
                   </div>
@@ -494,8 +622,12 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
             {currentStep === 4 && (
               <>
                 <div>
-                  <h2 className="text-2xl font-serif font-semibold mb-2">Availability</h2>
-                  <p className="text-muted-foreground">Let customers know if you're accepting orders</p>
+                  <h2 className="text-2xl font-serif font-semibold mb-2">
+                    Availability
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Let customers know if you're accepting orders
+                  </p>
                 </div>
 
                 <div className="space-y-4">
@@ -511,14 +643,17 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
                     <Switch
                       id="acceptingOrders"
                       checked={formData.acceptingOrders}
-                      onCheckedChange={(checked) => updateField('acceptingOrders', checked)}
+                      onCheckedChange={(checked) =>
+                        updateField("acceptingOrders", checked)
+                      }
                     />
                   </div>
 
                   <div className="p-4 bg-muted/50 rounded-lg">
                     <p className="text-sm text-muted-foreground">
-                      <strong className="text-foreground">Note:</strong> Pricing is handled directly through chat with customers.
-                      We'll add in-app payment options in the future.
+                      <strong className="text-foreground">Note:</strong> Pricing
+                      is handled directly through chat with customers. We'll add
+                      in-app payment options in the future.
                     </p>
                   </div>
                 </div>
@@ -529,82 +664,111 @@ export function ArtisanOnboardingWizard({ onComplete, onCancel }: ArtisanOnboard
             {currentStep === 5 && (
               <>
                 <div>
-                  <h2 className="text-2xl font-serif font-semibold mb-2">Review & Publish</h2>
-                  <p className="text-muted-foreground">Make sure everything looks good before going live</p>
+                  <h2 className="text-2xl font-serif font-semibold mb-2">
+                    Review & Publish
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Make sure everything looks good before going live
+                  </p>
                 </div>
 
                 <div className="space-y-4 p-6 bg-muted/50 rounded-lg">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Display Name</p>
-                    <p className="text-base">{formData.displayName || '—'}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Display Name
+                    </p>
+                    <p className="text-base">{formData.displayName || "—"}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Category</p>
-                    <p className="text-base">{formData.category || '—'}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Category
+                    </p>
+                    <p className="text-base">{formData.category || "—"}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Bio</p>
-                    <p className="text-base">{formData.bio || '—'}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Bio
+                    </p>
+                    <p className="text-base">{formData.bio || "—"}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Location</p>
-                    <p className="text-base">{formData.location || '—'}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Location
+                    </p>
+                    <p className="text-base">{formData.location || "—"}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Gallery Images</p>
-                    <p className="text-base">{galleryImages.length} image(s) uploaded</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Gallery Images
+                    </p>
+                    <p className="text-base">
+                      {galleryImages.length} image(s) uploaded
+                    </p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Accepting Orders</p>
-                    <p className="text-base">{formData.acceptingOrders ? 'Yes' : 'No'}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Accepting Orders
+                    </p>
+                    <p className="text-base">
+                      {formData.acceptingOrders ? "Yes" : "No"}
+                    </p>
                   </div>
                 </div>
 
                 <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
                   <p className="text-sm">
-                    By publishing, your profile will be visible to the Hestia community in Singapore. You can
-                    edit your profile or unpublish it at any time from your settings.
+                    By publishing, your profile will be visible to the Hestia
+                    community in Singapore. You can edit your profile or
+                    unpublish it at any time from your settings.
                   </p>
                 </div>
               </>
             )}
           </div>
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center">
-          <div>
-            {currentStep > 1 && (
-              <Button variant="ghost" onClick={handleBack} disabled={isLoading}>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            )}
-          </div>
+          {/* Navigation */}
+          <div className="flex justify-between items-center">
+            <div>
+              {currentStep > 1 && (
+                <Button
+                  variant="ghost"
+                  onClick={handleBack}
+                  disabled={isLoading}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+              )}
+            </div>
 
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleSaveAndExit} disabled={isLoading}>
-              Save & Exit
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleSaveAndExit}
+                disabled={isLoading}
+              >
+                Save & Exit
+              </Button>
 
-            {currentStep < 5 ? (
-              <Button onClick={handleNext} disabled={isLoading}>
-                Continue
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
-              <Button onClick={handlePublish} disabled={isLoading}>
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Check className="w-4 h-4 mr-2" />
-                )}
-                Publish Profile
-              </Button>
-            )}
+              {currentStep < 5 ? (
+                <Button onClick={handleNext} disabled={isLoading}>
+                  Continue
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
+                <Button onClick={handlePublish} disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4 mr-2" />
+                  )}
+                  Publish Profile
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }
