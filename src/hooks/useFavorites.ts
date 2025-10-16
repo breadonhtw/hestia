@@ -27,7 +27,7 @@ export const useFavorites = () => {
     }
   });
 
-  // Mutation to add favorite
+  // Mutation to add favorite with optimistic updates (Instagram-style)
   const addFavoriteMutation = useMutation({
     mutationFn: async (artisanId: string) => {
       const { error } = await supabase
@@ -35,13 +35,34 @@ export const useFavorites = () => {
         .insert({ user_id: user!.id, artisan_id: artisanId });
       if (error) throw error;
     },
-    onSuccess: () => {
+    // Optimistic update - update UI immediately before server responds
+    onMutate: async (artisanId: string) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['user-favorites', user?.id] });
+      
+      // Snapshot the previous value
+      const previousFavorites = queryClient.getQueryData<string[]>(['user-favorites', user?.id]);
+      
+      // Optimistically update to the new value
+      queryClient.setQueryData<string[]>(['user-favorites', user?.id], (old = []) => [...old, artisanId]);
+      
+      // Return context with previous value
+      return { previousFavorites };
+    },
+    // On error, roll back to previous value
+    onError: (err, artisanId, context) => {
+      if (context?.previousFavorites) {
+        queryClient.setQueryData(['user-favorites', user?.id], context.previousFavorites);
+      }
+    },
+    // Always refetch after error or success
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['user-favorites'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
     }
   });
 
-  // Mutation to remove favorite
+  // Mutation to remove favorite with optimistic updates
   const removeFavoriteMutation = useMutation({
     mutationFn: async (artisanId: string) => {
       const { error } = await supabase
@@ -51,7 +72,21 @@ export const useFavorites = () => {
         .eq('artisan_id', artisanId);
       if (error) throw error;
     },
-    onSuccess: () => {
+    // Optimistic update
+    onMutate: async (artisanId: string) => {
+      await queryClient.cancelQueries({ queryKey: ['user-favorites', user?.id] });
+      const previousFavorites = queryClient.getQueryData<string[]>(['user-favorites', user?.id]);
+      queryClient.setQueryData<string[]>(['user-favorites', user?.id], (old = []) => 
+        old.filter(id => id !== artisanId)
+      );
+      return { previousFavorites };
+    },
+    onError: (err, artisanId, context) => {
+      if (context?.previousFavorites) {
+        queryClient.setQueryData(['user-favorites', user?.id], context.previousFavorites);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['user-favorites'] });
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
     }

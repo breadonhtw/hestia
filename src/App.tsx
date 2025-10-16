@@ -20,7 +20,24 @@ const SettingsAccount = React.lazy(() => import("./pages/SettingsAccount"));
 const SettingsProfile = React.lazy(() => import("./pages/SettingsProfile"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+// Optimized QueryClient configuration inspired by X and Instagram
+// - Longer staleTime reduces unnecessary refetches
+// - Proper gcTime (formerly cacheTime) improves performance
+// - Retry logic for better reliability
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh longer
+      gcTime: 10 * 60 * 1000, // 10 minutes - keep unused data in cache
+      refetchOnWindowFocus: false, // Reduce unnecessary refetches (like Instagram)
+      refetchOnReconnect: true, // Refetch when connection is restored
+      retry: 1, // Retry failed requests once
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
 
 const AppRoutes = () => {
   return (

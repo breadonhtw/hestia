@@ -4,6 +4,7 @@ import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFavorites } from "@/hooks/useFavorites";
+import { ProgressiveImage } from "@/components/ProgressiveImage";
 
 interface CreatorCardProps {
   creator: Creator;
@@ -92,7 +93,7 @@ export const CreatorCard = ({
         {/* Creator Photo */}
         <div className="mb-4 flex justify-center">
           <div className="relative w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-primary/10">
-            <img
+            <ProgressiveImage
               src={creator.image}
               alt={creator.name}
               className="w-full h-full object-cover"
@@ -161,10 +162,10 @@ export const CreatorCard = ({
       {/* Creator Photo - Larger */}
       <div className="mb-6 flex justify-center">
         <div className="relative w-[160px] h-[160px] rounded-full overflow-hidden border-4 border-primary/10 shadow-md">
-          <img
+          <ProgressiveImage
             src={creator.image}
             alt={creator.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-full"
             loading="lazy"
             width={160}
             height={160}
@@ -205,7 +206,7 @@ export const CreatorCard = ({
                 key={work.id}
                 className="w-16 h-16 rounded-lg overflow-hidden border-2 border-primary/20 hover:border-primary transition-all"
               >
-                <img
+                <ProgressiveImage
                   src={work.image}
                   alt={work.title}
                   className="w-full h-full object-cover"
