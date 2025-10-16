@@ -47,6 +47,22 @@ const isProdHost =
   typeof window !== "undefined" &&
   /(?:^|\.)hestia\.sg$/.test(window.location.hostname);
 
+// Create root once and reuse it
+const rootEl = document.getElementById("root")!;
+const root = createRoot(rootEl);
+
+function render() {
+  const RootAnalytics = Analytics;
+  const RootSpeed = SpeedInsights;
+  root.render(
+    <>
+      <App />
+      {isProdHost && RootAnalytics ? <RootAnalytics /> : null}
+      {isProdHost && RootSpeed ? <RootSpeed /> : null}
+    </>
+  );
+}
+
 if (isProdHost) {
   // Defer importing analytics until after first paint
   queueMicrotask(async () => {
@@ -61,19 +77,6 @@ if (isProdHost) {
       render();
     } catch {}
   });
-}
-
-function render() {
-  const rootEl = document.getElementById("root")!;
-  const RootAnalytics = Analytics;
-  const RootSpeed = SpeedInsights;
-  createRoot(rootEl).render(
-    <>
-      <App />
-      {isProdHost && RootAnalytics ? <RootAnalytics /> : null}
-      {isProdHost && RootSpeed ? <RootSpeed /> : null}
-    </>
-  );
 }
 
 render();
