@@ -13,8 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectListBox,
+  SelectPopover,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -358,35 +359,40 @@ export function ArtisanOnboardingWizard({
                   <div>
                     <Label htmlFor="category">Primary Craft Type *</Label>
                     <Select
-                      value={formData.category}
-                      onValueChange={(value) => updateField("category", value)}
+                      selectedKey={formData.category}
+                      onSelectionChange={(key) =>
+                        updateField("category", key as string)
+                      }
+                      placeholder="Select your primary craft"
                     >
                       <SelectTrigger className="bg-background">
-                        <SelectValue placeholder="Select your primary craft" />
+                        <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Pottery & Ceramics">
-                          Pottery & Ceramics
-                        </SelectItem>
-                        <SelectItem value="Textiles & Fiber Arts">
-                          Textiles & Fiber Arts
-                        </SelectItem>
-                        <SelectItem value="Woodworking">Woodworking</SelectItem>
-                        <SelectItem value="Baked Goods & Preserves">
-                          Baked Goods & Preserves
-                        </SelectItem>
-                        <SelectItem value="Jewelry & Accessories">
-                          Jewelry & Accessories
-                        </SelectItem>
-                        <SelectItem value="Art & Illustration">
-                          Art & Illustration
-                        </SelectItem>
-                        <SelectItem value="Plants & Florals">
-                          Plants & Florals
-                        </SelectItem>
-                        <SelectItem value="Home Decor">Home Decor</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
+                      <SelectPopover>
+                        <SelectListBox>
+                          <SelectItem id="Pottery & Ceramics">
+                            Pottery & Ceramics
+                          </SelectItem>
+                          <SelectItem id="Textiles & Fiber Arts">
+                            Textiles & Fiber Arts
+                          </SelectItem>
+                          <SelectItem id="Woodworking">Woodworking</SelectItem>
+                          <SelectItem id="Baked Goods & Preserves">
+                            Baked Goods & Preserves
+                          </SelectItem>
+                          <SelectItem id="Jewelry & Accessories">
+                            Jewelry & Accessories
+                          </SelectItem>
+                          <SelectItem id="Art & Illustration">
+                            Art & Illustration
+                          </SelectItem>
+                          <SelectItem id="Plants & Florals">
+                            Plants & Florals
+                          </SelectItem>
+                          <SelectItem id="Home Decor">Home Decor</SelectItem>
+                          <SelectItem id="Other">Other</SelectItem>
+                        </SelectListBox>
+                      </SelectPopover>
                     </Select>
                   </div>
 
@@ -411,19 +417,24 @@ export function ArtisanOnboardingWizard({
                   <div>
                     <Label htmlFor="location">Location (Singapore) *</Label>
                     <Select
-                      value={formData.location}
-                      onValueChange={(value) => updateField("location", value)}
+                      selectedKey={formData.location}
+                      onSelectionChange={(key) =>
+                        updateField("location", key as string)
+                      }
+                      placeholder="Select your neighborhood"
                     >
                       <SelectTrigger className="bg-background">
-                        <SelectValue placeholder="Select your neighborhood" />
+                        <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="max-h-[300px]">
-                        {SINGAPORE_LOCATIONS.map((loc) => (
-                          <SelectItem key={loc} value={loc}>
-                            {loc}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
+                      <SelectPopover className="max-h-[300px]">
+                        <SelectListBox>
+                          {SINGAPORE_LOCATIONS.map((loc) => (
+                            <SelectItem key={loc} id={loc}>
+                              {loc}
+                            </SelectItem>
+                          ))}
+                        </SelectListBox>
+                      </SelectPopover>
                     </Select>
                   </div>
                 </div>
@@ -532,20 +543,22 @@ export function ArtisanOnboardingWizard({
                       Preferred Contact Method *
                     </Label>
                     <Select
-                      value={formData.contactChannel}
-                      onValueChange={(value: any) =>
-                        updateField("contactChannel", value)
+                      selectedKey={formData.contactChannel}
+                      onSelectionChange={(key) =>
+                        updateField("contactChannel", key as string)
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger aria-label="Contact method">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="instagram">Instagram DM</SelectItem>
-                        <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                        <SelectItem value="telegram">Telegram</SelectItem>
-                        <SelectItem value="email">Email</SelectItem>
-                      </SelectContent>
+                      <SelectPopover>
+                        <SelectListBox>
+                          <SelectItem id="instagram">Instagram DM</SelectItem>
+                          <SelectItem id="whatsapp">WhatsApp</SelectItem>
+                          <SelectItem id="telegram">Telegram</SelectItem>
+                          <SelectItem id="email">Email</SelectItem>
+                        </SelectListBox>
+                      </SelectPopover>
                     </Select>
                   </div>
 
