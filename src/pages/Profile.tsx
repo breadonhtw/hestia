@@ -9,8 +9,6 @@ import { Footer } from "@/components/Footer";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { EditCommunityForm } from "@/components/profile/EditCommunityForm";
 import { EditArtisanForm } from "@/components/profile/EditArtisanForm";
-import { FavoritesList } from "@/components/profile/FavoritesList";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 
 const Profile = () => {
@@ -18,7 +16,6 @@ const Profile = () => {
   const { role, isLoading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "edit");
 
   const {
     data: profile,
@@ -125,35 +122,20 @@ const Profile = () => {
 
         <div className="w-full max-w-[1920px]">
           <div className="container mx-auto px-4 lg:px-8 py-8">
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full max-w-4xl mx-auto"
-            >
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="edit">Edit Profile</TabsTrigger>
-                <TabsTrigger value="favorites">My Favorites</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="edit" className="space-y-6">
-                {role === "artisan" ? (
-                  <EditArtisanForm
-                    fullName={profile.full_name}
-                    avatarUrl={profile.avatar_url}
-                  />
-                ) : (
-                  <EditCommunityForm
-                    displayName={profile.full_name}
-                    avatarUrl={profile.avatar_url}
-                    isArtisan={role === "artisan"}
-                  />
-                )}
-              </TabsContent>
-
-              <TabsContent value="favorites">
-                <FavoritesList />
-              </TabsContent>
-            </Tabs>
+            <div className="w-full max-w-4xl mx-auto space-y-6">
+              {role === "artisan" ? (
+                <EditArtisanForm
+                  fullName={profile.full_name}
+                  avatarUrl={profile.avatar_url}
+                />
+              ) : (
+                <EditCommunityForm
+                  displayName={profile.full_name}
+                  avatarUrl={profile.avatar_url}
+                  isArtisan={(role as string) === "artisan"}
+                />
+              )}
+            </div>
           </div>
         </div>
 

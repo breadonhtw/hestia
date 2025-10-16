@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectListBox,
+  SelectPopover,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -254,7 +255,11 @@ export const EditArtisanForm = ({
 
   return (
     <div className="space-y-8">
-      <EditCommunityForm displayName={fullName} avatarUrl={avatarUrl} isArtisan={true} />
+      <EditCommunityForm
+        displayName={fullName}
+        avatarUrl={avatarUrl}
+        isArtisan={true}
+      />
 
       <div className="border-t pt-8">
         <h3 className="text-lg font-semibold mb-4">Artisan Details</h3>
@@ -267,30 +272,35 @@ export const EditArtisanForm = ({
             <div className="space-y-2">
               <Label htmlFor="craft_type">Craft Type</Label>
               <Select
-                onValueChange={(value) => setValue("craft_type", value)}
-                value={watch("craft_type")}
+                selectedKey={watch("craft_type")}
+                onSelectionChange={(key) =>
+                  setValue("craft_type", key as string)
+                }
+                placeholder="Select a craft"
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a craft" />
+                  <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Pottery & Ceramics">
-                    Pottery & Ceramics
-                  </SelectItem>
-                  <SelectItem value="Woodworking">Woodworking</SelectItem>
-                  <SelectItem value="Textiles & Fiber Arts">
-                    Textiles & Fiber Arts
-                  </SelectItem>
-                  <SelectItem value="Jewelry">Jewelry</SelectItem>
-                  <SelectItem value="Art & Illustration">
-                    Art & Illustration
-                  </SelectItem>
-                  <SelectItem value="Baked Goods">Baked Goods</SelectItem>
-                  <SelectItem value="Plants & Florals">
-                    Plants & Florals
-                  </SelectItem>
-                  <SelectItem value="Home Decor">Home Decor</SelectItem>
-                </SelectContent>
+                <SelectPopover>
+                  <SelectListBox>
+                    <SelectItem id="Pottery & Ceramics">
+                      Pottery & Ceramics
+                    </SelectItem>
+                    <SelectItem id="Woodworking">Woodworking</SelectItem>
+                    <SelectItem id="Textiles & Fiber Arts">
+                      Textiles & Fiber Arts
+                    </SelectItem>
+                    <SelectItem id="Jewelry">Jewelry</SelectItem>
+                    <SelectItem id="Art & Illustration">
+                      Art & Illustration
+                    </SelectItem>
+                    <SelectItem id="Baked Goods">Baked Goods</SelectItem>
+                    <SelectItem id="Plants & Florals">
+                      Plants & Florals
+                    </SelectItem>
+                    <SelectItem id="Home Decor">Home Decor</SelectItem>
+                  </SelectListBox>
+                </SelectPopover>
               </Select>
               {errors.craft_type && (
                 <p className="text-sm text-destructive">
@@ -542,21 +552,27 @@ export const EditArtisanForm = ({
           <div className="space-y-2">
             <Label htmlFor="contact_channel">Preferred Contact</Label>
             <Select
-              onValueChange={(value) =>
-                setValue("contact_channel", value as any)
+              selectedKey={watch("contact_channel")}
+              onSelectionChange={(key) =>
+                setValue(
+                  "contact_channel",
+                  key as "chat" | "instagram" | "website" | "email" | "phone"
+                )
               }
-              value={watch("contact_channel")}
+              placeholder="Select contact method"
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select contact method" />
+                <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="chat">On-platform chat</SelectItem>
-                <SelectItem value="instagram">Instagram</SelectItem>
-                <SelectItem value="website">Website</SelectItem>
-                <SelectItem value="email">Email</SelectItem>
-                <SelectItem value="phone">Phone</SelectItem>
-              </SelectContent>
+              <SelectPopover>
+                <SelectListBox>
+                  <SelectItem id="chat">On-platform chat</SelectItem>
+                  <SelectItem id="instagram">Instagram</SelectItem>
+                  <SelectItem id="website">Website</SelectItem>
+                  <SelectItem id="email">Email</SelectItem>
+                  <SelectItem id="phone">Phone</SelectItem>
+                </SelectListBox>
+              </SelectPopover>
             </Select>
           </div>
 

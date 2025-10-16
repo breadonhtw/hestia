@@ -65,7 +65,7 @@ export const Footer = () => {
             </h3>
             <div className="flex gap-3">
               <a
-                href="https://www.instagram.com/brandonhtw/"
+                href="https://www.instagram.com/sg.hestia/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-all hover:scale-110"
@@ -74,7 +74,7 @@ export const Footer = () => {
                 <Instagram className="h-5 w-5 text-primary hover:text-primary-foreground" />
               </a>
               <a
-                href="mailto:brandonhtw@gmail.com"
+                href="mailto:admin@hestia.sg"
                 className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary flex items-center justify-center transition-all hover:scale-110"
                 aria-label="Email"
               >

@@ -19,6 +19,27 @@ const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
+const AppRoutes = () => {
+  return (
+    <Suspense fallback={<div />}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/browse" element={<Browse />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/artisan/:username" element={<CreatorProfile />} />
+        <Route path="/creator/:id" element={<CreatorProfile />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/become-artisan" element={<ArtisanUpgrade />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
+  );
+};
+
 const App = () => {
   const toasterRef = useToastModern();
 
@@ -29,22 +50,7 @@ const App = () => {
           <ToasterModern ref={toasterRef} />
           <BrowserRouter>
             <ScrollToTop />
-            <Suspense fallback={<div />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/browse" element={<Browse />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/artisan/:username" element={<CreatorProfile />} />
-                <Route path="/creator/:id" element={<CreatorProfile />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/become-artisan" element={<ArtisanUpgrade />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+            <AppRoutes />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

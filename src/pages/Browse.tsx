@@ -14,8 +14,9 @@ import { Switch } from "@/components/ui/switch";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectListBox,
+  SelectPopover,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -279,24 +280,27 @@ const Browse = () => {
                     Location
                   </h3>
                   <Select
-                    value={pendingLocation}
-                    onValueChange={setPendingLocation}
+                    selectedKey={pendingLocation}
+                    onSelectionChange={(key) =>
+                      setPendingLocation(key as string)
+                    }
+                    placeholder="Select location"
                   >
                     <SelectTrigger className="w-full bg-background dark:bg-[rgba(245,240,232,0.08)] focus-terracotta">
-                      <SelectValue placeholder="Select location" />
+                      <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="dark:bg-[rgba(245,240,232,0.08)]">
-                      {locations.map((location) => (
-                        <SelectItem
-                          key={location}
-                          value={
-                            location === "All Locations" ? "all" : location
-                          }
-                        >
-                          {location}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+                    <SelectPopover className="dark:bg-[rgba(245,240,232,0.08)]">
+                      <SelectListBox>
+                        {locations.map((location) => (
+                          <SelectItem
+                            key={location}
+                            id={location === "All Locations" ? "all" : location}
+                          >
+                            {location}
+                          </SelectItem>
+                        ))}
+                      </SelectListBox>
+                    </SelectPopover>
                   </Select>
                 </div>
 
@@ -556,16 +560,24 @@ const Browse = () => {
                   <span className="text-sm text-[#2A5A54] dark:text-[#E8DFD3]">
                     Sort by:
                   </span>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-40 dark:bg-[rgba(245,240,232,0.08)] focus-terracotta">
+                  <Select
+                    selectedKey={sortBy}
+                    onSelectionChange={(key) => setSortBy(key as string)}
+                  >
+                    <SelectTrigger
+                      className="w-40 dark:bg-[rgba(245,240,232,0.08)] focus-terracotta"
+                      aria-label="Sort by"
+                    >
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="dark:bg-[rgba(245,240,232,0.08)]">
-                      <SelectItem value="featured">Featured</SelectItem>
-                      <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="a-z">A-Z</SelectItem>
-                      <SelectItem value="nearby">Nearby</SelectItem>
-                    </SelectContent>
+                    <SelectPopover className="dark:bg-[rgba(245,240,232,0.08)]">
+                      <SelectListBox>
+                        <SelectItem id="featured">Featured</SelectItem>
+                        <SelectItem id="newest">Newest</SelectItem>
+                        <SelectItem id="a-z">A-Z</SelectItem>
+                        <SelectItem id="nearby">Nearby</SelectItem>
+                      </SelectListBox>
+                    </SelectPopover>
                   </Select>
                 </div>
               </div>
