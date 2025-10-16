@@ -35,6 +35,7 @@ export const useFeaturedGalleryImages = (artisanId: string) => {
       return data || [];
     },
     enabled: !!artisanId,
+    staleTime: 5 * 60 * 1000, // 5 minutes - featured images don't change frequently
   });
 };
 
@@ -52,6 +53,7 @@ export const useGalleryImages = (artisanId: string) => {
       return data || [];
     },
     enabled: !!artisanId,
+    staleTime: 2 * 60 * 1000, // 2 minutes - gallery can be edited more frequently
   });
 };
 
