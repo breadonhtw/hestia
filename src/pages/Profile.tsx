@@ -145,6 +145,7 @@ const Profile = () => {
                   <EditCommunityForm
                     displayName={profile.full_name}
                     avatarUrl={profile.avatar_url}
+                    isArtisan={role === "artisan"}
                   />
                 )}
               </TabsContent>

@@ -15,12 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { EditCommunityForm } from "./EditCommunityForm";
 import { GalleryManager } from "./GalleryManager";
 import { Switch } from "@/components/ui/switch";
 import { CRAFT_CATEGORIES } from "@/data/categories";
+import { SINGAPORE_LOCATIONS } from "@/constants/locations";
 import {
   Command,
   CommandEmpty,
@@ -253,7 +254,7 @@ export const EditArtisanForm = ({
 
   return (
     <div className="space-y-8">
-      <EditCommunityForm displayName={fullName} avatarUrl={avatarUrl} />
+      <EditCommunityForm displayName={fullName} avatarUrl={avatarUrl} isArtisan={true} />
 
       <div className="border-t pt-8">
         <h3 className="text-lg font-semibold mb-4">Artisan Details</h3>
@@ -300,11 +301,51 @@ export const EditArtisanForm = ({
 
             <div className="space-y-2">
               <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                {...register("location")}
-                placeholder="ie. Bishan"
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-between",
+                      !watch("location") && "text-muted-foreground"
+                    )}
+                  >
+                    {watch("location") || "Select location"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[320px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search location..." />
+                    <CommandList>
+                      <CommandEmpty>No location found.</CommandEmpty>
+                      <CommandGroup>
+                        {SINGAPORE_LOCATIONS.map((location) => (
+                          <CommandItem
+                            key={location}
+                            onSelect={() => setValue("location", location)}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                watch("location") === location
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            <span
+                              className={cn(
+                                watch("location") === location && "font-medium"
+                              )}
+                            >
+                              {location}
+                            </span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               {errors.location && (
                 <p className="text-sm text-destructive">
                   {errors.location.message}
@@ -367,6 +408,12 @@ export const EditArtisanForm = ({
                                 setValue("categories", Array.from(current));
                               }}
                             >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selected ? "opacity-100" : "opacity-0"
+                                )}
+                              />
                               <span className={cn(selected && "font-medium")}>
                                 {category}
                               </span>

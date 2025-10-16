@@ -10,7 +10,6 @@ import { uploadAvatar } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -21,14 +20,10 @@ import {
 } from "@/components/ui/card";
 import { Upload, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ImageCropDialog } from "@/components/ImageCropDialog";
 
 const communitySchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
-  bio: z
-    .string()
-    .max(200, "Bio must be less than 200 characters")
-    .optional()
-    .or(z.literal("")),
 });
 
 type CommunityFormData = z.infer<typeof communitySchema>;
@@ -36,11 +31,13 @@ type CommunityFormData = z.infer<typeof communitySchema>;
 interface EditCommunityFormProps {
   displayName: string;
   avatarUrl: string | null;
+  isArtisan?: boolean;
 }
 
 export const EditCommunityForm = ({
   displayName,
   avatarUrl,
+  isArtisan = false,
 }: EditCommunityFormProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -48,6 +45,8 @@ export const EditCommunityForm = ({
   const navigate = useNavigate();
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(avatarUrl);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedImageSrc, setSelectedImageSrc] = useState<string>("");
 
   const {
     register,
@@ -57,7 +56,6 @@ export const EditCommunityForm = ({
     resolver: zodResolver(communitySchema),
     defaultValues: {
       full_name: displayName,
-      bio: "",
     },
   });
 
@@ -88,13 +86,33 @@ export const EditCommunityForm = ({
     },
   });
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    // Read the file and show crop dialog
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedImageSrc(reader.result as string);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+
+    // Reset the input so the same file can be selected again
+    e.target.value = "";
+  };
+
+  const handleCroppedImage = async (croppedBlob: Blob) => {
+    if (!user) return;
+
     setUploadingAvatar(true);
     try {
-      const url = await uploadAvatar(user.id, file);
+      // Convert blob to File
+      const croppedFile = new File([croppedBlob], "avatar.jpg", {
+        type: "image/jpeg",
+      });
+
+      const url = await uploadAvatar(user.id, croppedFile);
 
       await supabase
         .from("profiles")
@@ -121,33 +139,35 @@ export const EditCommunityForm = ({
 
   return (
     <div className="space-y-8">
-      {/* Become an Artisan CTA */}
-      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            <CardTitle className="text-xl font-serif">
-              Become an Artisan
-            </CardTitle>
-          </div>
-          <CardDescription>
-            Share your handcrafted work with the Hestia community
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            List your products, connect with customers, and grow your craft
-            business. Create your artisan profile in just a few minutes.
-          </p>
-          <Button
-            onClick={() => navigate("/become-artisan")}
-            className="w-full sm:w-auto"
-          >
-            Get Started
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Become an Artisan CTA - Only show for non-artisans */}
+      {!isArtisan && (
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              <CardTitle className="text-xl font-serif">
+                Become an Artisan
+              </CardTitle>
+            </div>
+            <CardDescription>
+              Share your handcrafted work with the Hestia community
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              List your products, connect with customers, and grow your craft
+              business. Create your artisan profile in just a few minutes.
+            </p>
+            <Button
+              onClick={() => navigate("/become-artisan")}
+              className="w-full sm:w-auto"
+            >
+              Get Started
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Community Profile Form */}
       <form
@@ -201,19 +221,6 @@ export const EditCommunityForm = ({
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
-          <Textarea
-            id="bio"
-            {...register("bio")}
-            placeholder="Tell us a bit about yourself..."
-            rows={3}
-          />
-          {errors.bio && (
-            <p className="text-sm text-destructive">{errors.bio.message}</p>
-          )}
-        </div>
-
         <Button type="submit" disabled={updateProfile.isPending}>
           {updateProfile.isPending && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -221,6 +228,14 @@ export const EditCommunityForm = ({
           Save Changes
         </Button>
       </form>
+
+      <ImageCropDialog
+        open={cropDialogOpen}
+        imageSrc={selectedImageSrc}
+        aspectRatio={1}
+        onCropComplete={handleCroppedImage}
+        onClose={() => setCropDialogOpen(false)}
+      />
     </div>
   );
 };

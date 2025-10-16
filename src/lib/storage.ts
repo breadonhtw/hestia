@@ -43,14 +43,27 @@ export const uploadGalleryImage = async (artisanId: string, file: File) => {
 
 export const deleteGalleryImage = async (imageUrl: string) => {
   // Extract the file path from the URL
-  const urlParts = imageUrl.split("/gallery-images/");
-  if (urlParts.length < 2) throw new Error("Invalid image URL");
+  // Handle both full URLs and relative paths
+  let filePath: string;
 
-  const filePath = urlParts[1];
+  if (imageUrl.includes("/gallery-images/")) {
+    const urlParts = imageUrl.split("/gallery-images/");
+    if (urlParts.length < 2) throw new Error("Invalid image URL");
+    filePath = urlParts[1];
+  } else {
+    // If it's already just a path, use it directly
+    filePath = imageUrl;
+  }
+
+  // Remove any query parameters (e.g., ?t=timestamp)
+  filePath = filePath.split("?")[0];
 
   const { error } = await supabase.storage
     .from("gallery-images")
     .remove([filePath]);
 
-  if (error) throw error;
+  if (error) {
+    console.error("Storage deletion error:", error);
+    throw error;
+  }
 };

@@ -81,11 +81,12 @@ const Index = () => {
     "Pottery & Ceramics": Gem,
     "Textiles & Fiber Arts": Scissors,
     Woodworking: Hammer,
-    "Baked Goods": CakeSlice,
-    Jewelry: Gem,
+    "Baked Goods & Preserves": CakeSlice,
+    "Jewelry & Accessories": Gem,
     "Art & Illustration": Palette,
     "Plants & Florals": Flower,
     "Home Decor": Home,
+    Other: Sparkles,
   };
 
   // Prefetch creator profile route chunk on intent (hover/focus)

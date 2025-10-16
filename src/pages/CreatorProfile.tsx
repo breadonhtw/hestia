@@ -194,17 +194,16 @@ const CreatorProfile = () => {
           </h2>
           <div className="bg-[#F5F0E8] dark:bg-[rgba(245,240,232,0.08)] rounded-xl p-8 border border-[rgba(160,97,58,0.1)] dark:border-[rgba(245,240,232,0.1)] shadow-soft">
             <div className="prose prose-lg max-w-none">
-              <p className="text-lg text-[#2A5A54] dark:text-[#E8DFD3] leading-relaxed mb-6">
+              <p className="text-lg text-[#2A5A54] dark:text-[#E8DFD3] leading-relaxed mb-6 break-words overflow-wrap-anywhere">
                 {creator.bio}
               </p>
               {creator.story && (
-                <p className="text-lg text-[#2A5A54] dark:text-[#E8DFD3] leading-relaxed">
+                <p className="text-lg text-[#2A5A54] dark:text-[#E8DFD3] leading-relaxed break-words overflow-wrap-anywhere">
                   {creator.story}
                 </p>
               )}
             </div>
-          </div>
-        </section>
+          </div>        </section>
 
         {/* Gallery Section */}
         {galleryImages && galleryImages.length > 0 && (

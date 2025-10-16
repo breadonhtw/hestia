@@ -8,6 +8,7 @@ import { ImagePlus, X, Upload as UploadIcon, Trash2, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { MAX_FEATURED_IMAGES } from "@/constants/gallery";
+import { ImageCropDialog } from "@/components/ImageCropDialog";
 
 interface GalleryManagerProps {
   artisanId: string;
@@ -21,6 +22,22 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [currentCropImage, setCurrentCropImage] = useState<string>("");
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+
+  const processNextFile = useCallback(() => {
+    if (pendingFiles.length === 0) return;
+
+    const [nextFile, ...remaining] = pendingFiles;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setCurrentCropImage(reader.result as string);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(nextFile);
+    setPendingFiles(remaining);
+  }, [pendingFiles]);
 
   useEffect(() => {
     return () => {
@@ -28,6 +45,12 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (pendingFiles.length > 0 && !cropDialogOpen) {
+      processNextFile();
+    }
+  }, [pendingFiles, cropDialogOpen, processNextFile]);
 
   const { data: images, isLoading } = useQuery({
     queryKey: ["gallery", artisanId],
@@ -44,28 +67,58 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
   const deleteImage = useMutation({
     mutationFn: async (imageId: string) => {
       const image = images?.find((img) => img.id === imageId);
-      if (image) {
-        await deleteGalleryImage(image.image_url);
+
+      // Try to delete from storage first (but don't fail if it errors)
+      if (image?.image_url) {
+        try {
+          await deleteGalleryImage(image.image_url);
+        } catch (storageError) {
+          console.warn("Storage deletion failed:", storageError);
+          // Continue to delete from database even if storage fails
+        }
       }
 
+      // Delete from database
       const { error } = await supabase
         .from("gallery_images")
         .delete()
         .eq("id", imageId);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Database deletion failed:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gallery", artisanId] });
+      queryClient.invalidateQueries({
+        queryKey: ["featured-gallery", artisanId],
+      });
       toast({
         title: "Image deleted",
-        description: "Gallery image has been removed.",
+        description:
+          "Gallery image has been removed from storage and database.",
+      });
+    },
+    onError: (error: Error) => {
+      console.error("Error deleting image:", error);
+      toast({
+        title: "Error deleting image",
+        description:
+          error?.message || "Failed to delete image. Please try again.",
+        variant: "destructive",
       });
     },
   });
 
   const toggleFeatured = useMutation({
-    mutationFn: async ({ imageId, isFeatured }: { imageId: string; isFeatured: boolean }) => {
+    mutationFn: async ({
+      imageId,
+      isFeatured,
+    }: {
+      imageId: string;
+      isFeatured: boolean;
+    }) => {
       const { error } = await supabase
         .from("gallery_images")
         .update({ is_featured: isFeatured })
@@ -75,12 +128,17 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gallery", artisanId] });
-      queryClient.invalidateQueries({ queryKey: ["featured-gallery", artisanId] });
+      queryClient.invalidateQueries({
+        queryKey: ["featured-gallery", artisanId],
+      });
     },
     onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update featured status",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update featured status",
         variant: "destructive",
       });
     },
@@ -89,7 +147,7 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
   const handleToggleFeatured = (imageId: string, currentStatus: boolean) => {
     if (!images) return;
 
-    const featuredCount = images.filter(img => img.is_featured).length;
+    const featuredCount = images.filter((img) => img.is_featured).length;
 
     if (!currentStatus && featuredCount >= MAX_FEATURED_IMAGES) {
       toast({
@@ -120,38 +178,42 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
     setIsDragging(false);
   };
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-      const dropped = Array.from(e.dataTransfer.files || []).filter((f) =>
-        f.type.startsWith("image/")
-      );
-      if (dropped.length === 0) return;
-      const nextFiles = [...selectedFiles, ...dropped];
-      const nextPreviews = [
-        ...previews,
-        ...dropped.map((f) => URL.createObjectURL(f)),
-      ];
-      setSelectedFiles(nextFiles);
-      setPreviews(nextPreviews);
-    },
-    [previews, selectedFiles]
-  );
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const dropped = Array.from(e.dataTransfer.files || []).filter((f) =>
+      f.type.startsWith("image/")
+    );
+    if (dropped.length === 0) return;
+
+    // Start cropping workflow
+    setPendingFiles(dropped);
+  }, []);
+
+  const handleCroppedImage = (croppedBlob: Blob) => {
+    const croppedFile = new File([croppedBlob], `gallery-${Date.now()}.jpg`, {
+      type: "image/jpeg",
+    });
+    const preview = URL.createObjectURL(croppedBlob);
+
+    setSelectedFiles([...selectedFiles, croppedFile]);
+    setPreviews([...previews, preview]);
+
+    // Next file will be processed by useEffect when cropDialog closes
+  };
 
   const handleFilePickerClick = () => fileInputRef.current?.click();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    const nextFiles = [...selectedFiles, ...files];
-    const nextPreviews = [
-      ...previews,
-      ...files.map((f) => URL.createObjectURL(f)),
-    ];
-    setSelectedFiles(nextFiles);
-    setPreviews(nextPreviews);
+
+    // Start cropping workflow (processNextFile will be triggered by useEffect)
+    setPendingFiles(files);
+
+    // Reset input
+    e.target.value = "";
   };
 
   const handleRemoveAt = (idx: number) => {
@@ -303,7 +365,8 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
           <div className="mb-4 p-3 bg-muted/50 rounded-lg">
             <p className="text-sm text-muted-foreground">
               <Star className="inline h-4 w-4 mr-1" />
-              Click the star icon to feature up to {MAX_FEATURED_IMAGES} images (shown in browse preview)
+              Click the star icon to feature up to {MAX_FEATURED_IMAGES} images
+              (shown in browse preview)
             </p>
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -322,13 +385,29 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
                   variant={image.is_featured ? "default" : "secondary"}
                   className={cn(
                     "absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity",
-                    image.is_featured && "opacity-100 bg-yellow-500 hover:bg-yellow-600"
+                    image.is_featured &&
+                      "opacity-100 bg-yellow-500 hover:bg-yellow-600"
                   )}
-                  onClick={() => handleToggleFeatured(image.id, image.is_featured)}
-                  aria-label={image.is_featured ? `Unfeature ${image.title}` : `Feature ${image.title}`}
-                  title={image.is_featured ? "Remove from featured" : "Add to featured"}
+                  onClick={() =>
+                    handleToggleFeatured(image.id, image.is_featured)
+                  }
+                  aria-label={
+                    image.is_featured
+                      ? `Unfeature ${image.title}`
+                      : `Feature ${image.title}`
+                  }
+                  title={
+                    image.is_featured
+                      ? "Remove from featured"
+                      : "Add to featured"
+                  }
                 >
-                  <Star className={cn("h-4 w-4", image.is_featured && "fill-current")} />
+                  <Star
+                    className={cn(
+                      "h-4 w-4",
+                      image.is_featured && "fill-current"
+                    )}
+                  />
                 </Button>
                 <Button
                   size="icon"
@@ -343,6 +422,14 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
           </div>
         </div>
       ) : null}
+
+      <ImageCropDialog
+        open={cropDialogOpen}
+        imageSrc={currentCropImage}
+        aspectRatio={4 / 3}
+        onCropComplete={handleCroppedImage}
+        onClose={() => setCropDialogOpen(false)}
+      />
     </div>
   );
 };
