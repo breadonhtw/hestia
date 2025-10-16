@@ -10,10 +10,10 @@ import {
   Moon,
   User,
   LogOut,
-  Images,
-  LayoutDashboard,
+  BarChart3,
   Heart,
   LogIn,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -77,14 +77,14 @@ export const PageLayout = ({ children }: PageLayoutProps) => {
           onClick: () => navigate("/profile?tab=favorites"),
         },
         {
-          label: "My Gallery",
-          Icon: <Images className="w-4 h-4" />,
-          onClick: () => navigate("/profile?tab=gallery"),
+          label: "Analytics",
+          Icon: <BarChart3 className="w-4 h-4" />,
+          onClick: () => navigate("/settings/analytics"),
         },
         {
-          label: "Artisan Dashboard",
-          Icon: <LayoutDashboard className="w-4 h-4" />,
-          onClick: () => navigate("/become-artisan"),
+          label: "Settings",
+          Icon: <SettingsIcon className="w-4 h-4" />,
+          onClick: () => navigate("/settings"),
         },
         {
           label: "Logout",
@@ -104,6 +104,11 @@ export const PageLayout = ({ children }: PageLayoutProps) => {
           label: "Favorites",
           Icon: <Heart className="w-4 h-4" />,
           onClick: () => navigate("/profile?tab=favorites"),
+        },
+        {
+          label: "Settings",
+          Icon: <SettingsIcon className="w-4 h-4" />,
+          onClick: () => navigate("/settings"),
         },
         {
           label: "Logout",
