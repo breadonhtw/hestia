@@ -8,6 +8,7 @@ import { useArtisanByUserId } from "@/hooks/useArtisans";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { BecomeArtisanBanner } from "@/components/profile/BecomeArtisanBanner";
 import { FavoritesList } from "@/components/profile/FavoritesList";
 import { Loader2 } from "lucide-react";
 
@@ -135,6 +136,9 @@ const Profile = () => {
           createdAt={profile.created_at}
           favoritesCount={favorites?.length}
         />
+
+        {/* Prominent Call-to-Action to Become Artisan */}
+        <BecomeArtisanBanner />
 
         <div className="w-full max-w-[1920px]">
           <div className="container mx-auto px-4 lg:px-8 py-8">

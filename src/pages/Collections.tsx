@@ -23,6 +23,26 @@ const Collections = () => {
             content="Explore curated collections of artisans. Discover themed groups of talented craftspeople in Singapore."
           />
           <link rel="canonical" href={`https://www.hestia.sg/collections`} />
+          <meta property="og:title" content="Curated Collections | Hestia" />
+          <meta
+            property="og:description"
+            content="Discover handpicked groups of artisans organized by theme, occasion, and specialty."
+          />
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content="https://www.hestia.sg/og-image.jpg" />
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              name: "Curated Collections",
+              url: "https://www.hestia.sg/collections",
+              description: "Explore curated collections of artisans organized by theme and specialty",
+              mainEntity: {
+                "@type": "Collection",
+                name: "Hestia Artisan Collections",
+              },
+            })}
+          </script>
         </Helmet>
 
         {/* Hero Section */}

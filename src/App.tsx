@@ -24,6 +24,7 @@ const Settings = React.lazy(() => import("./pages/Settings"));
 const SettingsAccount = React.lazy(() => import("./pages/SettingsAccount"));
 const SettingsProfile = React.lazy(() => import("./pages/SettingsProfile"));
 const SettingsAnalytics = React.lazy(() => import("./pages/SettingsAnalytics"));
+const SettingsBecomeArtisan = React.lazy(() => import("./pages/SettingsBecomeArtisan"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -62,6 +63,7 @@ const AppRoutes = () => {
           <Route path="account" element={<SettingsAccount />} />
           <Route path="profile" element={<SettingsProfile />} />
           <Route path="analytics" element={<SettingsAnalytics />} />
+          <Route path="become-artisan" element={<SettingsBecomeArtisan />} />
         </Route>
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
