@@ -62,10 +62,10 @@ DECLARE
   _errors jsonb := '[]'::jsonb;
   _artisan RECORD;
 BEGIN
-  -- Get artisan profile ID
-  SELECT artisan_profile_id INTO _artisan_id
-  FROM public.profiles
-  WHERE id = _user_id;
+  -- Get artisan profile ID by user_id (not from profiles.artisan_profile_id)
+  SELECT id INTO _artisan_id
+  FROM public.artisans
+  WHERE user_id = _user_id;
 
   IF _artisan_id IS NULL THEN
     RETURN jsonb_build_object('success', false, 'error', 'No artisan profile found');
@@ -135,10 +135,10 @@ AS $$
 DECLARE
   _artisan_id uuid;
 BEGIN
-  -- Get artisan profile ID
-  SELECT artisan_profile_id INTO _artisan_id
-  FROM public.profiles
-  WHERE id = _user_id;
+  -- Get artisan profile ID by user_id (not from profiles.artisan_profile_id)
+  SELECT id INTO _artisan_id
+  FROM public.artisans
+  WHERE user_id = _user_id;
 
   IF _artisan_id IS NULL THEN
     RETURN false;

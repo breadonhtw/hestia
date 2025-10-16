@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { UserBadges } from "./UserBadges";
 
 interface ProfileHeaderProps {
   fullName: string;
@@ -68,13 +67,6 @@ export const ProfileHeader = ({
               <div className="mt-2 flex items-center gap-2">
                 {getRoleBadge()}
               </div>
-              {/* ✅ Add badges component */}
-              <UserBadges
-                role={role}
-                createdAt={createdAt}
-                favoritesCount={favoritesCount}
-                followersCount={followersCount}
-              />
             </div>
           </div>
 

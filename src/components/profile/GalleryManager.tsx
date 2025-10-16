@@ -25,9 +25,26 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [currentCropImage, setCurrentCropImage] = useState<string>("");
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const [totalFiles, setTotalFiles] = useState(0);
 
   const processNextFile = useCallback(() => {
-    if (pendingFiles.length === 0) return;
+    if (pendingFiles.length === 0) {
+      // All files have been processed
+      if (totalFiles > 1) {
+        toast({
+          title: "Cropping complete",
+          description: `All ${totalFiles} images have been cropped and are ready for upload.`,
+        });
+      }
+      setCurrentFileIndex(0);
+      setTotalFiles(0);
+      return;
+    }
+
+    // Calculate index BEFORE taking the file out of the queue
+    const currentIndex = totalFiles - pendingFiles.length;
+    setCurrentFileIndex(currentIndex);
 
     const [nextFile, ...remaining] = pendingFiles;
     const reader = new FileReader();
@@ -37,7 +54,7 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
     };
     reader.readAsDataURL(nextFile);
     setPendingFiles(remaining);
-  }, [pendingFiles]);
+  }, [pendingFiles, totalFiles, toast]);
 
   useEffect(() => {
     return () => {
@@ -189,6 +206,8 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
 
     // Start cropping workflow
     setPendingFiles(dropped);
+    setTotalFiles(dropped.length);
+    setCurrentFileIndex(0);
   }, []);
 
   const handleCroppedImage = (croppedBlob: Blob) => {
@@ -200,7 +219,8 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
     setSelectedFiles([...selectedFiles, croppedFile]);
     setPreviews([...previews, preview]);
 
-    // Next file will be processed by useEffect when cropDialog closes
+    // Close the crop dialog and let useEffect process the next file
+    setCropDialogOpen(false);
   };
 
   const handleFilePickerClick = () => fileInputRef.current?.click();
@@ -211,6 +231,8 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
 
     // Start cropping workflow (processNextFile will be triggered by useEffect)
     setPendingFiles(files);
+    setTotalFiles(files.length);
+    setCurrentFileIndex(0);
 
     // Reset input
     e.target.value = "";
@@ -429,6 +451,11 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
         aspectRatio={4 / 3}
         onCropComplete={handleCroppedImage}
         onClose={() => setCropDialogOpen(false)}
+        title={
+          totalFiles > 1
+            ? `Crop Image ${currentFileIndex + 1} of ${totalFiles}`
+            : "Crop Image"
+        }
       />
     </div>
   );

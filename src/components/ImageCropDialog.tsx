@@ -20,6 +20,7 @@ interface ImageCropDialogProps {
   aspectRatio?: number;
   onCropComplete: (croppedImageBlob: Blob) => void;
   onClose: () => void;
+  title?: string;
 }
 
 const createImage = (url: string): Promise<HTMLImageElement> =>
@@ -30,10 +31,7 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
     image.src = url;
   });
 
-async function getCroppedImg(
-  imageSrc: string,
-  pixelCrop: Area
-): Promise<Blob> {
+async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
   const image = await createImage(imageSrc);
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -74,6 +72,7 @@ export const ImageCropDialog = ({
   aspectRatio = 1,
   onCropComplete,
   onClose,
+  title = "Crop Image",
 }: ImageCropDialogProps) => {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -114,9 +113,10 @@ export const ImageCropDialog = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Crop Image</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Adjust the crop area and zoom to select the part of the image you want to use.
+            Adjust the crop area and zoom to select the part of the image you
+            want to use.
           </DialogDescription>
         </DialogHeader>
 

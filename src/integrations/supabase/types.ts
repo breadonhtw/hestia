@@ -461,11 +461,11 @@ export type Database = {
         Returns: string;
       };
       publish_artisan_profile: {
-        Args: { _artisan_id: string; _user_id: string };
+        Args: { _user_id: string };
         Returns: Json;
       };
       unpublish_artisan_profile: {
-        Args: { _artisan_id: string; _user_id: string };
+        Args: { _user_id: string };
         Returns: boolean;
       };
     };

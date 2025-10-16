@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export interface ArtisanProfileDraft {
@@ -38,6 +39,7 @@ export interface PublishResult {
 
 export function useArtisanUpgrade() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [draftProfile, setDraftProfile] = useState<ArtisanProfileDraft | null>(
     null
@@ -226,7 +228,6 @@ export function useArtisanUpgrade() {
   const testPublishFunction = async (): Promise<boolean> => {
     try {
       const { error } = await supabase.rpc("publish_artisan_profile", {
-        _artisan_id: "00000000-0000-0000-0000-000000000000",
         _user_id: "00000000-0000-0000-0000-000000000000",
       });
 
@@ -264,7 +265,6 @@ export function useArtisanUpgrade() {
       }
 
       const { data, error } = await supabase.rpc("publish_artisan_profile", {
-        _artisan_id: artisanId,
         _user_id: user.id,
       });
 
@@ -284,6 +284,8 @@ export function useArtisanUpgrade() {
 
       if (result.success) {
         toast.success("Congratulations! Your artisan profile is now live!");
+        // Invalidate user role query so UI updates immediately
+        queryClient.invalidateQueries({ queryKey: ["userRole"] });
         return result;
       } else {
         toast.error("Please complete all required fields", {
@@ -321,7 +323,6 @@ export function useArtisanUpgrade() {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.rpc("unpublish_artisan_profile", {
-        _artisan_id: artisanId,
         _user_id: user.id,
       });
 
