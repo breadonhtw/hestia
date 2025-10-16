@@ -1,8 +1,10 @@
 import ToasterModern from "@/components/ui/toast-modern";
 import { useToastModern } from "@/hooks/use-toast-modern";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
 import React, { Suspense } from "react";
@@ -10,6 +12,7 @@ const Index = React.lazy(() => import("./pages/Index"));
 const Browse = React.lazy(() => import("./pages/Browse"));
 const Search = React.lazy(() => import("./pages/Search"));
 const CreatorProfile = React.lazy(() => import("./pages/CreatorProfile"));
+const ProfileModal = React.lazy(() => import("./pages/ProfileModal"));
 const About = React.lazy(() => import("./pages/About"));
 const Contact = React.lazy(() => import("./pages/Contact"));
 const Auth = React.lazy(() => import("./pages/Auth"));
@@ -23,9 +26,12 @@ const NotFound = React.lazy(() => import("./pages/NotFound"));
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
+  const location = useLocation();
+  const state = location.state as { backgroundLocation?: Location } | undefined;
+
   return (
-    <Suspense fallback={<div />}>
-      <Routes>
+    <Suspense fallback={<div />}>      
+      <Routes location={state?.backgroundLocation || location}>
         <Route path="/" element={<Index />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/search" element={<Search />} />
@@ -43,6 +49,13 @@ const AppRoutes = () => {
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      {state?.backgroundLocation && (
+        <Routes>
+          <Route path="/artisan/:username" element={<ProfileModal />} />
+          <Route path="/creator/:id" element={<ProfileModal />} />
+        </Routes>
+      )}
     </Suspense>
   );
 };
@@ -50,8 +63,16 @@ const AppRoutes = () => {
 const App = () => {
   const toasterRef = useToastModern();
 
+  const persister =
+    typeof window !== "undefined"
+      ? createSyncStoragePersister({ storage: window.localStorage })
+      : undefined;
+
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={persister ? { persister, maxAge: 24 * 60 * 60 * 1000 } : undefined}
+    >
       <AuthProvider>
         <TooltipProvider>
           <ToasterModern ref={toasterRef} />
@@ -61,7 +82,7 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 };
 

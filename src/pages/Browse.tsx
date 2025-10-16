@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
@@ -21,10 +22,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useArtisans } from "@/hooks/useArtisans";
+import { useArtisansInfinite } from "@/hooks/useArtisansInfinite";
+import { VirtualizedCreatorGrid } from "@/components/VirtualizedCreatorGrid";
 import { Creator } from "@/types/creator";
 import { Filter } from "lucide-react";
 const Browse = () => {
-  const { data: artisansData, isLoading } = useArtisans();
+  const { data: artisansDataAll } = useArtisans();
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useArtisansInfinite();
+  const artisansData = data?.pages.flat() || artisansDataAll || [];
+  const location = useLocation();
   const [gridVisible, setGridVisible] = useState(false);
   useEffect(() => {
     const el = document.getElementById("browse-grid");
@@ -590,30 +597,35 @@ const Browse = () => {
                   ))}
                 </div>
               ) : filteredCreators.length > 0 ? (
-                <div
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-                  id="browse-grid"
-                  style={{ contentVisibility: "auto" }}
-                >
-                  {(gridVisible
-                    ? filteredCreators
-                    : filteredCreators.slice(0, 6)
-                  ).map((creator, index) => (
-                    <div
-                      key={creator.id}
-                      className="aspect-[4/5]"
-                      onMouseEnter={prefetchCreatorProfile}
-                      onFocus={prefetchCreatorProfile}
-                    >
-                      <CreatorCard
-                        creator={creator}
-                        index={index}
-                        onClick={() => setSelectedCreator(creator)}
-                        isPlaceholder={selectedCreator?.id === creator.id}
-                        variant="expanded"
-                      />
-                    </div>
-                  ))}
+                <div id="browse-grid" style={{ contentVisibility: "auto" }}>
+                  <VirtualizedCreatorGrid
+                    creators={gridVisible ? filteredCreators : filteredCreators.slice(0, 12)}
+                    renderCard={(creator, index) => (
+                      <div
+                        key={creator.id}
+                        className="aspect-[4/5]"
+                        onMouseEnter={prefetchCreatorProfile}
+                        onFocus={prefetchCreatorProfile}
+                      >
+                        <Link
+                          to={`/artisan/${creator.username ?? creator.id}`}
+                          state={{ backgroundLocation: location }}
+                        >
+                          <CreatorCard
+                            creator={creator}
+                            index={index}
+                            isPlaceholder={selectedCreator?.id === creator.id}
+                            variant="expanded"
+                          />
+                        </Link>
+                      </div>
+                    )}
+                    onEndReached={() => {
+                      if (hasNextPage && !isFetchingNextPage) {
+                        fetchNextPage();
+                      }
+                    }}
+                  />
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
