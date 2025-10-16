@@ -15,6 +15,9 @@ const Contact = React.lazy(() => import("./pages/Contact"));
 const Auth = React.lazy(() => import("./pages/Auth"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const ArtisanUpgrade = React.lazy(() => import("./pages/ArtisanUpgrade"));
+const Settings = React.lazy(() => import("./pages/Settings"));
+const SettingsAccount = React.lazy(() => import("./pages/SettingsAccount"));
+const SettingsProfile = React.lazy(() => import("./pages/SettingsProfile"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -33,6 +36,10 @@ const AppRoutes = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/become-artisan" element={<ArtisanUpgrade />} />
+        <Route path="/settings" element={<Settings />}>
+          <Route path="account" element={<SettingsAccount />} />
+          <Route path="profile" element={<SettingsProfile />} />
+        </Route>
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
