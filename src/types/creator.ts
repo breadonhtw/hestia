@@ -1,3 +1,13 @@
+export interface BadgeData {
+  badge_key: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  awarded_at: string;
+  metadata?: any;
+}
+
 export interface Creator {
   id: string;
   name: string;
@@ -12,6 +22,7 @@ export interface Creator {
   instagram?: string;
   email?: string;
   username?: string;
+  badges?: BadgeData[];
 }
 
 export interface Work {

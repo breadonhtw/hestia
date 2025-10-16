@@ -8,6 +8,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { ArtisanBadges } from "@/components/artisan/ArtisanBadge";
 
 interface CreatorCardProps {
   creator: Creator;
@@ -157,6 +158,11 @@ export const CreatorCard = ({
           <Badge className="bg-secondary text-white text-xs rounded-full px-3 py-1">
             {creator.craftType}
           </Badge>
+          {creator.badges && creator.badges.length > 0 && (
+            <div className="flex justify-center">
+              <ArtisanBadges badges={creator.badges} size="sm" maxDisplay={3} />
+            </div>
+          )}
           <p className="text-sm flex items-center justify-center gap-1 text-[#7A8A86] dark:text-[#C4B5A5]">
             <MapPin className="h-3 w-3" style={{ color: "#B8976A" }} />
             {creator.location}
@@ -230,6 +236,11 @@ export const CreatorCard = ({
         <Badge className="bg-secondary text-white text-sm rounded-full px-4 py-1.5">
           {creator.craftType}
         </Badge>
+        {creator.badges && creator.badges.length > 0 && (
+          <div className="flex justify-center">
+            <ArtisanBadges badges={creator.badges} size="md" maxDisplay={4} />
+          </div>
+        )}
         <p className="text-sm flex items-center justify-center gap-1.5 text-[#7A8A86] dark:text-[#C4B5A5]">
           <MapPin className="h-4 w-4" style={{ color: "#B8976A" }} />
           {creator.location}

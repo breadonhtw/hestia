@@ -5,7 +5,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2, User, UserCircle } from "lucide-react";
+import { Search, Loader2, User, UserCircle, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Settings = () => {
@@ -63,6 +63,13 @@ const Settings = () => {
             path: "/settings/profile",
             icon: UserCircle,
             description: "Edit your profile information and gallery",
+          },
+          {
+            id: "analytics",
+            label: "Analytics",
+            path: "/settings/analytics",
+            icon: BarChart3,
+            description: "Track your profile performance and engagement metrics",
           },
         ]
       : []),
