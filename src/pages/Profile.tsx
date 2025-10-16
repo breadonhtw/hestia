@@ -4,16 +4,19 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useArtisanByUserId } from "@/hooks/useArtisans";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { EditCommunityForm } from "@/components/profile/EditCommunityForm";
-import { EditArtisanForm } from "@/components/profile/EditArtisanForm";
+import { FavoritesList } from "@/components/profile/FavoritesList";
 import { Loader2 } from "lucide-react";
 
 const Profile = () => {
   const { user, loading: authLoading } = useAuth();
   const { role, isLoading: roleLoading } = useUserRole();
+  const { data: artisanData, isLoading: artisanLoading } = useArtisanByUserId(
+    user?.id || ""
+  );
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -71,7 +74,19 @@ const Profile = () => {
     }
   }, [user, authLoading, navigate]);
 
-  if (authLoading || roleLoading || profileLoading) {
+  // Redirect artisans to their public profile using artisan ID
+  useEffect(() => {
+    if (
+      !roleLoading &&
+      !artisanLoading &&
+      role === "artisan" &&
+      artisanData?.id
+    ) {
+      navigate(`/creator/${artisanData.id}`, { replace: true });
+    }
+  }, [role, roleLoading, artisanLoading, artisanData?.id, navigate]);
+
+  if (authLoading || roleLoading || profileLoading || artisanLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -106,7 +121,8 @@ const Profile = () => {
     );
   }
 
-  try {
+  // Community users see their favorites
+  if (role !== "artisan") {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -123,18 +139,7 @@ const Profile = () => {
         <div className="w-full max-w-[1920px]">
           <div className="container mx-auto px-4 lg:px-8 py-8">
             <div className="w-full max-w-4xl mx-auto space-y-6">
-              {role === "artisan" ? (
-                <EditArtisanForm
-                  fullName={profile.full_name}
-                  avatarUrl={profile.avatar_url}
-                />
-              ) : (
-                <EditCommunityForm
-                  displayName={profile.full_name}
-                  avatarUrl={profile.avatar_url}
-                  isArtisan={(role as string) === "artisan"}
-                />
-              )}
+              <FavoritesList />
             </div>
           </div>
         </div>
@@ -142,26 +147,10 @@ const Profile = () => {
         <Footer />
       </div>
     );
-  } catch (error) {
-    console.error("Profile component error:", error);
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="flex items-center justify-center h-[60vh]">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">Profile Error</h2>
-            <p className="text-muted-foreground">
-              Something went wrong loading your profile.
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Error: {error instanceof Error ? error.message : "Unknown error"}
-            </p>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
   }
+
+  // Artisans will be redirected to their public profile
+  return null;
 };
 
 export default Profile;

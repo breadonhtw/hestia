@@ -1,10 +1,10 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { PageLayout } from "@/components/PageLayout";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CreatorCard } from "@/components/CreatorCard";
-import { MapPin, Instagram, Globe, Loader2 } from "lucide-react";
+import { MapPin, Instagram, Globe, Loader2, Edit } from "lucide-react";
 import { sanitizeUrl, sanitizeInstagramHandle } from "@/lib/sanitize";
 import {
   useArtisanById,
@@ -13,9 +13,12 @@ import {
   useGalleryImages,
 } from "@/hooks/useArtisans";
 import type { Creator } from "@/types/creator";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CreatorProfile = () => {
   const { id, username } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Fetch the specific artisan
   const { data: artisanById, isLoading: isLoadingById } = useArtisanById(
@@ -95,6 +98,9 @@ const CreatorProfile = () => {
       featured: a.featured || false,
     }));
 
+  // Check if viewing own profile (compare user.id with artisan.user_id, not artisan.id)
+  const isOwnProfile = user?.id === artisan.user_id;
+
   return (
     <PageLayout>
       <div className="w-full max-w-[1920px]">
@@ -159,8 +165,18 @@ const CreatorProfile = () => {
               </div>
             </div>
 
-            {/* Social Links */}
+            {/* Social Links and Edit Button */}
             <div className="absolute top-8 right-8 flex gap-3">
+              {isOwnProfile && (
+                <Button
+                  onClick={() => navigate("/settings/profile")}
+                  className="flex items-center gap-2 shadow-soft"
+                  size="sm"
+                >
+                  <Edit className="h-4 w-4" />
+                  Edit Profile
+                </Button>
+              )}
               {creator.instagram && (
                 <a
                   href={`https://instagram.com/${sanitizeInstagramHandle(
@@ -203,7 +219,8 @@ const CreatorProfile = () => {
                 </p>
               )}
             </div>
-          </div>        </section>
+          </div>{" "}
+        </section>
 
         {/* Gallery Section */}
         {galleryImages && galleryImages.length > 0 && (

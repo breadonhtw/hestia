@@ -92,3 +92,22 @@ export const useArtisanByUsername = (username: string) => {
     enabled: !!username,
   });
 };
+
+export const useArtisanByUserId = (userId: string) => {
+  return useQuery({
+    queryKey: ["artisan-by-user-id", userId],
+    queryFn: async () => {
+      // Query the public VIEW to get artisan by user_id
+      const { data, error } = await supabase
+        .from("artisans_public")
+        .select("id, user_id")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes - this doesn't change often
+  });
+};

@@ -12,9 +12,11 @@ import {
   LayoutDashboard,
   Heart,
   LogIn,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useArtisanByUserId } from "@/hooks/useArtisans";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +35,7 @@ export const Header = () => {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { isArtisan } = useUserRole();
+  const { data: artisanData } = useArtisanByUserId(user?.id || "");
   const isProfilePage = location.pathname === "/profile";
 
   useEffect(() => {
@@ -72,7 +75,15 @@ export const Header = () => {
         {
           label: "Profile",
           Icon: <User className="w-4 h-4" />,
-          onClick: () => navigate("/profile"),
+          onClick: () => {
+            // Navigate to artisan profile using artisan ID, not user ID
+            if (artisanData?.id) {
+              navigate(`/creator/${artisanData.id}`);
+            } else {
+              // Fallback to /profile if artisan data not loaded yet
+              navigate("/profile");
+            }
+          },
         },
         {
           label: "Favorites",
@@ -88,6 +99,11 @@ export const Header = () => {
           label: "Artisan Dashboard",
           Icon: <LayoutDashboard className="w-4 h-4" />,
           onClick: () => navigate("/become-artisan"),
+        },
+        {
+          label: "Settings",
+          Icon: <SettingsIcon className="w-4 h-4" />,
+          onClick: () => navigate("/settings"),
         },
         {
           label: "Logout",
@@ -107,6 +123,11 @@ export const Header = () => {
           label: "Favorites",
           Icon: <Heart className="w-4 h-4" />,
           onClick: () => navigate("/profile?tab=favorites"),
+        },
+        {
+          label: "Settings",
+          Icon: <SettingsIcon className="w-4 h-4" />,
+          onClick: () => navigate("/settings"),
         },
         {
           label: "Logout",
