@@ -319,7 +319,6 @@ export type Database = {
           role: Database["public"]["Enums"]["app_role"];
           updated_at: string;
           username: string | null;
-          artisan_profile_id: string | null;
         };
         Insert: {
           avatar_url?: string | null;
@@ -329,7 +328,6 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"];
           updated_at?: string;
           username?: string | null;
-          artisan_profile_id?: string | null;
         };
         Update: {
           avatar_url?: string | null;
@@ -339,41 +337,8 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"];
           updated_at?: string;
           username?: string | null;
-          artisan_profile_id?: string | null;
         };
         Relationships: [];
-      };
-      user_roles: {
-        Row: {
-          id: string;
-          user_id: string;
-          role: Database["public"]["Enums"]["app_role"];
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          role?: Database["public"]["Enums"]["app_role"];
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          role?: Database["public"]["Enums"]["app_role"];
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_user_id_fkey";
-            columns: ["user_id"];
-            isOneToOne: true;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          }
-        ];
       };
       user_favorites: {
         Row: {
