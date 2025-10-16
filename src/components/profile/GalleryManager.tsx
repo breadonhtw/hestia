@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ImagePlus, X, Upload as UploadIcon, Trash2, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { MAX_FEATURED_IMAGES } from "@/constants/gallery";
 
 interface GalleryManagerProps {
   artisanId: string;
@@ -74,15 +75,33 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gallery", artisanId] });
+      queryClient.invalidateQueries({ queryKey: ["featured-gallery", artisanId] });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to update featured status",
+        description: error instanceof Error ? error.message : "Failed to update featured status",
         variant: "destructive",
       });
     },
   });
+
+  const handleToggleFeatured = (imageId: string, currentStatus: boolean) => {
+    if (!images) return;
+
+    const featuredCount = images.filter(img => img.is_featured).length;
+
+    if (!currentStatus && featuredCount >= MAX_FEATURED_IMAGES) {
+      toast({
+        title: "Featured limit reached",
+        description: `You can only feature ${MAX_FEATURED_IMAGES} images. Please unfeature an existing image first.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toggleFeatured.mutate({ imageId, isFeatured: !currentStatus });
+  };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -284,7 +303,7 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
           <div className="mb-4 p-3 bg-muted/50 rounded-lg">
             <p className="text-sm text-muted-foreground">
               <Star className="inline h-4 w-4 mr-1" />
-              Click the star icon to feature up to 3 images (shown in browse preview)
+              Click the star icon to feature up to {MAX_FEATURED_IMAGES} images (shown in browse preview)
             </p>
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -305,7 +324,9 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
                     "absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity",
                     image.is_featured && "opacity-100 bg-yellow-500 hover:bg-yellow-600"
                   )}
-                  onClick={() => toggleFeatured.mutate({ imageId: image.id, isFeatured: !image.is_featured })}
+                  onClick={() => handleToggleFeatured(image.id, image.is_featured)}
+                  aria-label={image.is_featured ? `Unfeature ${image.title}` : `Feature ${image.title}`}
+                  title={image.is_featured ? "Remove from featured" : "Add to featured"}
                 >
                   <Star className={cn("h-4 w-4", image.is_featured && "fill-current")} />
                 </Button>

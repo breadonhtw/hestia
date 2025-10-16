@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { X, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, ArrowRight, Loader2, ImageOff } from "lucide-react";
 import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,8 @@ interface CreatorOverlayProps {
 export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
-  const { data: featuredImages } = useFeaturedGalleryImages(creator.id);
+  const { data: featuredImages, isLoading: loadingFeatured } = useFeaturedGalleryImages(creator.id);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
   // Handle ESC key
   useEffect(() => {
@@ -40,6 +41,10 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
   };
   const handleViewProfile = () => {
     navigate(`/creator/${creator.id}`);
+  };
+
+  const handleImageError = (imageId: string) => {
+    setImageErrors(prev => new Set([...prev, imageId]));
   };
   return (
     <>
@@ -139,7 +144,11 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
 
         {/* Featured Works Section */}
         <div className="px-2">
-          {featuredImages && featuredImages.length > 0 ? (
+          {loadingFeatured ? (
+            <div className="flex justify-center p-6">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : featuredImages && featuredImages.length > 0 ? (
             <>
               <h4 className="featured-works-heading text-center text-lg mb-4 font-semibold uppercase tracking-wider text-yellow-500">
                 Featured Works
@@ -150,7 +159,7 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
                 {featuredImages.map((image, idx) => (
                   <div
                     key={image.id}
-                    className="work-thumbnail w-[110px] h-[110px] rounded-xl overflow-hidden"
+                    className="work-thumbnail w-[110px] h-[110px] rounded-xl overflow-hidden bg-muted"
                     style={{
                       animationDelay: `${idx * 0.1}s`,
                     }}
@@ -158,15 +167,22 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
                     role="button"
                     aria-label={`View ${image.title}`}
                   >
-                    <img
-                      src={image.image_url}
-                      alt={image.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                      width={110}
-                      height={110}
-                    />
+                    {imageErrors.has(image.id) ? (
+                      <div className="w-full h-full flex items-center justify-center bg-muted">
+                        <ImageOff className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    ) : (
+                      <img
+                        src={image.image_url}
+                        alt={image.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        width={110}
+                        height={110}
+                        onError={() => handleImageError(image.id)}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
