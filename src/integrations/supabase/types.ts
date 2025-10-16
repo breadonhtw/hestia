@@ -271,6 +271,7 @@ export type Database = {
           id: string;
           image_url: string;
           title: string;
+          is_featured: boolean;
         };
         Insert: {
           artisan_id: string;
@@ -280,6 +281,7 @@ export type Database = {
           id?: string;
           image_url: string;
           title: string;
+          is_featured?: boolean;
         };
         Update: {
           artisan_id?: string;
@@ -289,6 +291,7 @@ export type Database = {
           id?: string;
           image_url?: string;
           title?: string;
+          is_featured?: boolean;
         };
         Relationships: [
           {

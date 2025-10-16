@@ -10,6 +10,7 @@ import {
   useArtisanById,
   useArtisanByUsername,
   useArtisans,
+  useGalleryImages,
 } from "@/hooks/useArtisans";
 import type { Creator } from "@/types/creator";
 
@@ -25,6 +26,9 @@ const CreatorProfile = () => {
 
   const artisan = artisanById ?? artisanByUsername;
   const isLoading = isLoadingById || isLoadingByUsername;
+
+  // Fetch gallery images for this artisan
+  const { data: galleryImages } = useGalleryImages(artisan?.id || "");
 
   // Fetch all artisans for "similar creators"
   const { data: allArtisans } = useArtisans();
@@ -188,17 +192,50 @@ const CreatorProfile = () => {
           <h2 className="font-serif text-3xl font-bold text-foreground mb-6">
             About {creator.name.split(" ")[0]}
           </h2>
-          <div className="prose prose-lg max-w-none">
-            <p className="text-lg text-foreground leading-relaxed mb-6">
-              {creator.bio}
-            </p>
-            {creator.story && (
-              <p className="text-lg text-foreground leading-relaxed">
-                {creator.story}
+          <div className="bg-[#F5F0E8] dark:bg-[rgba(245,240,232,0.08)] rounded-xl p-8 border border-[rgba(160,97,58,0.1)] dark:border-[rgba(245,240,232,0.1)] shadow-soft">
+            <div className="prose prose-lg max-w-none">
+              <p className="text-lg text-[#2A5A54] dark:text-[#E8DFD3] leading-relaxed mb-6">
+                {creator.bio}
               </p>
-            )}
+              {creator.story && (
+                <p className="text-lg text-[#2A5A54] dark:text-[#E8DFD3] leading-relaxed">
+                  {creator.story}
+                </p>
+              )}
+            </div>
           </div>
         </section>
+
+        {/* Gallery Section */}
+        {galleryImages && galleryImages.length > 0 && (
+          <section className="container mx-auto px-4 lg:px-8 py-16">
+            <h2 className="font-serif text-3xl font-bold text-foreground mb-8">
+              Gallery
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {galleryImages.map((image) => (
+                <div
+                  key={image.id}
+                  className="relative aspect-square rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-shadow"
+                >
+                  <img
+                    src={image.image_url}
+                    alt={image.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  {image.is_featured && (
+                    <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                      <span>★</span>
+                      <span>Featured</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Similar Creators */}
         {similarCreators.length > 0 && (

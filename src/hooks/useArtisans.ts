@@ -19,6 +19,42 @@ export const useArtisans = () => {
   });
 };
 
+export const useFeaturedGalleryImages = (artisanId: string) => {
+  return useQuery({
+    queryKey: ["featured-gallery", artisanId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("gallery_images")
+        .select("*")
+        .eq("artisan_id", artisanId)
+        .eq("is_featured", true)
+        .order("display_order", { ascending: true })
+        .limit(3);
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!artisanId,
+  });
+};
+
+export const useGalleryImages = (artisanId: string) => {
+  return useQuery({
+    queryKey: ["gallery", artisanId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("gallery_images")
+        .select("*")
+        .eq("artisan_id", artisanId)
+        .order("display_order", { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!artisanId,
+  });
+};
+
 export const useArtisanById = (id: string) => {
   return useQuery({
     queryKey: ["artisan-public", id],

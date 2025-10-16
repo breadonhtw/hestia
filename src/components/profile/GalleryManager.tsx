@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { uploadGalleryImage, deleteGalleryImage } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ImagePlus, X, Upload as UploadIcon, Trash2 } from "lucide-react";
+import { ImagePlus, X, Upload as UploadIcon, Trash2, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -59,6 +59,27 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
       toast({
         title: "Image deleted",
         description: "Gallery image has been removed.",
+      });
+    },
+  });
+
+  const toggleFeatured = useMutation({
+    mutationFn: async ({ imageId, isFeatured }: { imageId: string; isFeatured: boolean }) => {
+      const { error } = await supabase
+        .from("gallery_images")
+        .update({ is_featured: isFeatured })
+        .eq("id", imageId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["gallery", artisanId] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update featured status",
+        variant: "destructive",
       });
     },
   });
@@ -259,24 +280,46 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
           <UploadIcon className="h-8 w-8 animate-spin" />
         </div>
       ) : images && images.length > 0 ? (
-        <div className="grid grid-cols-3 gap-4">
-          {images.map((image) => (
-            <div key={image.id} className="relative group">
-              <img
-                src={image.image_url}
-                alt={image.title}
-                className="w-full aspect-square object-cover rounded-lg"
-              />
-              <Button
-                size="icon"
-                variant="destructive"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => deleteImage.mutate(image.id)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
+        <div>
+          <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+            <p className="text-sm text-muted-foreground">
+              <Star className="inline h-4 w-4 mr-1" />
+              Click the star icon to feature up to 3 images (shown in browse preview)
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {images.map((image) => (
+              <div key={image.id} className="relative group">
+                <img
+                  src={image.image_url}
+                  alt={image.title}
+                  className={cn(
+                    "w-full aspect-square object-cover rounded-lg",
+                    image.is_featured && "ring-2 ring-yellow-500"
+                  )}
+                />
+                <Button
+                  size="icon"
+                  variant={image.is_featured ? "default" : "secondary"}
+                  className={cn(
+                    "absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity",
+                    image.is_featured && "opacity-100 bg-yellow-500 hover:bg-yellow-600"
+                  )}
+                  onClick={() => toggleFeatured.mutate({ imageId: image.id, isFeatured: !image.is_featured })}
+                >
+                  <Star className={cn("h-4 w-4", image.is_featured && "fill-current")} />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => deleteImage.mutate(image.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
     </div>

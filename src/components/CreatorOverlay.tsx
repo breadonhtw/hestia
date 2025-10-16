@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useNavigate } from "react-router-dom";
+import { useFeaturedGalleryImages } from "@/hooks/useArtisans";
 interface CreatorOverlayProps {
   creator: Creator;
   onClose: () => void;
@@ -13,6 +14,7 @@ interface CreatorOverlayProps {
 export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
+  const { data: featuredImages } = useFeaturedGalleryImages(creator.id);
 
   // Handle ESC key
   useEffect(() => {
@@ -137,35 +139,43 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
 
         {/* Featured Works Section */}
         <div className="px-2">
-          <h4 className="featured-works-heading text-center text-lg mb-4 font-semibold uppercase tracking-wider text-yellow-500">
-            Featured Works
-          </h4>
+          {featuredImages && featuredImages.length > 0 ? (
+            <>
+              <h4 className="featured-works-heading text-center text-lg mb-4 font-semibold uppercase tracking-wider text-yellow-500">
+                Featured Works
+              </h4>
 
-          {/* Work Thumbnails */}
-          <div className="flex justify-center gap-3 mb-6">
-            {creator.works.slice(0, 3).map((work, idx) => (
-              <div
-                key={work.title}
-                className="work-thumbnail w-[110px] h-[110px] rounded-xl overflow-hidden"
-                style={{
-                  animationDelay: `${idx * 0.1}s`,
-                }}
-                tabIndex={0}
-                role="button"
-                aria-label={`View ${work.title}`}
-              >
-                <img
-                  src={work.image}
-                  alt={work.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                  width={110}
-                  height={110}
-                />
+              {/* Work Thumbnails */}
+              <div className="flex justify-center gap-3 mb-6">
+                {featuredImages.map((image, idx) => (
+                  <div
+                    key={image.id}
+                    className="work-thumbnail w-[110px] h-[110px] rounded-xl overflow-hidden"
+                    style={{
+                      animationDelay: `${idx * 0.1}s`,
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View ${image.title}`}
+                  >
+                    <img
+                      src={image.image_url}
+                      alt={image.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      width={110}
+                      height={110}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <div className="text-center text-sm text-muted-foreground mb-6 p-4">
+              No featured works yet
+            </div>
+          )}
 
           {/* View Full Profile Button */}
           <Button
