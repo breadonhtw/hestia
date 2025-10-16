@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
+// Lazy-load analytics only in production to avoid affecting TTI/LCP
+let Analytics: React.ComponentType | null = null;
+let SpeedInsights: React.ComponentType | null = null;
 import App from "./App.tsx";
 import "./index.css";
 
@@ -46,10 +47,33 @@ const isProdHost =
   typeof window !== "undefined" &&
   /(?:^|\.)hestia\.sg$/.test(window.location.hostname);
 
-createRoot(document.getElementById("root")!).render(
-  <>
-    <App />
-    {isProdHost && <Analytics />}
-    {isProdHost && <SpeedInsights />}
-  </>
-);
+if (isProdHost) {
+  // Defer importing analytics until after first paint
+  queueMicrotask(async () => {
+    try {
+      const [{ Analytics: A }, { SpeedInsights: S }] = await Promise.all([
+        import("@vercel/analytics/react"),
+        import("@vercel/speed-insights/react"),
+      ]);
+      Analytics = A as any;
+      SpeedInsights = S as any;
+      // Re-render to attach analytics components
+      render();
+    } catch {}
+  });
+}
+
+function render() {
+  const rootEl = document.getElementById("root")!;
+  const RootAnalytics = Analytics;
+  const RootSpeed = SpeedInsights;
+  createRoot(rootEl).render(
+    <>
+      <App />
+      {isProdHost && RootAnalytics ? <RootAnalytics /> : null}
+      {isProdHost && RootSpeed ? <RootSpeed /> : null}
+    </>
+  );
+}
+
+render();

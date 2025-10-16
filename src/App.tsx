@@ -20,7 +20,18 @@ const SettingsAccount = React.lazy(() => import("./pages/SettingsAccount"));
 const SettingsProfile = React.lazy(() => import("./pages/SettingsProfile"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Cache longer to minimize refetches across navigations
+      staleTime: 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: "always",
+      retry: 1,
+    },
+  },
+});
 
 const AppRoutes = () => {
   return (

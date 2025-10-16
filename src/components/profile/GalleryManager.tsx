@@ -341,6 +341,8 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
                   src={src}
                   alt={`Preview ${idx + 1}`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <button
                   type="button"
@@ -401,6 +403,8 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
                     "w-full aspect-square object-cover rounded-lg",
                     image.is_featured && "ring-2 ring-yellow-500"
                   )}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <Button
                   size="icon"
