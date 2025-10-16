@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
+import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
 import { PageLayout } from "@/components/PageLayout";
@@ -21,26 +22,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useArtisans } from "@/hooks/useArtisans";
+import { useArtisansInfinite } from "@/hooks/useArtisansInfinite";
 import { Creator } from "@/types/creator";
 import { Filter } from "lucide-react";
 const Browse = () => {
-  const { data: artisansData, isLoading } = useArtisans();
-  const [gridVisible, setGridVisible] = useState(false);
-  useEffect(() => {
-    const el = document.getElementById("browse-grid");
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setGridVisible(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const { data: artisansDataAll } = useArtisans();
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useArtisansInfinite();
+  const artisansData = data?.pages.flat() || artisansDataAll || [];
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   // Pending filters (what user is selecting)
@@ -590,31 +580,34 @@ const Browse = () => {
                   ))}
                 </div>
               ) : filteredCreators.length > 0 ? (
-                <div
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-                  id="browse-grid"
-                  style={{ contentVisibility: "auto" }}
-                >
-                  {(gridVisible
-                    ? filteredCreators
-                    : filteredCreators.slice(0, 6)
-                  ).map((creator, index) => (
-                    <div
-                      key={creator.id}
-                      className="aspect-[4/5]"
-                      onMouseEnter={prefetchCreatorProfile}
-                      onFocus={prefetchCreatorProfile}
-                    >
-                      <CreatorCard
-                        creator={creator}
-                        index={index}
-                        onClick={() => setSelectedCreator(creator)}
-                        isPlaceholder={selectedCreator?.id === creator.id}
-                        variant="expanded"
-                      />
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {filteredCreators.map((creator, index) => (
+                      <div key={creator.id} className="aspect-[4/5]">
+                        <CreatorCard
+                          creator={creator}
+                          index={index}
+                          isPlaceholder={selectedCreator?.id === creator.id}
+                          variant="expanded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Load More Button */}
+                  {hasNextPage && (
+                    <div className="flex justify-center mt-12">
+                      <Button
+                        onClick={() => fetchNextPage()}
+                        disabled={isFetchingNextPage}
+                        size="lg"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      >
+                        {isFetchingNextPage ? "Loading..." : "Load More"}
+                      </Button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {[1, 2, 3, 4, 5, 6].map((i) => (

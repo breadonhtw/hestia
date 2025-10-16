@@ -1,14 +1,18 @@
 import { useMemo, useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { MapPin, Heart } from "lucide-react";
 import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFavorites } from "@/hooks/useFavorites";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreatorCardProps {
   creator: Creator;
   index?: number;
-  onClick: () => void;
+  onClick?: () => void;
   isPlaceholder?: boolean;
   variant?: "compact" | "expanded";
 }
@@ -20,11 +24,49 @@ export const CreatorCard = ({
   isPlaceholder = false,
   variant = "compact",
 }: CreatorCardProps) => {
+  const location = useLocation();
   // Memoize derived values to avoid recalculation on parent renders
   const baseRotation = useMemo(() => ((index % 3) - 1) * 1.5, [index]);
   const [isHovered, setIsHovered] = useState(false);
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isAnimating, setIsAnimating] = useState(false);
+  const queryClient = useQueryClient();
+
+  const profilePath = creator.username
+    ? `/artisan/${creator.username}`
+    : `/creator/${creator.id}`;
+
+  const prefetchProfile = () => {
+    if (creator.username) {
+      queryClient.prefetchQuery({
+        queryKey: ["artisan-public-username", creator.username],
+        queryFn: async () => {
+          const { data, error } = await supabase
+            .from("artisans_public")
+            .select("*")
+            .eq("username", creator.username!)
+            .maybeSingle();
+          if (error) throw error;
+          return data;
+        },
+        staleTime: 10 * 60 * 1000,
+      });
+    } else {
+      queryClient.prefetchQuery({
+        queryKey: ["artisan-public", creator.id],
+        queryFn: async () => {
+          const { data, error } = await supabase
+            .from("artisans_public")
+            .select("*")
+            .eq("id", creator.id)
+            .maybeSingle();
+          if (error) throw error;
+          return data;
+        },
+        staleTime: 10 * 60 * 1000,
+      });
+    }
+  };
 
   // Check if artisan is newly joined (within 30 days)
   const isNew =
@@ -50,8 +92,16 @@ export const CreatorCard = ({
 
   if (variant === "compact") {
     return (
-      <div
-        className={`creator-card relative bg-[#F5F0E8] dark:bg-[#2A5A54] rounded-[20px] p-6 transition-all duration-300 cursor-pointer ${
+      <Link
+        to={profilePath}
+        state={{ backgroundLocation: location }}
+        onMouseEnter={() => {
+          handleMouseEnter();
+          prefetchProfile();
+        }}
+        onMouseLeave={handleMouseLeave}
+        onFocus={prefetchProfile}
+        className={`creator-card relative bg-[#F5F0E8] dark:bg-[#2A5A54] rounded-[20px] p-6 transition-all duration-300 cursor-pointer block ${
           isPlaceholder ? "dimmed-placeholder" : isHovered ? "hovered" : ""
         }`}
         style={{
@@ -62,9 +112,6 @@ export const CreatorCard = ({
             ? "0 6px 20px rgba(184, 151, 106, 0.3)"
             : "0 2px 12px rgba(0, 0, 0, 0.08)",
         }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={onClick}
       >
         {/* New Badge */}
         {isNew && (
@@ -92,13 +139,10 @@ export const CreatorCard = ({
         {/* Creator Photo */}
         <div className="mb-4 flex justify-center">
           <div className="relative w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-primary/10">
-          <img
+            <OptimizedImage
               src={creator.image}
               alt={creator.name}
               className="w-full h-full object-cover"
-            loading="lazy"
-            decoding="async"
-            fetchPriority="low"
               width={120}
               height={120}
             />
@@ -118,13 +162,21 @@ export const CreatorCard = ({
             {creator.location}
           </p>
         </div>
-      </div>
+      </Link>
     );
   }
 
   return (
-    <div
-      className={`creator-card group relative bg-[#F5F0E8] dark:bg-[#2A5A54] rounded-[20px] p-8 transition-all duration-300 cursor-pointer ${
+    <Link
+      to={profilePath}
+      state={{ backgroundLocation: location }}
+      onMouseEnter={() => {
+        handleMouseEnter();
+        prefetchProfile();
+      }}
+      onMouseLeave={handleMouseLeave}
+      onFocus={prefetchProfile}
+      className={`creator-card group relative bg-[#F5F0E8] dark:bg-[#2A5A54] rounded-[20px] p-8 transition-all duration-300 cursor-pointer block ${
         isPlaceholder ? "dimmed-placeholder" : isHovered ? "hovered" : ""
       }`}
       style={{
@@ -133,9 +185,6 @@ export const CreatorCard = ({
           ? "0 8px 24px rgba(184, 151, 106, 0.4)"
           : "0 2px 12px rgba(0, 0, 0, 0.08)",
       }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={onClick}
     >
       {/* New Badge */}
       {isNew && (
@@ -163,11 +212,10 @@ export const CreatorCard = ({
       {/* Creator Photo - Larger */}
       <div className="mb-6 flex justify-center">
         <div className="relative w-[160px] h-[160px] rounded-full overflow-hidden border-4 border-primary/10 shadow-md">
-          <img
+          <OptimizedImage
             src={creator.image}
             alt={creator.name}
             className="w-full h-full object-cover"
-            loading="lazy"
             width={160}
             height={160}
           />
@@ -233,6 +281,6 @@ export const CreatorCard = ({
           Click to view full profile →
         </span>
       </div>
-    </div>
+    </Link>
   );
 };

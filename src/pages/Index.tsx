@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   ChevronDown,
@@ -29,6 +29,7 @@ import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
   const { data: artisansData, isLoading } = useArtisans();
+  const location = useLocation();
   const [showEffects, setShowEffects] = useState(false);
   const [FloatingOrbsComp, setFloatingOrbsComp] = useState<
     null | ((props: any) => JSX.Element)
@@ -324,17 +325,10 @@ const Index = () => {
                   <SkeletonCard key={index} />
                 ))
               : exploreCreators.map((creator, index) => (
-                  <div
-                    key={creator.id}
-                    onMouseEnter={prefetchCreatorProfile}
-                    onFocus={prefetchCreatorProfile}
-                  >
+                  <div key={creator.id}>
                     <CreatorCard
                       creator={creator}
                       index={index}
-                      onClick={() =>
-                        (window.location.href = `/creator/${creator.id}`)
-                      }
                       variant="compact"
                     />
                   </div>

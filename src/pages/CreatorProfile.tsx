@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CreatorCard } from "@/components/CreatorCard";
 import { MapPin, Instagram, Globe, Loader2, Edit } from "lucide-react";
+import { OptimizedImage } from "@/components/OptimizedImage";
 import { sanitizeUrl, sanitizeInstagramHandle } from "@/lib/sanitize";
 import {
   useArtisanById,
@@ -137,14 +138,12 @@ const CreatorProfile = () => {
             <div className="flex flex-col md:flex-row items-start md:items-end gap-6">
               {/* Creator Photo */}
               <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-background shadow-lift -mb-20 md:-mb-8">
-                <img
+                <OptimizedImage
                   src={creator.image}
                   alt={creator.name}
                   className="w-full h-full object-cover"
                   width={160}
                   height={160}
-                  loading="lazy"
-                  decoding="async"
                 />
               </div>
 
