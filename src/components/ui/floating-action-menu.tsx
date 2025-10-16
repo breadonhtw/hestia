@@ -32,7 +32,7 @@ const FloatingActionMenu = ({
       {isFixed ? (
         <button
           onClick={toggleMenu}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-background/80 backdrop-blur-lg border border-border shadow-lg flex items-center justify-center hover:bg-primary/10 transition-all hover:scale-110 touch-manipulation"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-background/80 backdrop-blur-lg border border-border shadow-lg flex items-center justify-center hover:bg-primary/10 transition-all hover:scale-110 touch-manipulation"
           aria-label="User Menu"
         >
           <motion.div
@@ -53,7 +53,7 @@ const FloatingActionMenu = ({
           onClick={toggleMenu}
           variant="ghost"
           size="icon"
-          className="rounded-full hover:bg-primary/10 w-9 h-9 sm:w-10 sm:h-10 touch-manipulation"
+          className="rounded-full hover:bg-primary/10 w-10 h-10 sm:w-11 sm:h-11 touch-manipulation"
           aria-label="User Menu"
         >
           <motion.div

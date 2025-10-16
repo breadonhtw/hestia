@@ -35,7 +35,7 @@ export const BecomeArtisanBanner = () => {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-3 gap-4 pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
                 <div className="bg-background/50 backdrop-blur-sm rounded-lg p-3 border border-primary/10">
                   <div className="text-2xl font-bold text-primary">125+</div>
                   <p className="text-xs text-muted-foreground">Artisans</p>

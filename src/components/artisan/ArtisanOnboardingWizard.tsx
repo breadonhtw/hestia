@@ -329,7 +329,7 @@ export function ArtisanOnboardingWizard({
           </div>
 
           {/* Step Content */}
-          <div className="bg-card rounded-xl shadow-soft p-8 md:p-12 mb-8 space-y-6">
+          <div className="bg-card rounded-xl shadow-soft p-4 md:p-8 lg:p-12 mb-8 space-y-6">
             {/* Step 1: Basics */}
             {currentStep === 1 && (
               <>
@@ -740,13 +740,14 @@ export function ArtisanOnboardingWizard({
           </div>
 
           {/* Navigation */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center">
             <div>
               {currentStep > 1 && (
                 <Button
                   variant="ghost"
                   onClick={handleBack}
                   disabled={isLoading}
+                  className="w-full md:w-auto"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
@@ -754,7 +755,7 @@ export function ArtisanOnboardingWizard({
               )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <Button
                 variant="outline"
                 onClick={handleSaveAndExit}

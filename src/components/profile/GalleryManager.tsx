@@ -331,7 +331,7 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
         </div>
       ) : (
         <div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {previews.map((src, idx) => (
               <div
                 key={src}
@@ -393,7 +393,7 @@ export const GalleryManager = ({ artisanId }: GalleryManagerProps) => {
               (shown in browse preview)
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {images.map((image) => (
               <div key={image.id} className="relative group">
                 <img

@@ -268,7 +268,7 @@ export const EditArtisanForm = ({
           onSubmit={handleSubmit((data) => updateArtisan.mutate(data))}
           className="space-y-6"
         >
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="craft_type">Craft Type</Label>
               <Select
@@ -489,7 +489,7 @@ export const EditArtisanForm = ({
 
           {/* Languages removed per spec */}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="instagram">Instagram</Label>
               <Input
@@ -519,7 +519,7 @@ export const EditArtisanForm = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input

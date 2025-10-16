@@ -76,13 +76,15 @@ export function HeroShadow({
     bold: { scale: 90, speed: 85 },
   };
 
-  // Reduce animation on mobile for performance
+  // Disable animation on mobile for performance (Option 1 optimization)
+  // Mobile devices: Static fallback only (much faster)
+  // Desktop: Full animation (beautiful)
   const baseAnimation = animations[intensity];
   const mobileScale = isMobile ? baseAnimation.scale : baseAnimation.scale;
   const mobileSpeed = isMobile ? baseAnimation.speed : baseAnimation.speed;
 
   const finalAnimation =
-    animationReady && !prefersReducedMotion
+    animationReady && !prefersReducedMotion && !isMobile
       ? { scale: mobileScale, speed: mobileSpeed }
       : { scale: 0, speed: 0 };
 
