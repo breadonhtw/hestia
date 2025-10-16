@@ -16,6 +16,8 @@ export const useArtisans = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
@@ -36,6 +38,7 @@ export const useFeaturedGalleryImages = (artisanId: string) => {
     },
     enabled: !!artisanId,
     staleTime: 5 * 60 * 1000, // 5 minutes - featured images don't change frequently
+    gcTime: 15 * 60 * 1000,
   });
 };
 
@@ -54,6 +57,7 @@ export const useGalleryImages = (artisanId: string) => {
     },
     enabled: !!artisanId,
     staleTime: 2 * 60 * 1000, // 2 minutes - gallery can be edited more frequently
+    gcTime: 10 * 60 * 1000,
   });
 };
 
@@ -72,6 +76,8 @@ export const useArtisanById = (id: string) => {
       return data;
     },
     enabled: !!id,
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
@@ -90,6 +96,8 @@ export const useArtisanByUsername = (username: string) => {
       return data;
     },
     enabled: !!username,
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
@@ -109,5 +117,6 @@ export const useArtisanByUserId = (userId: string) => {
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes - this doesn't change often
+    gcTime: 15 * 60 * 1000,
   });
 };

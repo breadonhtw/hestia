@@ -92,11 +92,13 @@ export const CreatorCard = ({
         {/* Creator Photo */}
         <div className="mb-4 flex justify-center">
           <div className="relative w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-primary/10">
-            <img
+          <img
               src={creator.image}
               alt={creator.name}
               className="w-full h-full object-cover"
-              loading="lazy"
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
               width={120}
               height={120}
             />
@@ -210,6 +212,8 @@ export const CreatorCard = ({
                   alt={work.title}
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  decoding="async"
+                  fetchPriority="low"
                   width={64}
                   height={64}
                 />
