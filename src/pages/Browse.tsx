@@ -227,6 +227,22 @@ const Browse = () => {
             content="Discover local artisans by craft and location. Explore pottery, textiles, woodwork, jewelry, and more."
           />
           <link rel="canonical" href={`https://www.hestia.sg/browse`} />
+          <meta property="og:title" content="Browse Local Artisans | Hestia" />
+          <meta
+            property="og:description"
+            content="Discover and connect with talented local artisans by craft and location."
+          />
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content="https://www.hestia.sg/og-image.jpg" />
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              name: "Browse Artisans",
+              url: "https://www.hestia.sg/browse",
+              description: "Discover local artisans by craft and location",
+            })}
+          </script>
         </Helmet>
         <div className="container mx-auto px-4 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row gap-8">

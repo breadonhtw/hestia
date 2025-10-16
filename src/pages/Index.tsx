@@ -120,7 +120,32 @@ const Index = () => {
             content="Connect with talented home-based artisans and makers in your neighbourhood."
           />
           <meta property="og:type" content="website" />
+          <meta property="og:image" content="https://www.hestia.sg/og-image.jpg" />
           <link rel="preload" as="image" href={heroBackground} />
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Hestia",
+              url: "https://www.hestia.sg",
+              logo: "https://www.hestia.sg/hestia-logo.svg",
+              description: "Connect with talented home-based artisans and makers in Singapore. Discover handcrafted pottery, textiles, woodwork, and more.",
+              sameAs: [
+                "https://instagram.com/hestia_sg",
+              ],
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "SG",
+                addressLocality: "Singapore",
+              },
+              areaServed: "SG",
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "Customer Service",
+                url: "https://www.hestia.sg/contact",
+              },
+            })}
+          </script>
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",

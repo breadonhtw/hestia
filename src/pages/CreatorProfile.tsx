@@ -140,6 +140,59 @@ const CreatorProfile = () => {
               `${creator.name} – ${creator.craftType} in ${creator.location}`
             }
           />
+          <meta
+            property="og:image"
+            content={creator.image}
+          />
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item: "https://www.hestia.sg",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Browse",
+                  item: "https://www.hestia.sg/browse",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: creator.name,
+                  item: `https://www.hestia.sg/creator/${creator.id}`,
+                },
+              ],
+            })}
+          </script>
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: creator.name,
+              jobTitle: creator.craftType,
+              areaServed: creator.location,
+              image: creator.image,
+              url: `https://www.hestia.sg/creator/${creator.id}`,
+              knowsAbout: creator.craftType ? [creator.craftType] : [],
+              ...(creator.instagram && {
+                sameAs: [
+                  ...(creator.instagram
+                    ? [`https://instagram.com/${sanitizeInstagramHandle(
+                        creator.instagram
+                      )}`]
+                    : []),
+                  ...(creator.website ? [creator.website] : []),
+                ].filter(Boolean),
+              }),
+              description: creator.bio,
+            })}
+          </script>
         </Helmet>
         {/* Hero Section */}
         <section className="relative h-96 bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
@@ -247,12 +300,13 @@ const CreatorProfile = () => {
                   key={image.id}
                   className="relative aspect-square rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-shadow"
                 >
-                  <img
+                  <OptimizedImage
                     src={image.image_url}
-                    alt={image.title}
+                    alt={image.title || "Gallery image"}
                     className="w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
+                    width={600}
+                    height={600}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   {image.is_featured && (
                     <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">

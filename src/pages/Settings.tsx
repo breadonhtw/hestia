@@ -5,7 +5,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2, User, UserCircle, BarChart3 } from "lucide-react";
+import { Search, Loader2, User, UserCircle, BarChart3, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Settings = () => {
@@ -72,7 +72,16 @@ const Settings = () => {
             description: "Track your profile performance and engagement metrics",
           },
         ]
-      : []),
+      : [
+          {
+            id: "become-artisan",
+            label: "Become an Artisan",
+            path: "/settings/become-artisan",
+            icon: Sparkles,
+            description: "Share your craft with the Hestia community",
+            highlight: true,
+          },
+        ]),
   ];
 
   return (
@@ -102,6 +111,7 @@ const Settings = () => {
                   {sidebarItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = currentPath === item.path;
+                    const isHighlight = (item as any).highlight;
 
                     return (
                       <Link
@@ -111,11 +121,13 @@ const Settings = () => {
                           "block px-4 py-3 rounded-lg transition-colors",
                           isActive
                             ? "bg-primary/10 text-primary font-semibold"
+                            : isHighlight
+                            ? "bg-primary/5 border border-primary/20 text-foreground hover:bg-primary/10"
                             : "text-foreground hover:bg-muted"
                         )}
                       >
                         <div className="flex items-center gap-3">
-                          <Icon className="h-5 w-5" />
+                          <Icon className={cn("h-5 w-5", isHighlight && "text-primary")} />
                           <span>{item.label}</span>
                         </div>
                       </Link>
