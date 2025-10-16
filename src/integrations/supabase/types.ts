@@ -383,6 +383,312 @@ export type Database = {
           }
         ];
       };
+      badge_types: {
+        Row: {
+          id: string;
+          badge_key: string;
+          name: string;
+          description: string | null;
+          icon: string | null;
+          color: string | null;
+          is_auto_awarded: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          badge_key: string;
+          name: string;
+          description?: string | null;
+          icon?: string | null;
+          color?: string | null;
+          is_auto_awarded?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          badge_key?: string;
+          name?: string;
+          description?: string | null;
+          icon?: string | null;
+          color?: string | null;
+          is_auto_awarded?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      artisan_badges: {
+        Row: {
+          id: string;
+          artisan_id: string;
+          badge_key: string;
+          awarded_at: string;
+          expires_at: string | null;
+          metadata: Json;
+          awarded_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          artisan_id: string;
+          badge_key: string;
+          awarded_at?: string;
+          expires_at?: string | null;
+          metadata?: Json;
+          awarded_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          artisan_id?: string;
+          badge_key?: string;
+          awarded_at?: string;
+          expires_at?: string | null;
+          metadata?: Json;
+          awarded_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "artisan_badges_artisan_id_fkey";
+            columns: ["artisan_id"];
+            isOneToOne: false;
+            referencedRelation: "artisans";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "artisan_badges_artisan_id_fkey";
+            columns: ["artisan_id"];
+            isOneToOne: false;
+            referencedRelation: "artisans_public";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "artisan_badges_awarded_by_fkey";
+            columns: ["awarded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      artisan_analytics_events: {
+        Row: {
+          id: string;
+          artisan_id: string;
+          event_type: string;
+          event_data: Json;
+          session_id: string | null;
+          user_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          artisan_id: string;
+          event_type: string;
+          event_data?: Json;
+          session_id?: string | null;
+          user_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          artisan_id?: string;
+          event_type?: string;
+          event_data?: Json;
+          session_id?: string | null;
+          user_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "artisan_analytics_events_artisan_id_fkey";
+            columns: ["artisan_id"];
+            isOneToOne: false;
+            referencedRelation: "artisans";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "artisan_analytics_events_artisan_id_fkey";
+            columns: ["artisan_id"];
+            isOneToOne: false;
+            referencedRelation: "artisans_public";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "artisan_analytics_events_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      artisan_analytics_summary: {
+        Row: {
+          id: string;
+          artisan_id: string;
+          date: string;
+          profile_views: number;
+          unique_visitors: number;
+          favorites_added: number;
+          favorites_removed: number;
+          contact_requests: number;
+          image_views: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          artisan_id: string;
+          date: string;
+          profile_views?: number;
+          unique_visitors?: number;
+          favorites_added?: number;
+          favorites_removed?: number;
+          contact_requests?: number;
+          image_views?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          artisan_id?: string;
+          date?: string;
+          profile_views?: number;
+          unique_visitors?: number;
+          favorites_added?: number;
+          favorites_removed?: number;
+          contact_requests?: number;
+          image_views?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "artisan_analytics_summary_artisan_id_fkey";
+            columns: ["artisan_id"];
+            isOneToOne: false;
+            referencedRelation: "artisans";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "artisan_analytics_summary_artisan_id_fkey";
+            columns: ["artisan_id"];
+            isOneToOne: false;
+            referencedRelation: "artisans_public";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      collections: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          description: string | null;
+          cover_image_url: string | null;
+          collection_type: string;
+          is_featured: boolean;
+          display_order: number;
+          created_by: string | null;
+          status: string;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          description?: string | null;
+          cover_image_url?: string | null;
+          collection_type?: string;
+          is_featured?: boolean;
+          display_order?: number;
+          created_by?: string | null;
+          status?: string;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          description?: string | null;
+          cover_image_url?: string | null;
+          collection_type?: string;
+          is_featured?: boolean;
+          display_order?: number;
+          created_by?: string | null;
+          status?: string;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "collections_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      collection_artisans: {
+        Row: {
+          id: string;
+          collection_id: string;
+          artisan_id: string;
+          display_order: number;
+          added_at: string;
+          added_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          collection_id: string;
+          artisan_id: string;
+          display_order?: number;
+          added_at?: string;
+          added_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          collection_id?: string;
+          artisan_id?: string;
+          display_order?: number;
+          added_at?: string;
+          added_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "collection_artisans_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_artisans_artisan_id_fkey";
+            columns: ["artisan_id"];
+            isOneToOne: false;
+            referencedRelation: "artisans";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_artisans_artisan_id_fkey";
+            columns: ["artisan_id"];
+            isOneToOne: false;
+            referencedRelation: "artisans_public";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_artisans_added_by_fkey";
+            columns: ["added_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       artisans_public: {
@@ -428,6 +734,10 @@ export type Database = {
           telegram: string | null;
           lead_time_days: number | null;
           hours: Json | null;
+          // Gallery images (aggregated JSON)
+          gallery_images: Json | null;
+          // Badges (aggregated JSON)
+          badges: Json | null;
         };
         Relationships: [
           {
@@ -467,6 +777,94 @@ export type Database = {
       unpublish_artisan_profile: {
         Args: { _user_id: string };
         Returns: boolean;
+      };
+      // Badge functions
+      get_artisan_badges: {
+        Args: { p_artisan_id: string };
+        Returns: Json;
+      };
+      award_badge: {
+        Args: {
+          p_artisan_id: string;
+          p_badge_key: string;
+          p_metadata?: Json;
+          p_expires_at?: string;
+        };
+        Returns: string;
+      };
+      revoke_badge: {
+        Args: {
+          p_artisan_id: string;
+          p_badge_key: string;
+        };
+        Returns: boolean;
+      };
+      // Analytics functions
+      track_analytics_event: {
+        Args: {
+          p_artisan_id: string;
+          p_event_type: string;
+          p_event_data?: Json;
+          p_session_id?: string;
+        };
+        Returns: string;
+      };
+      get_artisan_analytics: {
+        Args: {
+          p_artisan_id: string;
+          p_start_date?: string;
+          p_end_date?: string;
+        };
+        Returns: Json;
+      };
+      get_artisan_analytics_realtime: {
+        Args: {
+          p_artisan_id: string;
+          p_days?: number;
+        };
+        Returns: Json;
+      };
+      aggregate_daily_analytics: {
+        Args: {
+          p_date?: string;
+        };
+        Returns: void;
+      };
+      // Collection functions
+      create_collection: {
+        Args: {
+          p_title: string;
+          p_slug: string;
+          p_description?: string;
+          p_cover_image_url?: string;
+          p_is_featured?: boolean;
+        };
+        Returns: string;
+      };
+      add_artisan_to_collection: {
+        Args: {
+          p_collection_id: string;
+          p_artisan_id: string;
+          p_display_order?: number;
+        };
+        Returns: string;
+      };
+      remove_artisan_from_collection: {
+        Args: {
+          p_collection_id: string;
+          p_artisan_id: string;
+        };
+        Returns: boolean;
+      };
+      get_collection_with_artisans: {
+        Args: {
+          p_collection_slug: string;
+        };
+        Returns: Json;
+      };
+      get_featured_collections: {
+        Args: Record<string, never>;
+        Returns: Json;
       };
     };
     Enums: {

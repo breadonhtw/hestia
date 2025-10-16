@@ -11,6 +11,8 @@ import React, { Suspense } from "react";
 const Index = React.lazy(() => import("./pages/Index"));
 const Browse = React.lazy(() => import("./pages/Browse"));
 const Search = React.lazy(() => import("./pages/Search"));
+const Collections = React.lazy(() => import("./pages/Collections"));
+const CollectionDetail = React.lazy(() => import("./pages/CollectionDetail"));
 const CreatorProfile = React.lazy(() => import("./pages/CreatorProfile"));
 const ProfileModal = React.lazy(() => import("./pages/ProfileModal"));
 const About = React.lazy(() => import("./pages/About"));
@@ -21,6 +23,7 @@ const ArtisanUpgrade = React.lazy(() => import("./pages/ArtisanUpgrade"));
 const Settings = React.lazy(() => import("./pages/Settings"));
 const SettingsAccount = React.lazy(() => import("./pages/SettingsAccount"));
 const SettingsProfile = React.lazy(() => import("./pages/SettingsProfile"));
+const SettingsAnalytics = React.lazy(() => import("./pages/SettingsAnalytics"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -46,6 +49,8 @@ const AppRoutes = () => {
         <Route path="/" element={<Index />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/collections" element={<Collections />} />
+        <Route path="/collections/:slug" element={<CollectionDetail />} />
         <Route path="/artisan/:username" element={<CreatorProfile />} />
         <Route path="/creator/:id" element={<CreatorProfile />} />
         <Route path="/about" element={<About />} />
@@ -56,6 +61,7 @@ const AppRoutes = () => {
         <Route path="/settings" element={<Settings />}>
           <Route path="account" element={<SettingsAccount />} />
           <Route path="profile" element={<SettingsProfile />} />
+          <Route path="analytics" element={<SettingsAnalytics />} />
         </Route>
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />

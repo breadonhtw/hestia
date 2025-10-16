@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { trackFavoriteAdded, trackFavoriteRemoved } from '@/lib/analytics';
 
 const FAVORITES_KEY = 'hestia_favorites';
 
@@ -67,23 +68,27 @@ export const useFavorites = () => {
 
   const toggleFavorite = async (creatorId: string, creatorName: string) => {
     const isFavorited = favorites.includes(creatorId);
-    
+
     if (user) {
       // Authenticated user - use database
       if (isFavorited) {
         await removeFavoriteMutation.mutateAsync(creatorId);
+        trackFavoriteRemoved(creatorId);
         toast.info(`Removed ${creatorName} from favorites`);
       } else {
         await addFavoriteMutation.mutateAsync(creatorId);
+        trackFavoriteAdded(creatorId);
         toast.success(`Added ${creatorName} to favorites!`);
       }
     } else {
       // Guest user - use localStorage
       setLocalFavorites(prev => {
         if (isFavorited) {
+          trackFavoriteRemoved(creatorId);
           toast.info(`Removed ${creatorName} from favorites`);
           return prev.filter(id => id !== creatorId);
         } else {
+          trackFavoriteAdded(creatorId);
           toast.success(`Added ${creatorName} to favorites!`);
           return [...prev, creatorId];
         }

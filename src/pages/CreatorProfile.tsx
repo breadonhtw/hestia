@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { PageLayout } from "@/components/PageLayout";
@@ -15,6 +16,8 @@ import {
 } from "@/hooks/useArtisans";
 import type { Creator } from "@/types/creator";
 import { useAuth } from "@/contexts/AuthContext";
+import { ArtisanBadges } from "@/components/artisan/ArtisanBadge";
+import { trackProfileViewDebounced } from "@/lib/analytics";
 
 const CreatorProfile = () => {
   const { id, username } = useParams();
@@ -36,6 +39,13 @@ const CreatorProfile = () => {
 
   // Fetch all artisans for "similar creators"
   const { data: allArtisans } = useArtisans();
+
+  // Track profile view when artisan data is loaded
+  useEffect(() => {
+    if (artisan?.id && !isLoading) {
+      trackProfileViewDebounced(artisan.id);
+    }
+  }, [artisan?.id, isLoading]);
 
   if (isLoading) {
     return (
@@ -82,6 +92,7 @@ const CreatorProfile = () => {
     instagram: artisan.instagram || undefined,
     website: artisan.website || undefined,
     username: artisan.username || undefined,
+    badges: artisan.badges ? (typeof artisan.badges === 'string' ? JSON.parse(artisan.badges) : artisan.badges) : undefined,
   };
 
   // Find similar creators
@@ -135,7 +146,7 @@ const CreatorProfile = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
 
           <div className="container mx-auto px-4 relative h-full flex items-end pb-8">
-            <div className="flex flex-col md:flex-row items-start md:items-end gap-6">
+            <div className="flex flex-col md:flex-row items-start md:items-end gap-6 w-full">
               {/* Creator Photo */}
               <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-background shadow-lift -mb-20 md:-mb-8">
                 <OptimizedImage
@@ -148,11 +159,11 @@ const CreatorProfile = () => {
               </div>
 
               {/* Creator Info */}
-              <div className="md:mb-4 mt-4 md:mt-0">
+              <div className="md:mb-4 mt-4 md:mt-0 flex-1">
                 <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {creator.name}
                 </h1>
-                <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-3">
                   <span className="font-medium text-secondary text-lg">
                     {creator.craftType}
                   </span>
@@ -161,11 +172,13 @@ const CreatorProfile = () => {
                     {creator.location}
                   </span>
                 </div>
+                {creator.badges && creator.badges.length > 0 && (
+                  <ArtisanBadges badges={creator.badges} size="md" />
+                )}
               </div>
-            </div>
 
-            {/* Social Links and Edit Button */}
-            <div className="absolute top-8 right-8 flex gap-3">
+              {/* Social Links and Edit Button - positioned next to profile icon */}
+              <div className="flex gap-3 md:mb-4 items-end">
               {isOwnProfile && (
                 <Button
                   onClick={() => navigate("/settings/profile")}
@@ -198,6 +211,7 @@ const CreatorProfile = () => {
                   <Globe className="h-5 w-5 text-foreground hover:text-primary-foreground" />
                 </a>
               )}
+              </div>
             </div>
           </div>
         </section>

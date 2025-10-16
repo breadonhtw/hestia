@@ -8,8 +8,7 @@ import {
   Moon,
   User,
   LogOut,
-  Images,
-  LayoutDashboard,
+  BarChart3,
   Heart,
   LogIn,
   Settings as SettingsIcon,
@@ -91,14 +90,9 @@ export const Header = () => {
           onClick: () => navigate("/profile?tab=favorites"),
         },
         {
-          label: "My Gallery",
-          Icon: <Images className="w-4 h-4" />,
-          onClick: () => navigate("/profile?tab=gallery"),
-        },
-        {
-          label: "Artisan Dashboard",
-          Icon: <LayoutDashboard className="w-4 h-4" />,
-          onClick: () => navigate("/become-artisan"),
+          label: "Analytics",
+          Icon: <BarChart3 className="w-4 h-4" />,
+          onClick: () => navigate("/settings/analytics"),
         },
         {
           label: "Settings",

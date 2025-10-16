@@ -20,15 +20,18 @@ import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useArtisans } from "@/hooks/useArtisans";
+import { useFeaturedCollections } from "@/hooks/useCollections";
 import { HeroShadow } from "@/components/HeroShadow";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import type { Creator } from "@/types/creator";
 import { GradientText } from "@/components/ui/gradient-text";
+import { OptimizedImage } from "@/components/OptimizedImage";
 // Floating effects and Footer are loaded on idle to reduce initial JS
 import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
   const { data: artisansData, isLoading } = useArtisans();
+  const { data: featuredCollections, isLoading: isLoadingCollections } = useFeaturedCollections();
   const location = useLocation();
   const [showEffects, setShowEffects] = useState(false);
   const [FloatingOrbsComp, setFloatingOrbsComp] = useState<
@@ -76,6 +79,7 @@ const Index = () => {
   // Scroll reveal hooks for different sections
   const bentoReveal = useScrollReveal({ threshold: 0.1 });
   const artisansReveal = useScrollReveal({ threshold: 0.1 });
+  const collectionsReveal = useScrollReveal({ threshold: 0.1 });
   const categoriesReveal = useScrollReveal({ threshold: 0.1 });
 
   const categoryIcons = {
@@ -347,6 +351,88 @@ const Index = () => {
             </Link>
           </div>
         </section>
+
+        {/* Featured Collections Section */}
+        {featuredCollections && featuredCollections.length > 0 && (
+          <section className="relative z-10 container mx-auto px-4 lg:px-8 py-24 pointer-events-auto">
+            <div className="text-center mb-12">
+              <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Curated Collections
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Discover handpicked groups of artisans by theme and specialty
+              </p>
+            </div>
+
+            <div
+              ref={collectionsReveal.ref}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
+            >
+              {isLoadingCollections
+                ? Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="space-y-4">
+                      <div className="h-48 bg-muted rounded-xl shimmer-skeleton" />
+                      <div className="h-6 w-3/4 bg-muted rounded shimmer-skeleton" />
+                      <div className="h-4 w-full bg-muted rounded shimmer-skeleton" />
+                    </div>
+                  ))
+                : featuredCollections.slice(0, 3).map((collection) => (
+                    <Link
+                      key={collection.id}
+                      to={`/collections/${collection.slug}`}
+                      className="group block"
+                    >
+                      <article className="h-full bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all duration-300 card-lift border border-border">
+                        <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10">
+                          {collection.cover_image_url ? (
+                            <OptimizedImage
+                              src={collection.cover_image_url}
+                              alt={collection.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              width={400}
+                              height={225}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Users className="h-12 w-12 text-primary/30" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-6">
+                          <h3 className="font-serif text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                            {collection.title}
+                          </h3>
+                          {collection.description && (
+                            <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
+                              {collection.description}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="h-4 w-4" />
+                            <span>
+                              {collection.artisan_count}{" "}
+                              {collection.artisan_count === 1 ? "artisan" : "artisans"}
+                            </span>
+                          </div>
+                        </div>
+                      </article>
+                    </Link>
+                  ))}
+            </div>
+
+            <div className="text-center">
+              <Link to="/collections">
+                <Button
+                  size="lg"
+                  variant="default"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
+                >
+                  View All Collections
+                </Button>
+              </Link>
+            </div>
+          </section>
+        )}
 
         {/* Browse by Craft Categories with Custom Icons */}
         <section className="relative z-10 bg-primary/5 py-24">
