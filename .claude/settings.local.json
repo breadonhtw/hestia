@@ -5,7 +5,11 @@
       "Bash(npx tsc:*)",
       "Bash(npm run lint:*)",
       "Bash(npm install:*)",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run test:coverage:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(npx supabase:*)"
     ],
     "deny": [],
     "ask": []

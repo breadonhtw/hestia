@@ -577,16 +577,18 @@ export type Database = {
           }
         ];
       };
-      collections: {
+      publications: {
         Row: {
           id: string;
           title: string;
           slug: string;
           description: string | null;
           cover_image_url: string | null;
-          collection_type: string;
-          is_featured: boolean;
-          display_order: number;
+          external_url: string | null;
+          theme: string | null;
+          issue_number: number | null;
+          active_from: string | null;
+          active_until: string | null;
           created_by: string | null;
           status: string;
           published_at: string | null;
@@ -599,9 +601,11 @@ export type Database = {
           slug: string;
           description?: string | null;
           cover_image_url?: string | null;
-          collection_type?: string;
-          is_featured?: boolean;
-          display_order?: number;
+          external_url?: string | null;
+          theme?: string | null;
+          issue_number?: number | null;
+          active_from?: string | null;
+          active_until?: string | null;
           created_by?: string | null;
           status?: string;
           published_at?: string | null;
@@ -614,9 +618,11 @@ export type Database = {
           slug?: string;
           description?: string | null;
           cover_image_url?: string | null;
-          collection_type?: string;
-          is_featured?: boolean;
-          display_order?: number;
+          external_url?: string | null;
+          theme?: string | null;
+          issue_number?: number | null;
+          active_from?: string | null;
+          active_until?: string | null;
           created_by?: string | null;
           status?: string;
           published_at?: string | null;
@@ -625,64 +631,8 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "collections_created_by_fkey";
+            foreignKeyName: "publications_created_by_fkey";
             columns: ["created_by"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          }
-        ];
-      };
-      collection_artisans: {
-        Row: {
-          id: string;
-          collection_id: string;
-          artisan_id: string;
-          display_order: number;
-          added_at: string;
-          added_by: string | null;
-        };
-        Insert: {
-          id?: string;
-          collection_id: string;
-          artisan_id: string;
-          display_order?: number;
-          added_at?: string;
-          added_by?: string | null;
-        };
-        Update: {
-          id?: string;
-          collection_id?: string;
-          artisan_id?: string;
-          display_order?: number;
-          added_at?: string;
-          added_by?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "collection_artisans_collection_id_fkey";
-            columns: ["collection_id"];
-            isOneToOne: false;
-            referencedRelation: "collections";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "collection_artisans_artisan_id_fkey";
-            columns: ["artisan_id"];
-            isOneToOne: false;
-            referencedRelation: "artisans";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "collection_artisans_artisan_id_fkey";
-            columns: ["artisan_id"];
-            isOneToOne: false;
-            referencedRelation: "artisans_public";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "collection_artisans_added_by_fkey";
-            columns: ["added_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -830,39 +780,26 @@ export type Database = {
         };
         Returns: void;
       };
-      // Collection functions
-      create_collection: {
+      // Publication functions
+      create_publication: {
         Args: {
           p_title: string;
           p_slug: string;
           p_description?: string;
           p_cover_image_url?: string;
-          p_is_featured?: boolean;
+          p_external_url?: string;
+          p_active_from?: string;
+          p_active_until?: string;
+          p_issue_number?: number;
+          p_theme?: string;
         };
         Returns: string;
       };
-      add_artisan_to_collection: {
-        Args: {
-          p_collection_id: string;
-          p_artisan_id: string;
-          p_display_order?: number;
-        };
-        Returns: string;
-      };
-      remove_artisan_from_collection: {
-        Args: {
-          p_collection_id: string;
-          p_artisan_id: string;
-        };
-        Returns: boolean;
-      };
-      get_collection_with_artisans: {
-        Args: {
-          p_collection_slug: string;
-        };
+      get_current_weekly_publication: {
+        Args: Record<string, never>;
         Returns: Json;
       };
-      get_featured_collections: {
+      get_past_weekly_publications: {
         Args: Record<string, never>;
         Returns: Json;
       };

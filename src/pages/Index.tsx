@@ -20,18 +20,19 @@ import { CreatorCard } from "@/components/CreatorCard";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useArtisans } from "@/hooks/useArtisans";
-import { useFeaturedCollections } from "@/hooks/useCollections";
+import { useCurrentWeeklyPublication } from "@/hooks/usePublications";
 import { HeroShadow } from "@/components/HeroShadow";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import type { Creator } from "@/types/creator";
 import { GradientText } from "@/components/ui/gradient-text";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { MagazineModal } from "@/components/MagazineModal";
 // Floating effects and Footer are loaded on idle to reduce initial JS
 import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
   const { data: artisansData, isLoading } = useArtisans();
-  const { data: featuredCollections, isLoading: isLoadingCollections } = useFeaturedCollections();
+  const { data: weeklyPublication, isLoading: isLoadingPublication } = useCurrentWeeklyPublication();
   const location = useLocation();
   const [showEffects, setShowEffects] = useState(false);
   const [FloatingOrbsComp, setFloatingOrbsComp] = useState<
@@ -77,9 +78,8 @@ const Index = () => {
   const exploreCreators = creators.slice(0, 6);
 
   // Scroll reveal hooks for different sections
-  const bentoReveal = useScrollReveal({ threshold: 0.1 });
+  const magazineReveal = useScrollReveal({ threshold: 0.1 });
   const artisansReveal = useScrollReveal({ threshold: 0.1 });
-  const collectionsReveal = useScrollReveal({ threshold: 0.1 });
   const categoriesReveal = useScrollReveal({ threshold: 0.1 });
 
   const categoryIcons = {
@@ -198,141 +198,70 @@ const Index = () => {
           </section>
         </HeroShadow>
 
-        {/* This Week at Hestia - Bento Grid with Scroll Reveal */}
-        <section className="relative z-10 container mx-auto px-4 lg:px-8 py-24">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
-              This Week at Hestia
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Celebrating our community of makers
-            </p>
-          </div>
-
-          <div
-            ref={bentoReveal.ref}
-            className={`grid grid-cols-1 md:grid-cols-12 gap-6`}
+        {/* This Week's Feature - Magazine Section */}
+        {weeklyPublication && (
+          <section
+            ref={magazineReveal.ref}
+            className="relative z-10 container mx-auto px-4 lg:px-8 py-24 pointer-events-auto"
           >
-            {/* Large Featured Creator Tile (reserve space when loading) */}
-            {featuredCreator ? (
-              <div className="md:col-span-8 md:row-span-2 bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift">
-                <div className="aspect-[3/2] md:aspect-[16/9]">
-                  <img
-                    src={heroBackground}
-                    alt={featuredCreator.name}
-                    className="w-full h-full object-cover"
-                    loading="eager"
-                    decoding="async"
-                    fetchPriority="high"
-                    sizes="100vw"
-                    width={1200}
-                    height={800}
-                  />
-                </div>
-                <div className="p-8">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    <span className="text-sm font-medium text-primary">
-                      Featured Creator
-                    </span>
-                  </div>
-                  <h3 className="font-serif text-3xl font-bold text-foreground mb-2">
-                    {featuredCreator.name}
-                  </h3>
-                  <p className="text-secondary font-medium mb-3">
-                    {featuredCreator.craftType}
-                  </p>
-                  <p className="text-muted-foreground mb-6">
-                    {featuredCreator.bio?.slice(0, 200)}
-                  </p>
-                  <Link
-                    to={`/creator/${
-                      featuredCreator.username || featuredCreator.id
-                    }`}
-                  >
-                    <Button
-                      variant="link"
-                      className="text-primary p-0 h-auto font-semibold"
-                    >
-                      Read Story →
-                    </Button>
-                  </Link>
-                </div>
+            <div className="text-center mb-12">
+              <div className="inline-block mb-4">
+                <span className="text-sm font-medium text-primary bg-primary/10 px-4 py-2 rounded-full">
+                  Issue #{weeklyPublication.issue_number || 1}
+                </span>
               </div>
-            ) : (
-              <div className="md:col-span-8 md:row-span-2 bg-card rounded-xl overflow-hidden shadow-soft transition-all">
-                <div className="h-64 md:h-96 shimmer-skeleton" />
-                <div className="p-8 space-y-4">
-                  <div className="h-4 w-32 bg-muted rounded shimmer-skeleton" />
-                  <div className="h-8 w-2/3 bg-muted rounded shimmer-skeleton" />
-                  <div className="h-4 w-1/2 bg-muted rounded shimmer-skeleton" />
-                </div>
-              </div>
-            )}
-
-            {/* Stat Card */}
-            {bentoReveal.isVisible ? (
-              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center items-center text-center">
-                <Users className="h-12 w-12 text-primary mb-4" />
-                <div className="font-serif text-5xl font-bold text-primary mb-2">
-                  125
-                </div>
-                <p className="text-lg text-muted-foreground">Local Artisans</p>
-              </div>
-            ) : (
-              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft" />
-            )}
-
-            {/* Testimonial Card */}
-            {bentoReveal.isVisible ? (
-              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft hover:shadow-lift transition-all card-lift flex flex-col justify-center">
-                <Quote className="h-8 w-8 text-secondary mb-4" />
-                <p className="italic text-foreground mb-4">
-                  "Finding Elena's pottery was like discovering a treasure in my
-                  own neighborhood."
+              <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Stories from Our Community
+              </h2>
+              {weeklyPublication.theme && (
+                <p className="text-xl text-secondary mb-2 font-medium">
+                  {weeklyPublication.theme}
                 </p>
-                <p className="text-sm text-muted-foreground">— Sarah M.</p>
-              </div>
-            ) : (
-              <div className="md:col-span-4 bg-card rounded-xl p-8 shadow-soft" />
-            )}
+              )}
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                {weeklyPublication.description || "Pull up a chair and discover the heartwarming stories of makers in your neighborhood"}
+              </p>
+            </div>
 
-            {/* Work Image Tiles */}
-            {(
-              featuredCreator?.works?.slice(0, 2) || [undefined, undefined]
-            ).map((work, idx) => (
-              <div
-                key={work?.id ?? idx}
-                className={`${
-                  idx === 0 ? "md:col-span-4" : "md:col-span-8"
-                } bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all card-lift group cursor-pointer`}
-              >
-                <div className="relative aspect-[4/3]">
-                  {work ? (
-                    <>
-                      <img
-                        src={work.image}
-                        alt={work.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        decoding="async"
+            <div className="max-w-4xl mx-auto">
+              <MagazineModal publication={weeklyPublication}>
+                <article className="bg-card rounded-2xl overflow-hidden shadow-lift border border-border hover:shadow-glow transition-all duration-300 card-lift group">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10">
+                    {weeklyPublication.cover_image_url ? (
+                      <OptimizedImage
+                        src={weeklyPublication.cover_image_url}
+                        alt={weeklyPublication.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         width={800}
-                        height={384}
+                        height={500}
                       />
-                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
-                        <p className="text-background font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                          {work.title}
-                        </p>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Sparkles className="h-24 w-24 text-primary/30" />
                       </div>
-                    </>
-                  ) : (
-                    <div className="w-full h-full shimmer-skeleton" />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+                    )}
+                  </div>
+                  <div className="p-8 text-center">
+                    <h3 className="font-serif text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
+                      {weeklyPublication.title}
+                    </h3>
+                    <Button
+                      size="lg"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
+                    >
+                      Settle In & Read →
+                    </Button>
+                    <p className="text-sm text-muted-foreground mt-6">
+                      <Link to="/publications" className="hover:text-primary transition-colors underline" onClick={(e) => e.stopPropagation()}>
+                        Browse Past Stories
+                      </Link>
+                    </p>
+                  </div>
+                </article>
+              </MagazineModal>
+            </div>
+          </section>
+        )}
 
         {/* Explore Our Artisans - Uniform Grid with Scroll Reveal */}
         <section className="relative z-10 container mx-auto px-4 lg:px-8 py-24 pointer-events-auto">
@@ -376,88 +305,6 @@ const Index = () => {
             </Link>
           </div>
         </section>
-
-        {/* Featured Collections Section */}
-        {featuredCollections && featuredCollections.length > 0 && (
-          <section className="relative z-10 container mx-auto px-4 lg:px-8 py-24 pointer-events-auto">
-            <div className="text-center mb-12">
-              <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
-                Curated Collections
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Discover handpicked groups of artisans by theme and specialty
-              </p>
-            </div>
-
-            <div
-              ref={collectionsReveal.ref}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-            >
-              {isLoadingCollections
-                ? Array.from({ length: 3 }).map((_, index) => (
-                    <div key={index} className="space-y-4">
-                      <div className="h-48 bg-muted rounded-xl shimmer-skeleton" />
-                      <div className="h-6 w-3/4 bg-muted rounded shimmer-skeleton" />
-                      <div className="h-4 w-full bg-muted rounded shimmer-skeleton" />
-                    </div>
-                  ))
-                : featuredCollections.slice(0, 3).map((collection) => (
-                    <Link
-                      key={collection.id}
-                      to={`/collections/${collection.slug}`}
-                      className="group block"
-                    >
-                      <article className="h-full bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-lift transition-all duration-300 card-lift border border-border">
-                        <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10">
-                          {collection.cover_image_url ? (
-                            <OptimizedImage
-                              src={collection.cover_image_url}
-                              alt={collection.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                              width={400}
-                              height={225}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Users className="h-12 w-12 text-primary/30" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-6">
-                          <h3 className="font-serif text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                            {collection.title}
-                          </h3>
-                          {collection.description && (
-                            <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
-                              {collection.description}
-                            </p>
-                          )}
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Users className="h-4 w-4" />
-                            <span>
-                              {collection.artisan_count}{" "}
-                              {collection.artisan_count === 1 ? "artisan" : "artisans"}
-                            </span>
-                          </div>
-                        </div>
-                      </article>
-                    </Link>
-                  ))}
-            </div>
-
-            <div className="text-center">
-              <Link to="/collections">
-                <Button
-                  size="lg"
-                  variant="default"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
-                >
-                  View All Collections
-                </Button>
-              </Link>
-            </div>
-          </section>
-        )}
 
         {/* Browse by Craft Categories with Custom Icons */}
         <section className="relative z-10 bg-primary/5 py-24">
