@@ -1,73 +1,388 @@
-# Welcome to your Lovable project
+# Hestia - Discover Local Artisans
 
-## Project info
+A modern web platform connecting artisans and makers with their local community in Singapore. Hestia helps home-based artisans showcase their work, build their brand, and connect with customers who appreciate handcrafted goods.
 
-**URL**: https://lovable.dev/projects/b0e59eca-bbc3-4b4b-b404-bdcd48ba74d1
+![Hestia Platform](https://www.hestia.sg/og-image.jpg)
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🌟 Features
 
-**Use Lovable**
+- **Artisan Profiles**: Beautiful, customizable profiles with portfolio galleries
+- **Browse & Search**: Find artisans by craft type, location, or keywords
+- **Publications System**: Weekly magazine featuring community stories
+- **Favorites**: Save and organize favorite artisans
+- **Analytics Dashboard**: Track profile views, favorites, and engagement
+- **Badge System**: Recognition badges for verified, top-rated, and featured artisans
+- **Dark Mode**: Beautiful light and dark themes
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
+- **SEO Optimized**: Structured data, Open Graph tags, and semantic HTML
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b0e59eca-bbc3-4b4b-b404-bdcd48ba74d1) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Quick Start
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js 18+ ([install with nvm](https://github.com/nvm-sh/nvm))
+- npm (comes with Node.js)
+- Supabase account ([sign up free](https://supabase.com))
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+1. **Clone the repository**
+```bash
+git clone https://github.com/yourusername/hestia.git
+cd hestia
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. **Install dependencies**
+```bash
+npm install
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. **Set up environment variables**
+```bash
+cp .env.example .env.local
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+Edit `.env.local` with your Supabase credentials:
+```bash
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+VITE_SUPABASE_PROJECT_ID=your-project-id
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. **Set up Supabase database**
+```bash
+# Apply migrations
+npx supabase db push
+```
+
+5. **Start development server**
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Visit `http://localhost:8080` 🎉
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📚 Documentation
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **[Tech Stack Documentation](docs/TECH_STACK.md)** - Complete guide to all libraries and frameworks used
+- **[Project Instructions (CLAUDE.md)](CLAUDE.md)** - Architecture, patterns, and development guidelines
+- **[Adding Magazines Guide](docs/adding-magazines.md)** - How to add weekly publications
+- **[Publications Summary](docs/PUBLICATIONS_SUMMARY.md)** - Publications system overview
+- **[Development Roadmap](.claude/CLAUDE.md)** - Upcoming features and improvements
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 🛠️ Tech Stack
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Core
+- **React 18** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
 
-## How can I deploy this project?
+### Backend
+- **Supabase** - PostgreSQL database, authentication, storage
+- **TanStack Query** - Server state management
+- **React Router** - Client-side routing
 
-Simply open [Lovable](https://lovable.dev/projects/b0e59eca-bbc3-4b4b-b404-bdcd48ba74d1) and click on Share -> Publish.
+### UI Components
+- **shadcn/ui** - Radix UI primitives with Tailwind styling
+- **Framer Motion** - Animations
+- **Lucide Icons** - Icon library
 
-## Can I connect a custom domain to my Lovable project?
+### Forms & Validation
+- **React Hook Form** - Form state management
+- **Zod** - Schema validation
 
-Yes, you can!
+### Additional Features
+- **React Helmet** - SEO/meta tags
+- **Vercel Analytics** - Web analytics
+- **Recharts** - Data visualization
+- **date-fns** - Date utilities
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+**[📖 View Full Tech Stack Documentation →](docs/TECH_STACK.md)**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 📁 Project Structure
+
+```
+hestia-2/
+├── src/
+│   ├── components/        # React components
+│   │   ├── ui/           # shadcn/ui components
+│   │   ├── artisan/      # Artisan-specific components
+│   │   └── ...           # Other components
+│   ├── hooks/            # Custom React hooks
+│   ├── pages/            # Route components
+│   ├── contexts/         # React Context providers
+│   ├── lib/              # Utility functions
+│   ├── integrations/     # Third-party integrations
+│   │   └── supabase/     # Supabase client & types
+│   ├── assets/           # Images, fonts, etc.
+│   └── styles/           # Global styles
+├── docs/                 # Documentation
+├── supabase/
+│   └── migrations/       # Database migrations
+├── public/               # Static assets
+└── ...config files
+```
+
+---
+
+## 🔧 Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev          # Start dev server (http://localhost:8080)
+
+# Building
+npm run build        # Production build
+npm run build:dev    # Development build with sourcemaps
+npm run preview      # Preview production build
+
+# Code Quality
+npm run lint         # Run ESLint
+
+# Testing
+npm run test         # Run tests in watch mode
+npm run test:run     # Run tests once
+npm run test:ui      # Open test UI
+npm run test:coverage # Generate coverage report
+```
+
+### Database Management
+
+```bash
+# Apply migrations to remote database
+npx supabase db push
+
+# Reset local database
+npx supabase db reset
+
+# Generate TypeScript types from database
+npx supabase gen types typescript --local > src/integrations/supabase/types.ts
+```
+
+---
+
+## 🎨 Key Features
+
+### Artisan Profiles
+- Customizable profile with bio, contact info, and social links
+- Portfolio gallery with drag-and-drop image upload
+- Craft categories and tags
+- Pricing and availability information
+- Analytics dashboard
+
+### Publications System
+Weekly magazine featuring artisan stories:
+- Designed in Canva as presentations
+- Embedded viewer on desktop, direct link on mobile
+- Weekly rotation based on active dates
+- Archive of past issues
+
+### Badge System
+Recognition badges for artisans:
+- Verified Artisan
+- Top Rated
+- Quick Responder
+- Eco-Friendly
+- Workshop Host
+- Featured Artisan
+
+### Analytics Dashboard
+Track performance metrics:
+- Profile views (daily, weekly, monthly)
+- Favorites count
+- Contact requests
+- Image views
+- Engagement rate
+- Smart tips for improvement
+
+---
+
+## 🌍 Environment Configuration
+
+### Required Environment Variables
+
+```bash
+# Supabase Configuration
+VITE_SUPABASE_URL=https://[project-id].supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=[anon-public-key]
+VITE_SUPABASE_PROJECT_ID=[project-id]
+```
+
+### Optional Environment Variables
+
+```bash
+# Analytics (production only)
+# Automatically enabled on hestia.sg domain
+```
+
+---
+
+## 🚢 Deployment
+
+### Vercel (Recommended)
+
+1. **Connect GitHub repository to Vercel**
+2. **Configure Environment Variables** in Vercel dashboard
+3. **Deploy**:
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Install Command: `npm install`
+
+### Manual Deployment
+
+```bash
+# Build for production
+npm run build
+
+# Deploy the dist/ folder to your hosting provider
+```
+
+---
+
+## 🧪 Testing
+
+Tests are written using Vitest and Testing Library:
+
+```bash
+# Run tests
+npm run test
+
+# Run tests with UI
+npm run test:ui
+
+# Generate coverage report
+npm run test:coverage
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these guidelines:
+
+### Getting Started
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes
+4. Run tests: `npm run test:run`
+5. Run linter: `npm run lint`
+6. Build: `npm run build`
+7. Commit: `git commit -m "Add your feature"`
+8. Push: `git push origin feature/your-feature`
+9. Create a Pull Request
+
+### Code Style
+
+- Use TypeScript for all new code
+- Follow existing patterns (see [CLAUDE.md](CLAUDE.md))
+- Use Tailwind CSS for styling
+- Extract business logic into custom hooks
+- Write semantic, accessible HTML
+- Add tests for new features
+
+### Pull Request Guidelines
+
+- Describe what your PR does
+- Link related issues
+- Ensure all tests pass
+- Update documentation if needed
+
+---
+
+## 📖 Database Schema
+
+### Main Tables
+- `profiles` - User profiles (community members & artisans)
+- `artisans` - Artisan-specific data
+- `artisans_public` - Public view of artisan data (always query this!)
+- `gallery_images` - Portfolio images
+- `publications` - Weekly magazines
+- `badge_types` - Available badge types
+- `artisan_badges` - Awarded badges
+- `user_favorites` - Favorited artisans
+- `artisan_applications` - Artisan applications
+- `analytics_events` - Analytics tracking
+- `analytics_summaries` - Aggregated analytics
+
+### Key Functions
+- `get_current_weekly_publication()` - Get current week's magazine
+- `get_past_weekly_publications()` - Get past magazines
+- `create_publication()` - Add new magazine
+- `create_artisan_profile()` - Initialize artisan profile
+- `publish_artisan_profile()` - Publish artisan profile
+
+**[📖 See CLAUDE.md for detailed schema documentation](CLAUDE.md)**
+
+---
+
+## 🔒 Security
+
+- **Row Level Security (RLS)** - Database-level access control
+- **Secure Authentication** - Supabase Auth with JWT tokens
+- **Input Validation** - Zod schema validation
+- **XSS Protection** - React escapes content by default
+- **HTTPS Only** - Enforced in production
+- **File Upload Validation** - Type and size checks
+
+---
+
+## 🎯 Roadmap
+
+### Phase 2 (In Progress)
+- [ ] Admin dashboard
+- [ ] Content moderation system
+- [ ] Client management for artisans
+
+### Phase 3 (Planned)
+- [ ] Bulk upload system
+- [ ] Newsletter system
+- [ ] Referral program
+
+**[📋 View Full Roadmap →](.claude/CLAUDE.md)**
+
+---
+
+## 📄 License
+
+[MIT License](LICENSE) - feel free to use this project for your own purposes.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [Lovable](https://lovable.dev/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons by [Lucide](https://lucide.dev/)
+- Backend by [Supabase](https://supabase.com/)
+
+---
+
+## 📧 Support & Contact
+
+- **Documentation**: See `/docs` folder
+- **Issues**: [Create an issue](https://github.com/yourusername/hestia/issues)
+- **Website**: [hestia.sg](https://hestia.sg)
+
+---
+
+## 🌟 Star History
+
+If you find this project useful, please consider giving it a star on GitHub!
+
+---
+
+**Made with ❤️ for the artisan community in Singapore**
