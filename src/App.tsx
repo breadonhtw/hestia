@@ -11,8 +11,7 @@ import React, { Suspense } from "react";
 const Index = React.lazy(() => import("./pages/Index"));
 const Browse = React.lazy(() => import("./pages/Browse"));
 const Search = React.lazy(() => import("./pages/Search"));
-const Collections = React.lazy(() => import("./pages/Collections"));
-const CollectionDetail = React.lazy(() => import("./pages/CollectionDetail"));
+const Publications = React.lazy(() => import("./pages/Collections"));
 const CreatorProfile = React.lazy(() => import("./pages/CreatorProfile"));
 const ProfileModal = React.lazy(() => import("./pages/ProfileModal"));
 const About = React.lazy(() => import("./pages/About"));
@@ -50,8 +49,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Index />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/collections" element={<Collections />} />
-        <Route path="/collections/:slug" element={<CollectionDetail />} />
+        <Route path="/publications" element={<Publications />} />
         <Route path="/artisan/:username" element={<CreatorProfile />} />
         <Route path="/creator/:id" element={<CreatorProfile />} />
         <Route path="/about" element={<About />} />
