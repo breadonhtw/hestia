@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   ChevronDown,
   Users,
@@ -31,6 +32,7 @@ import { MagazineModal } from "@/components/MagazineModal";
 import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
+  const { user } = useAuth();
   const { data: artisansData, isLoading } = useArtisans();
   const { data: weeklyPublication, isLoading: isLoadingPublication } = useCurrentWeeklyPublication();
   const location = useLocation();
@@ -181,15 +183,29 @@ const Index = () => {
               >
                 Connect with local artisans crafting beauty from home
               </p>
-              <Link to="/browse" aria-label="Explore creators">
-                <Button
-                  size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up pointer-events-auto"
-                  style={{ animationDelay: "0.2s" }}
+              <div className="flex flex-row gap-6 justify-center">
+                <Link to="/browse" aria-label="Explore creators">
+                  <Button
+                    size="lg"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up pointer-events-auto"
+                    style={{ animationDelay: "0.2s" }}
+                  >
+                    Explore Creators
+                  </Button>
+                </Link>
+                <Link
+                  to="/join"
+                  className="pointer-events-auto"
                 >
-                  Explore Creators
-                </Button>
-              </Link>
+                  <Button
+                    size="lg"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up"
+                    style={{ animationDelay: "0.3s" }}
+                  >
+                    Join as a Creator
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20 pointer-events-auto">
