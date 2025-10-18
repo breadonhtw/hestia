@@ -5,15 +5,16 @@ const FooterLazy = lazy(() =>
   import("@/components/Footer").then((m) => ({ default: m.Footer }))
 );
 import { OptimizedImage } from "@/components/OptimizedImage";
-import { useCurrentWeeklyPublication, usePastWeeklyPublications } from "@/hooks/usePublications";
+import { usePublications } from "@/hooks/usePublications";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MagazineModal } from "@/components/MagazineModal";
 
 const Publications = () => {
-  const { data: currentPublication, isLoading: isLoadingCurrent } = useCurrentWeeklyPublication();
-  const { data: pastPublications, isLoading: isLoadingPast } = usePastWeeklyPublications();
+  const { data: publicationsData, isLoading } = usePublications();
+  const currentPublication = publicationsData?.[0];
+  const pastPublications = publicationsData?.slice(1);
 
   return (
     <PageLayout>
@@ -132,7 +133,7 @@ const Publications = () => {
             </p>
           </div>
 
-          {isLoadingPast ? (
+          {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="space-y-4">
