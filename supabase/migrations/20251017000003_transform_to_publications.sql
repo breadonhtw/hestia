@@ -20,6 +20,13 @@ ALTER TABLE collections RENAME TO publications;
 ALTER TABLE publications
 ADD COLUMN IF NOT EXISTS external_url text;
 
+-- Add active_from and active_until fields for magazine scheduling
+ALTER TABLE publications
+ADD COLUMN IF NOT EXISTS active_from timestamptz,
+ADD COLUMN IF NOT EXISTS active_until timestamptz,
+ADD COLUMN IF NOT EXISTS issue_number int,
+ADD COLUMN IF NOT EXISTS theme text;
+
 -- Remove collection_type field (no longer needed)
 ALTER TABLE publications
 DROP COLUMN IF EXISTS collection_type,

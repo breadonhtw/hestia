@@ -304,6 +304,11 @@ WHERE p.id = a.user_id AND p.artisan_profile_id IS NULL;
 -- 14. Add RLS policies for artisan profile access
 ALTER TABLE public.artisans ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own artisan profile" ON public.artisans;
+DROP POLICY IF EXISTS "Users can update own artisan profile" ON public.artisans;
+DROP POLICY IF EXISTS "Users can insert own artisan profile" ON public.artisans;
+
 -- Users can read their own draft artisan profiles
 CREATE POLICY "Users can view own artisan profile"
   ON public.artisans

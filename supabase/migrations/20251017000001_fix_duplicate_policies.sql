@@ -8,6 +8,7 @@
 DROP POLICY IF EXISTS "Analytics events admin read" ON public.artisan_analytics_events;
 DROP POLICY IF EXISTS "Analytics events artisan read" ON public.artisan_analytics_events;
 DROP POLICY IF EXISTS "Anyone can create analytics events" ON public.artisan_analytics_events;
+DROP POLICY IF EXISTS "Analytics events read" ON public.artisan_analytics_events;
 
 -- Recreate as single consolidated policy
 CREATE POLICY "Analytics events read"
@@ -42,6 +43,9 @@ DROP POLICY IF EXISTS "Anyone can submit applications" ON public.artisan_applica
 -- ARTISAN_BADGES - Remove duplicate ALL policy
 -- ============================================================================
 DROP POLICY IF EXISTS "Artisan badges admin" ON public.artisan_badges;
+DROP POLICY IF EXISTS "Artisan badges admin insert" ON public.artisan_badges;
+DROP POLICY IF EXISTS "Artisan badges admin update" ON public.artisan_badges;
+DROP POLICY IF EXISTS "Artisan badges admin delete" ON public.artisan_badges;
 
 -- Recreate as separate INSERT, UPDATE, DELETE policies
 CREATE POLICY "Artisan badges admin insert"
@@ -81,6 +85,9 @@ CREATE POLICY "Artisan badges admin delete"
 -- BADGE_TYPES - Remove duplicate ALL policy
 -- ============================================================================
 DROP POLICY IF EXISTS "Badge types admin" ON public.badge_types;
+DROP POLICY IF EXISTS "Badge types admin insert" ON public.badge_types;
+DROP POLICY IF EXISTS "Badge types admin update" ON public.badge_types;
+DROP POLICY IF EXISTS "Badge types admin delete" ON public.badge_types;
 
 -- Recreate as separate INSERT, UPDATE, DELETE policies
 CREATE POLICY "Badge types admin insert"
@@ -120,6 +127,9 @@ CREATE POLICY "Badge types admin delete"
 -- COLLECTION_ARTISANS - Remove duplicate ALL policy
 -- ============================================================================
 DROP POLICY IF EXISTS "Collection artisans admin" ON public.collection_artisans;
+DROP POLICY IF EXISTS "Collection artisans admin insert" ON public.collection_artisans;
+DROP POLICY IF EXISTS "Collection artisans admin update" ON public.collection_artisans;
+DROP POLICY IF EXISTS "Collection artisans admin delete" ON public.collection_artisans;
 
 -- Recreate as separate INSERT, UPDATE, DELETE policies
 CREATE POLICY "Collection artisans admin insert"
@@ -159,6 +169,9 @@ CREATE POLICY "Collection artisans admin delete"
 -- COLLECTIONS - Remove duplicate ALL policy
 -- ============================================================================
 DROP POLICY IF EXISTS "Collections admin" ON public.collections;
+DROP POLICY IF EXISTS "Collections admin insert" ON public.collections;
+DROP POLICY IF EXISTS "Collections admin update" ON public.collections;
+DROP POLICY IF EXISTS "Collections admin delete" ON public.collections;
 
 -- Recreate as separate INSERT, UPDATE, DELETE policies
 CREATE POLICY "Collections admin insert"
