@@ -27,7 +27,7 @@ import { sanitizeUrl, sanitizeInstagramHandle } from "@/lib/sanitize";
 import {
   useArtisanById,
   useArtisanByUsername,
-  useArtisans,
+  useSimilarArtisans,
   useGalleryImages,
 } from "@/hooks/useArtisans";
 import { useArtisanAnalyticsRealtime } from "@/hooks/useAnalytics";
@@ -60,8 +60,12 @@ const CreatorProfile = () => {
   // Fetch gallery images for this artisan
   const { data: galleryImages } = useGalleryImages(artisan?.id || "");
 
-  // Fetch all artisans for "similar creators"
-  const { data: allArtisans } = useArtisans();
+  // Fetch similar artisans (optimized - only fetches 3 instead of ALL artisans)
+  const { data: similarArtisansData } = useSimilarArtisans(
+    artisan?.craft_type || "",
+    artisan?.id || "",
+    3
+  );
 
   // Check if viewing own profile
   const isOwnProfile = user?.id === artisan?.user_id;
@@ -137,20 +141,18 @@ const CreatorProfile = () => {
       : undefined,
   };
 
-  // Find similar creators
-  const similarCreators: Creator[] = (allArtisans || [])
-    .filter((a) => a.id !== artisan.id && a.craft_type === artisan.craft_type)
-    .slice(0, 3)
-    .map((a) => ({
-      id: a.id,
-      name: a.username || a.full_name || "Anonymous",
-      craftType: a.craft_type,
-      location: a.location,
-      bio: a.bio,
-      image: a.avatar_url || "/placeholder.svg",
-      works: [],
-      featured: a.featured || false,
-    }));
+  // Transform similar artisans data to Creator format (optimized hook)
+  const similarCreators: Creator[] = (similarArtisansData || []).map((a) => ({
+    id: a.id,
+    name: a.username || a.full_name || "Anonymous",
+    craftType: a.craft_type,
+    location: a.location,
+    bio: a.bio,
+    image: a.avatar_url || "/placeholder.svg",
+    works: [],
+    featured: a.featured || false,
+    username: a.username || undefined,
+  }));
 
   // Prepare lightbox images
   const lightboxImages: LightboxImage[] =

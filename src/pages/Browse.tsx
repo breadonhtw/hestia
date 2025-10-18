@@ -26,10 +26,10 @@ import { useArtisansInfinite } from "@/hooks/useArtisansInfinite";
 import { Creator } from "@/types/creator";
 import { Filter } from "lucide-react";
 const Browse = () => {
-  const { data: artisansDataAll } = useArtisans();
+  // Removed duplicate useArtisans() call - using only infinite query for better performance
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useArtisansInfinite();
-  const artisansData = data?.pages.flat() || artisansDataAll || [];
+  const artisansData = data?.pages.flat() || [];
   const location = useLocation();
   const [searchParams] = useSearchParams();
 

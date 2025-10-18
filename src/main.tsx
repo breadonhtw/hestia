@@ -1,9 +1,14 @@
 import { createRoot } from "react-dom/client";
+import { initMonitoring } from "./lib/monitoring";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 // Lazy-load analytics only in production to avoid affecting TTI/LCP
 let Analytics: React.ComponentType | null = null;
 let SpeedInsights: React.ComponentType | null = null;
 import App from "./App.tsx";
 import "./index.css";
+
+// Initialize monitoring before anything else (production only)
+initMonitoring();
 
 // Dynamically add preconnect/dns-prefetch for Supabase to improve initial network setup
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
@@ -55,11 +60,11 @@ function render() {
   const RootAnalytics = Analytics;
   const RootSpeed = SpeedInsights;
   root.render(
-    <>
+    <ErrorBoundary>
       <App />
       {isProdHost && RootAnalytics ? <RootAnalytics /> : null}
       {isProdHost && RootSpeed ? <RootSpeed /> : null}
-    </>
+    </ErrorBoundary>
   );
 }
 
