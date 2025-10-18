@@ -37,8 +37,8 @@ const Index = () => {
   const { data: publicationsData, isLoading: isLoadingPublications } = usePublications();
   const location = useLocation();
 
-  // Get latest 5 publications for carousel
-  const latestPublications = publicationsData?.slice(0, 5) || [];
+  // Get latest publication
+  const latestPublication = publicationsData?.[0];
   const [showEffects, setShowEffects] = useState(false);
   const [FloatingOrbsComp, setFloatingOrbsComp] = useState<
     null | ((props: any) => JSX.Element)
@@ -217,11 +217,11 @@ const Index = () => {
           </section>
         </HeroShadow>
 
-        {/* Magazine Carousel Section */}
-        {latestPublications.length > 0 && (
+        {/* Latest Magazine Section */}
+        {latestPublication && (
           <section
             ref={magazineReveal.ref}
-            className="relative z-10 py-24 pointer-events-auto overflow-hidden"
+            className="relative z-10 py-24 pointer-events-auto"
           >
             <div className="container mx-auto px-4 lg:px-8">
               <div className="text-center mb-12">
@@ -232,72 +232,58 @@ const Index = () => {
                   Pull up a chair and discover the heartwarming stories of makers in your neighborhood
                 </p>
               </div>
-            </div>
 
-            {/* Horizontal Scrolling Carousel */}
-            <div className="relative">
-              <div className="flex gap-6 px-4 lg:px-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-4">
-                {latestPublications.map((publication) => (
-                  <div
-                    key={publication.id}
-                    className="flex-none w-[280px] md:w-[320px] snap-center"
-                  >
-                    <MagazineModal publication={publication}>
-                      <article className="bg-card rounded-2xl overflow-hidden shadow-lift border border-border hover:shadow-glow transition-all duration-300 card-lift group cursor-pointer h-full">
-                        <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10">
-                          {publication.cover_image_url ? (
-                            <OptimizedImage
-                              src={publication.cover_image_url}
-                              alt={publication.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                              width={320}
-                              height={427}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Sparkles className="h-16 w-16 text-primary/30" />
-                            </div>
-                          )}
-                          {publication.issue_number && (
-                            <div className="absolute top-3 right-3">
-                              <span className="text-xs font-medium text-primary-foreground bg-primary/90 px-3 py-1 rounded-full backdrop-blur-sm">
-                                Issue #{publication.issue_number}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-4">
-                          {publication.theme && (
-                            <p className="text-xs text-secondary font-medium mb-1">
-                              {publication.theme}
-                            </p>
-                          )}
-                          <h3 className="font-serif text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                            {publication.title}
-                          </h3>
-                          {publication.description && (
-                            <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                              {publication.description}
-                            </p>
-                          )}
-                          <Button
-                            size="sm"
-                            className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs"
-                          >
-                            Read →
-                          </Button>
-                        </div>
-                      </article>
-                    </MagazineModal>
-                  </div>
-                ))}
+              {/* Featured Magazine Card */}
+              <div className="flex justify-center">
+                <div className="w-full max-w-[320px]">
+                  <MagazineModal publication={latestPublication}>
+                    <article className="bg-card rounded-2xl overflow-hidden shadow-lift border border-border hover:shadow-glow transition-all duration-300 card-lift group cursor-pointer">
+                      <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10">
+                        {latestPublication.cover_image_url ? (
+                          <OptimizedImage
+                            src={latestPublication.cover_image_url}
+                            alt={latestPublication.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            width={320}
+                            height={427}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Sparkles className="h-16 w-16 text-primary/30" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-5">
+                        {latestPublication.theme && (
+                          <p className="text-sm text-secondary font-medium mb-1">
+                            {latestPublication.theme}
+                          </p>
+                        )}
+                        <h3 className="font-serif text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                          {latestPublication.title}
+                        </h3>
+                        {latestPublication.description && (
+                          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                            {latestPublication.description}
+                          </p>
+                        )}
+                        <Button
+                          size="default"
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 w-full"
+                        >
+                          Read Magazine →
+                        </Button>
+                      </div>
+                    </article>
+                  </MagazineModal>
+                </div>
               </div>
-            </div>
 
-            <div className="text-center mt-8">
-              <Link to="/publications" className="text-sm text-muted-foreground hover:text-primary transition-colors underline">
-                Browse All Stories
-              </Link>
+              <div className="text-center mt-8">
+                <Link to="/publications" className="text-sm text-muted-foreground hover:text-primary transition-colors underline">
+                  Browse All Stories
+                </Link>
+              </div>
             </div>
           </section>
         )}
