@@ -640,6 +640,7 @@ const Browse = () => {
           <CreatorOverlay
             creator={selectedCreator}
             onClose={() => setSelectedCreator(null)}
+            showBio={false}
           />
         )}
 

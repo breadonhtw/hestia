@@ -114,6 +114,7 @@ const Search = () => {
         <CreatorOverlay
           creator={selectedCreator}
           onClose={() => setSelectedCreator(null)}
+          showBio={false}
         />
       )}
     </>
