@@ -5,6 +5,28 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+// Debug: Log the environment variables to verify which environment is being used
+console.log('🔍 Supabase Environment Debug:', {
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  NODE_ENV: import.meta.env.MODE,
+  VITE_MODE: import.meta.env.MODE
+});
+
+// Test the connection
+if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
+  console.log('✅ Supabase client created successfully');
+  if (SUPABASE_URL.includes('127.0.0.1') || SUPABASE_URL.includes('localhost')) {
+    console.log('🏠 Using LOCAL Supabase environment');
+  } else {
+    console.log('☁️ Using CLOUD Supabase environment');
+  }
+} else {
+  console.error('❌ Supabase environment variables are missing!');
+  console.error('SUPABASE_URL:', SUPABASE_URL);
+  console.error('SUPABASE_PUBLISHABLE_KEY:', SUPABASE_PUBLISHABLE_KEY);
+}
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 

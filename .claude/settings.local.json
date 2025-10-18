@@ -10,7 +10,11 @@
       "Bash(npm run test:coverage:*)",
       "Bash(npm run test:run:*)",
       "Bash(npx supabase:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(python /Users/brandon/.claude/plugins/marketplaces/anthropic-agent-skills/skill-creator/scripts/init_skill.py hestia-uiux-designer --path /Users/brandon/.claude/skills)",
+      "Read(//Users/brandon/.claude/skills/hestia-uiux-designer/**)",
+      "Read(//Users/brandon/.claude/plugins/marketplaces/anthropic-agent-skills/skill-creator/**)",
+      "Bash(python /Users/brandon/.claude/skills/hestia-uiux-designer/scripts/validate-accessibility.py /Users/brandon/hestia-2/src/pages/CreatorProfileEnhanced.tsx)"
     ],
     "deny": [],
     "ask": []

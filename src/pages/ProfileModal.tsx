@@ -1,11 +1,17 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { CreatorOverlay } from "@/components/CreatorOverlay";
 import { useArtisanById, useArtisanByUsername } from "@/hooks/useArtisans";
 import type { Creator } from "@/types/creator";
 
 const ProfileModal = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { username, id } = useParams();
+
+  // Check if we came from Browse or Search page
+  const state = location.state as { backgroundLocation?: Location } | undefined;
+  const backgroundPath = state?.backgroundLocation?.pathname || "";
+  const isFromBrowseOrSearch = backgroundPath.startsWith("/browse") || backgroundPath.startsWith("/search");
 
   const {
     data: artisanByUsername,
@@ -35,7 +41,11 @@ const ProfileModal = () => {
   };
 
   return (
-    <CreatorOverlay creator={creator} onClose={() => navigate(-1)} />
+    <CreatorOverlay
+      creator={creator}
+      onClose={() => navigate(-1)}
+      showBio={!isFromBrowseOrSearch}
+    />
   );
 };
 

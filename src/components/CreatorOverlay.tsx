@@ -1,21 +1,39 @@
 import { useEffect, useState } from "react";
-import { X, ArrowRight, Loader2, ImageOff } from "lucide-react";
+import { X, ArrowRight, Loader2, ImageOff, Mail, CheckCircle, Clock } from "lucide-react";
 import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { MapPin, Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useNavigate } from "react-router-dom";
-import { useFeaturedGalleryImages } from "@/hooks/useArtisans";
+import { useFeaturedGalleryImages, useArtisanById } from "@/hooks/useArtisans";
+import { ArtisanBadges } from "@/components/artisan/ArtisanBadge";
+import { useAuth } from "@/contexts/AuthContext";
+import { ContactFormDialog } from "@/components/artisan/ContactFormDialog";
+
 interface CreatorOverlayProps {
   creator: Creator;
   onClose: () => void;
+  showBio?: boolean;
 }
-export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
+
+export const CreatorOverlay = ({
+  creator,
+  onClose,
+  showBio = true,
+}: CreatorOverlayProps) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
-  const { data: featuredImages, isLoading: loadingFeatured } = useFeaturedGalleryImages(creator.id);
+  const { user } = useAuth();
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const { data: featuredImages, isLoading: loadingFeatured } =
+    useFeaturedGalleryImages(creator.id);
+  const { data: artisan } = useArtisanById(creator.id);
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+
+  // Check if viewing own profile
+  const isOwnProfile = user?.id === artisan?.user_id;
 
   // Handle ESC key
   useEffect(() => {
@@ -28,47 +46,51 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  // Focus trap and body scroll lock
+  // Body scroll lock
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
   }, []);
+
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggleFavorite(creator.id, creator.name);
   };
+
   const handleViewProfile = () => {
     navigate(`/creator/${creator.id}`);
   };
 
   const handleImageError = (imageId: string) => {
-    setImageErrors(prev => new Set([...prev, imageId]));
+    setImageErrors((prev) => new Set([...prev, imageId]));
   };
+
   return (
     <>
       {/* Backdrop */}
       <div
-        className="overlay-backdrop active"
+        className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
         onClick={onClose}
         role="presentation"
       />
 
-      {/* Floating Overlay Card */}
+      {/* Floating Modal Card */}
       <div
-        className="creator-card floating-overlay"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] w-[95%] max-w-[480px] max-h-[90vh] overflow-y-auto bg-card rounded-2xl shadow-2xl border border-border animate-in zoom-in-95 fade-in duration-200"
         role="dialog"
         aria-modal="true"
         aria-labelledby="creator-name"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
-          className="close-overlay-btn"
+          className="absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-background/80 hover:bg-background border border-border flex items-center justify-center transition-all hover:scale-110"
           onClick={onClose}
           aria-label="Close creator preview"
         >
-          <X size={20} />
+          <X className="h-5 w-5" />
         </button>
 
         {/* Favorite Button */}
@@ -76,7 +98,7 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
           variant="ghost"
           size="icon"
           onClick={handleFavoriteClick}
-          className="absolute top-4 left-4 z-10 rounded-full hover:bg-primary/10"
+          className="absolute top-4 left-4 z-10 h-10 w-10 rounded-full hover:bg-primary/10"
         >
           <Heart
             className={`h-5 w-5 transition-all ${
@@ -87,142 +109,156 @@ export const CreatorOverlay = ({ creator, onClose }: CreatorOverlayProps) => {
           />
         </Button>
 
-        {/* Creator Photo - Enlarged */}
-        <div className="mb-4 flex justify-center">
-          <div className="relative w-[160px] h-[160px] rounded-full overflow-hidden border-4 border-white shadow-[0_4px_16px_rgba(0,0,0,0.1)]">
-            <img
-              src={creator.image}
-              alt={creator.name}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-              width={160}
-              height={160}
-            />
+        {/* Content */}
+        <div className="p-8 pt-16">
+          {/* Creator Photo */}
+          <div className="flex justify-center mb-6">
+            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
+              <img
+                src={creator.image}
+                alt={`${creator.name}'s profile photo`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                width={128}
+                height={128}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Creator Info */}
-        <div className="text-center space-y-2 mb-4">
-          <h3
-            className="creator-name font-serif text-[32px] font-bold text-[#1F4742] dark:text-[#F5F0E8]"
-            id="creator-name"
-          >
-            {creator.name}
-          </h3>
-          <Badge
-            className="text-sm font-bold px-4 py-1.5"
-            style={{
-              backgroundColor: "#A0613A",
-              color: "white",
-              borderRadius: "20px",
-            }}
-          >
-            {creator.craftType}
-          </Badge>
-          <p className="location-text text-base flex items-center justify-center gap-1.5 mt-2 text-[#7A8A86] dark:text-[#C4B5A5]">
-            <MapPin
-              className="h-4 w-4"
-              style={{
-                color: "#B8976A",
-              }}
-            />
-            {creator.location}
-          </p>
-        </div>
+          {/* Creator Info */}
+          <div className="text-center space-y-3 mb-6">
+            <h3
+              className="font-serif text-3xl font-bold text-foreground"
+              id="creator-name"
+            >
+              {creator.name}
+            </h3>
+            <Badge className="bg-primary text-white text-sm px-4 py-1.5">
+              {creator.craftType}
+            </Badge>
+            <p className="text-sm flex items-center justify-center gap-1.5 text-muted-foreground">
+              <MapPin className="h-4 w-4 text-primary" />
+              {creator.location}
+            </p>
+            {creator.badges && creator.badges.length > 0 && (
+              <div className="flex justify-center pt-2">
+                <ArtisanBadges badges={creator.badges} size="sm" maxDisplay={3} />
+              </div>
+            )}
+          </div>
 
-        {/* Gold Divider */}
-        <div
-          className="w-full h-px mx-auto"
-          style={{
-            background: "#B8976A",
-            opacity: 0.4,
-            marginTop: "24px",
-            marginBottom: "20px",
-          }}
-        />
+          {/* Status Indicators */}
+          {artisan && (artisan.accepting_orders || artisan.open_for_commissions) && (
+            <>
+              <div className="flex flex-wrap justify-center gap-3 mb-6">
+                {artisan.accepting_orders && (
+                  <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-full">
+                    <CheckCircle className="h-3.5 w-3.5" />
+                    <span className="font-medium">Accepting Orders</span>
+                  </div>
+                )}
+                {artisan.open_for_commissions && (
+                  <div className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full">
+                    <Clock className="h-3.5 w-3.5" />
+                    <span className="font-medium">Open for Commissions</span>
+                  </div>
+                )}
+              </div>
+              <Separator className="my-6" />
+            </>
+          )}
 
-        {/* Featured Works Section */}
-        <div className="px-2">
+          {/* Bio Preview */}
+          {showBio && creator.bio && (
+            <>
+              {!artisan?.accepting_orders && !artisan?.open_for_commissions && (
+                <Separator className="my-6" />
+              )}
+              <div className="mb-6">
+                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed text-center">
+                  {creator.bio}
+                </p>
+              </div>
+            </>
+          )}
+
+          {/* Featured Works Section */}
           {loadingFeatured ? (
             <div className="flex justify-center p-6">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : featuredImages && featuredImages.length > 0 ? (
             <>
-              <h4 className="featured-works-heading text-center text-lg mb-4 font-semibold uppercase tracking-wider text-yellow-500">
-                Featured Works
-              </h4>
-
-              {/* Work Thumbnails */}
-              <div className="flex justify-center gap-3 mb-6">
-                {featuredImages.map((image, idx) => (
-                  <div
-                    key={image.id}
-                    className="work-thumbnail w-[110px] h-[110px] rounded-xl overflow-hidden bg-muted"
-                    style={{
-                      animationDelay: `${idx * 0.1}s`,
-                    }}
-                    tabIndex={0}
-                    role="button"
-                    aria-label={`View ${image.title}`}
-                  >
-                    {imageErrors.has(image.id) ? (
-                      <div className="w-full h-full flex items-center justify-center bg-muted">
-                        <ImageOff className="h-8 w-8 text-muted-foreground" />
-                      </div>
-                    ) : (
-                      <img
-                        src={image.image_url}
-                        alt={image.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                        width={110}
-                        height={110}
-                        onError={() => handleImageError(image.id)}
-                      />
-                    )}
-                  </div>
-                ))}
+              {!showBio && !artisan?.accepting_orders && !artisan?.open_for_commissions && (
+                <Separator className="my-6" />
+              )}
+              <div className="mb-6">
+                <h4 className="text-sm font-semibold text-center mb-4 text-muted-foreground uppercase tracking-wider">
+                  Featured Works
+                </h4>
+                <div className="grid grid-cols-3 gap-3">
+                  {featuredImages.slice(0, 3).map((image) => (
+                    <div
+                      key={image.id}
+                      className="aspect-square rounded-lg overflow-hidden bg-muted hover:ring-2 hover:ring-primary transition-all cursor-pointer"
+                      onClick={handleViewProfile}
+                    >
+                      {imageErrors.has(image.id) ? (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ImageOff className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                      ) : (
+                        <img
+                          src={image.image_url}
+                          alt={image.title || "Featured work"}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          decoding="async"
+                          onError={() => handleImageError(image.id)}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
-          ) : (
-            <div className="text-center text-sm text-muted-foreground mb-6 p-4">
-              No featured works yet
-            </div>
-          )}
+          ) : null}
 
-          {/* View Full Profile Button */}
-          <Button
-            onClick={handleViewProfile}
-            className="focus-terracotta w-full font-semibold text-base flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98]"
-            style={{
-              height: "52px",
-              backgroundColor: "#B8976A",
-              color: "white",
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(184, 151, 106, 0.3)",
-              marginTop: "24px",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#A0613A";
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow =
-                "0 4px 12px rgba(160, 97, 58, 0.4)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#B8976A";
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow =
-                "0 2px 8px rgba(184, 151, 106, 0.3)";
-            }}
-          >
-            View Full Profile
-            <ArrowRight className="h-5 w-5" />
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            {!isOwnProfile && (
+              <Button
+                onClick={() => setContactDialogOpen(true)}
+                variant="outline"
+                className="flex-1 gap-2"
+                size="lg"
+              >
+                <Mail className="h-4 w-4" />
+                Contact
+              </Button>
+            )}
+            <Button
+              onClick={handleViewProfile}
+              className="flex-1 gap-2"
+              size="lg"
+            >
+              View Profile
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Contact Form Dialog */}
+      {artisan && (
+        <ContactFormDialog
+          artisanId={artisan.id}
+          artisanName={creator.name}
+          open={contactDialogOpen}
+          onOpenChange={setContactDialogOpen}
+        />
+      )}
     </>
   );
 };
