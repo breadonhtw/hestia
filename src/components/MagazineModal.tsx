@@ -55,7 +55,7 @@ export const MagazineModal = ({ publication, children }: MagazineModalProps) => 
 
       {/* Desktop Modal */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-[95vw] w-full h-[90vh] p-0 gap-0">
+        <DialogContent className="max-w-[95vw] w-full h-[90vh] p-0 gap-0 [&>button]:hidden">
           <DialogHeader className="p-6 pb-4 border-b border-border">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -78,13 +78,14 @@ export const MagazineModal = ({ publication, children }: MagazineModalProps) => 
                   <ExternalLink className="h-4 w-4" />
                   Open in New Tab
                 </Button>
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setIsOpen(false)}
-                  className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+                  className="flex items-center justify-center w-9 h-9 p-0"
                 >
                   <X className="h-4 w-4" />
-                  <span className="sr-only">Close</span>
-                </button>
+                </Button>
               </div>
             </div>
           </DialogHeader>
