@@ -157,6 +157,18 @@ All colors MUST be HSL.
   }
 }
 
+@layer utilities {
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer components {
   /* Hover scale animation */
   .hover-scale {
