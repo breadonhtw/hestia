@@ -4,13 +4,14 @@ This guide explains how to add and manage weekly magazine publications in Hestia
 
 ## Overview
 
-The publications system allows you to feature weekly magazines on the homepage and maintain an archive at `/publications`. Each magazine includes:
+The publications system features the latest magazine on the homepage and maintains an archive at `/publications`. Each magazine includes:
 - Cover image
 - Issue number
 - Theme
 - Description
 - External URL (link to your hosted magazine)
-- Active date range (for weekly rotation)
+
+**Homepage Display**: The latest published magazine appears as a featured card in the center of the page.
 
 ## Adding a New Magazine
 
@@ -75,7 +76,7 @@ INSERT INTO publications (
 | `title` | text | Yes | Magazine title (shown prominently) |
 | `slug` | text | Yes | URL-friendly identifier (must be unique) |
 | `description` | text | No | Brief description of the magazine content |
-| `cover_image_url` | text | No | URL to cover image (recommended: 1600x1000px) |
+| `cover_image_url` | text | No | URL to cover image (320x427px for homepage, 800x500px for /publications) |
 | `external_url` | text | No | Canva presentation URL (opens on click) |
 | `active_from` | timestamptz | No | Start date for this issue (UTC timezone) |
 | `active_until` | timestamptz | No | End date for this issue (UTC timezone) |
@@ -83,12 +84,20 @@ INSERT INTO publications (
 | `theme` | text | No | Theme or category (e.g., "Pottery & Ceramics") |
 | `status` | text | Yes | Default: 'published' |
 
-## Weekly Rotation System
+## Homepage Display
 
-The system automatically displays the correct magazine based on the current date:
+The homepage displays the **latest published magazine** as a compact portrait card:
 
-- **Current Week**: Shows magazine where `NOW()` is between `active_from` and `active_until`
-- **Past Issues**: Shows magazines where `NOW()` is after `active_until`
+- The magazine with the highest `issue_number` (or most recent `created_at`) is displayed
+- The card is centered on the page with a compact, portrait design (320x427px, 3:4 aspect ratio)
+- Styled like a traditional magazine cover for visual appeal
+- Clicking the magazine card opens it in a modal (desktop) or new tab (mobile)
+- The modal includes aligned "Open in New Tab" and close (X) buttons in the header
+- The `active_from` and `active_until` dates are optional and can be used for your own scheduling needs
+
+## Publications Page Display
+
+The `/publications` page displays the **latest magazine** as a large landscape card (800x500px, 16:10 aspect ratio), with past issues shown below in a grid.
 
 ### Example: Setting Up 4 Weeks of Magazines
 
@@ -145,16 +154,19 @@ SELECT create_publication(
 1. Go to Supabase Dashboard → Storage
 2. Create a bucket called `magazine-covers` (if not exists)
 3. Set bucket to **public**
-4. Upload your cover image (recommended dimensions: 1600x1000px, aspect ratio 16:10)
+4. Upload your cover image (recommended dimensions: 320x427px or 800x500px)
 5. Copy the public URL
 6. Use this URL in the `cover_image_url` field
 
 ### Image Guidelines
 
 - **Format**: JPG or PNG
-- **Size**: Max 2MB for optimal loading
-- **Dimensions**: 1600x1000px (16:10 aspect ratio)
+- **Size**: Max 1MB for optimal loading
+- **Dimensions**:
+  - **Homepage**: 320x427px (3:4 portrait aspect ratio, like a magazine cover)
+  - **Publications Page**: 800x500px (16:10 landscape aspect ratio)
 - **Content**: High-quality, visually appealing cover that represents the theme
+- **Note**: The homepage displays a compact portrait card, while the /publications page shows a larger landscape featured card
 
 ## Creating Canva Magazines
 
@@ -179,13 +191,17 @@ SELECT create_publication(
 - Use a PDF viewer service to generate embeddable URL
 
 The magazine will:
-- Open in a modal on desktop (>768px screens) with embedded Canva presentation
-- Open in a new tab on mobile (<768px screens)
+- Display as a compact portrait card (320x427px) centered on the homepage
+- Display as a large landscape card (800x500px) on the /publications page
+- Open in a modal on desktop (>768px screens) with:
+  - Embedded Canva presentation
+  - Aligned "Open in New Tab" button and close (X) button in the header
+- Open directly in a new tab on mobile (<768px screens)
 
 ## Viewing Published Magazines
 
-- **Homepage**: Current week's magazine appears in the featured section
-- **Archive**: All past magazines available at `/publications`
+- **Homepage**: The latest published magazine appears as a compact featured card
+- **Publications Page** (`/publications`): The latest magazine shown as a large featured card, with past issues in a grid below
 - **Admin View**: Can see draft/unpublished magazines in database
 
 ## Updating an Existing Magazine
@@ -217,26 +233,23 @@ WHERE slug = 'pottery-masters-oct-2025';
 
 ### Magazine Not Showing on Homepage
 
-1. Check the `active_from` and `active_until` dates - ensure current time is within range
-2. Verify `status` is set to `'published'`
-3. Check timezone - dates should be in UTC
+1. Verify `status` is set to `'published'`
+2. Check if you have at least 1 published magazine
+3. The homepage shows the latest magazine by `issue_number` (descending) or creation date
 
 ```sql
--- Check what should be current
+-- Check the latest published magazine (shown on homepage)
 SELECT * FROM publications
 WHERE status = 'published'
-  AND active_from IS NOT NULL
-  AND active_until IS NOT NULL
-  AND NOW() >= active_from
-  AND NOW() < active_until
-ORDER BY issue_number DESC;
+ORDER BY issue_number DESC NULLS LAST, created_at DESC
+LIMIT 1;
 ```
 
-### Magazine Shows Wrong Dates
+### Magazine Ordering
 
-- Dates are stored in UTC timezone
-- `active_from` is inclusive (start of week)
-- `active_until` is exclusive (start of next week)
+- The latest magazine is determined by `issue_number` (descending), then `created_at` (newest first)
+- Use sequential issue numbers (1, 2, 3...) to control which magazine appears on the homepage
+- Higher issue numbers will appear first
 
 ### Modal Not Opening
 
@@ -246,12 +259,15 @@ ORDER BY issue_number DESC;
 
 ## Best Practices
 
-1. **Plan Ahead**: Create magazines 1-2 weeks in advance
-2. **Sequential Issues**: Use sequential issue numbers (1, 2, 3...)
-3. **Consistent Themes**: Align themes with artisan craft categories
-4. **Quality Images**: Use high-resolution, branded cover images
-5. **Test Before Publishing**: Set `status = 'draft'` initially, then update to `'published'`
-6. **No Gaps**: Ensure `active_until` of one issue = `active_from` of next issue
+1. **Sequential Issues**: Use sequential issue numbers (1, 2, 3...) to control homepage display
+2. **Consistent Themes**: Align themes with artisan craft categories
+3. **Quality Cover Images**: Use high-quality covers optimized for each display
+   - Homepage: 320x427px (3:4 portrait, magazine cover style)
+   - /publications page: 800x500px (16:10 landscape)
+   - You can use one image for both, but it will be cropped differently
+4. **Test Before Publishing**: Set `status = 'draft'` initially, then update to `'published'`
+5. **Engaging Titles**: Create compelling titles that draw readers in
+6. **Keep It Fresh**: Regularly publish new issues - the homepage and /publications page always show the latest
 
 ## Theme Ideas
 
