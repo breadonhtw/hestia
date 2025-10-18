@@ -194,7 +194,7 @@ const Index = () => {
                   </Button>
                 </Link>
                 <Link
-                  to="/join"
+                  to={user ? "/profile" : "/join"}
                   className="pointer-events-auto"
                 >
                   <Button
@@ -202,7 +202,7 @@ const Index = () => {
                     className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up"
                     style={{ animationDelay: "0.3s" }}
                   >
-                    Join as a Creator
+                    {user ? "View Profile" : "Join as a Creator"}
                   </Button>
                 </Link>
               </div>

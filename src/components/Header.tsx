@@ -65,7 +65,7 @@ export const Header = () => {
         {
           label: "Log In",
           Icon: <LogIn className="w-4 h-4" />,
-          onClick: () => navigate("/auth"),
+          onClick: () => navigate("/login"),
         },
       ];
     } else if (isArtisan) {
@@ -138,7 +138,7 @@ export const Header = () => {
     { label: "About Hestia", path: "/about" },
     { label: "Browse Creators", path: "/browse" },
     { label: "Contact Us", path: "/contact" },
-    { label: "Sign In", path: "/auth" },
+    { label: "Sign In", path: "/login" },
   ];
 
   return (

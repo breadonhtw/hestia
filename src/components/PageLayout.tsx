@@ -60,7 +60,7 @@ export const PageLayout = ({ children }: PageLayoutProps) => {
         {
           label: "Log In",
           Icon: <LogIn className="w-4 h-4" />,
-          onClick: () => navigate("/auth"),
+          onClick: () => navigate("/login"),
         },
       ];
     } else if (isArtisan) {

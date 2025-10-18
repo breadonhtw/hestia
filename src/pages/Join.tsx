@@ -1,304 +1,271 @@
 import { useState } from "react";
-import { PageLayout } from "@/components/PageLayout";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectItem,
-  SelectListBox,
-  SelectPopover,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { toast } from "sonner";
-import { joinFormSchema } from "@/lib/validations";
-import { supabase } from "@/integrations/supabase/client";
+import { UserPlus, Lock, Mail, User, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
+import { showToast } from "@/hooks/use-toast-modern";
+import { validatePasswordStrength, validateUsername } from "@/lib/password-validation";
+import { motion } from "framer-motion";
 
 const Join = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    location: "",
-    craftType: "",
-    story: "",
-    specialty: "",
-    website: "",
-    instagram: "",
-    phone: "",
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPasswordReqs, setShowPasswordReqs] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
+  const { signUp, checkUsernameAvailability, user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
+  // Redirect if already logged in
+  if (user) {
+    navigate("/");
+    return null;
+  }
 
-    // Validate with Zod
-    const result = joinFormSchema.safeParse(formData);
+  const passwordStrength = validatePasswordStrength(password);
+  const usernameValidation = validateUsername(username);
 
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as string] = err.message;
-        }
+  const handleSignUp = async () => {
+    // Validation
+    if (!email || !username || !fullName || !password) {
+      showToast({
+        title: "Missing Information",
+        message: "Please fill in all required fields.",
+        variant: "warning",
+        position: "bottom-right",
+        duration: 4000,
       });
-      setErrors(fieldErrors);
-      toast.error("Please fix the form errors");
       return;
     }
 
-    // Save application to database
-    const { error } = await supabase.from("artisan_applications").insert({
-      name: result.data.name,
-      email: result.data.email,
-      location: result.data.location,
-      craft_type: result.data.craftType,
-      story: result.data.story,
-      specialty: result.data.specialty || null,
-      website: result.data.website || null,
-      instagram: result.data.instagram || null,
-      phone: result.data.phone || null,
-    });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast({
+        title: "Invalid Email",
+        message: "Please enter a valid email address.",
+        variant: "error",
+        position: "bottom-right",
+        duration: 4000,
+      });
+      return;
+    }
+
+    if (!usernameValidation.isValid) {
+      showToast({
+        title: "Invalid Username",
+        message: usernameValidation.error,
+        variant: "error",
+        position: "bottom-right",
+        duration: 4000,
+      });
+      return;
+    }
+
+    if (!passwordStrength.isValid) {
+      showToast({
+        title: "Weak Password",
+        message: passwordStrength.feedback.join(", "),
+        variant: "error",
+        position: "bottom-right",
+        duration: 5000,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    const { error } = await signUp(email, password, fullName, username, 'community_member');
 
     if (error) {
-      console.error("Application submission error:", error);
-      toast.error("Submission failed", {
-        description:
-          "Please try again or contact support if the issue persists.",
+      showToast({
+        title: "Sign Up Failed",
+        message: error.message,
+        variant: "error",
+        position: "bottom-right",
+        duration: 5000,
       });
+      setIsLoading(false);
       return;
     }
 
-    // Data is validated and safe to submit
-    toast.success(
-      "Application submitted! We'll review it and be in touch within 5 business days."
-    );
-
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      location: "",
-      craftType: "",
-      story: "",
-      specialty: "",
-      website: "",
-      instagram: "",
-      phone: "",
+    showToast({
+      title: "Welcome to Hestia!",
+      message: "Please check your email to verify your account.",
+      variant: "success",
+      position: "bottom-right",
+      duration: 5000,
+      highlightTitle: true,
     });
+
+    setIsLoading(false);
+    setTimeout(() => navigate("/login"), 2000);
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleUsernameBlur = async () => {
+    if (username && usernameValidation.isValid) {
+      const isAvailable = await checkUsernameAvailability(username);
+      setIsUsernameAvailable(isAvailable);
+
+      if (!isAvailable) {
+        showToast({
+          title: "Username Taken",
+          message: "This username is already in use. Please choose another.",
+          variant: "warning",
+          position: "bottom-right",
+          duration: 4000,
+        });
+      }
+    }
   };
 
   return (
-    <PageLayout>
-      <div className="w-full max-w-[1920px]">
-        {/* Hero */}
-        <section className="container mx-auto px-4 lg:px-8 py-16 text-center">
-          <h1 className="font-serif text-5xl md:text-6xl font-bold text-foreground mb-6">
-            Share Your Craft with the Community
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Join Hestia and connect with people who appreciate handmade
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.3,
+          duration: 0.8,
+          ease: "easeInOut",
+        }}
+        className="relative flex flex-col gap-4 items-center justify-center px-4"
+      >
+        <div className="w-full max-w-sm bg-gradient-to-b from-primary/5 via-background to-background rounded-3xl shadow-xl p-8 flex flex-col items-center border border-primary/20 backdrop-blur-sm">
+          <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-background mb-6 shadow-lg border border-primary/30">
+            <UserPlus className="w-7 h-7 text-primary" />
+          </div>
+          <h2 className="text-2xl font-serif font-semibold mb-2 text-center text-foreground">
+            Join Hestia
+          </h2>
+          <p className="text-muted-foreground text-sm mb-6 text-center">
+            Discover amazing artisans and handcrafted goods
           </p>
-        </section>
 
-        {/* Form */}
-        <section className="container mx-auto px-4 lg:px-8 pb-24">
-          <form
-            onSubmit={handleSubmit}
-            className="max-w-2xl mx-auto bg-card rounded-xl shadow-soft p-8 md:p-12 space-y-6"
-          >
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name *</Label>
-              <Input
-                id="name"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="bg-background"
+          <div className="w-full flex flex-col gap-3 mb-2">
+            {/* Display Name */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <User className="w-4 h-4" />
+              </span>
+              <input
+                placeholder="Display Name"
+                type="text"
+                value={fullName}
+                className="w-full pl-10 pr-3 py-2 rounded-xl border border-input focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground text-sm"
+                onChange={(e) => setFullName(e.target.value)}
+                disabled={isLoading}
               />
-              {errors.name && (
-                <p className="text-sm text-destructive">{errors.name}</p>
-              )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address *</Label>
-              <Input
-                id="email"
-                name="email"
+            {/* Email */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Mail className="w-4 h-4" />
+              </span>
+              <input
+                placeholder="Email"
                 type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="bg-background"
+                value={email}
+                className="w-full pl-10 pr-3 py-2 rounded-xl border border-input focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground text-sm"
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email}</p>
+            </div>
+
+            {/* Username */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <User className="w-4 h-4" />
+              </span>
+              <input
+                placeholder="Username"
+                type="text"
+                value={username}
+                className="w-full pl-10 pr-10 py-2 rounded-xl border border-input focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground text-sm"
+                onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                onBlur={handleUsernameBlur}
+                disabled={isLoading}
+              />
+              {username && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {usernameValidation.isValid && isUsernameAvailable !== false ? (
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-destructive" />
+                  )}
+                </span>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="location">Location (City/Neighborhood) *</Label>
-              <Input
-                id="location"
-                name="location"
-                required
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="e.g., Downtown District"
-                className="bg-background"
+            {/* Password */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Lock className="w-4 h-4" />
+              </span>
+              <input
+                placeholder="Password"
+                type="password"
+                value={password}
+                className="w-full pl-10 pr-10 py-2 rounded-xl border border-input focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background text-foreground text-sm"
+                onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setShowPasswordReqs(true)}
+                onBlur={() => setShowPasswordReqs(false)}
+                disabled={isLoading}
               />
-              {errors.location && (
-                <p className="text-sm text-destructive">{errors.location}</p>
-              )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="craftType">Craft Type *</Label>
-              <Select
-                selectedKey={formData.craftType}
-                onSelectionChange={(key) =>
-                  setFormData({ ...formData, craftType: key as string })
-                }
-                isRequired
-                placeholder="Select your craft"
-              >
-                <SelectTrigger className="bg-background">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectPopover>
-                  <SelectListBox>
-                    <SelectItem id="pottery">Pottery & Ceramics</SelectItem>
-                    <SelectItem id="textiles">Textiles & Fiber Arts</SelectItem>
-                    <SelectItem id="woodwork">Woodworking</SelectItem>
-                    <SelectItem id="baked">Baked Goods & Preserves</SelectItem>
-                    <SelectItem id="jewelry">Jewelry & Accessories</SelectItem>
-                    <SelectItem id="art">Art & Illustration</SelectItem>
-                    <SelectItem id="plants">Plants & Florals</SelectItem>
-                    <SelectItem id="decor">Home Decor</SelectItem>
-                    <SelectItem id="other">Other</SelectItem>
-                  </SelectListBox>
-                </SelectPopover>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="story">Your Story (500 characters max) *</Label>
-              <Textarea
-                id="story"
-                name="story"
-                required
-                value={formData.story}
-                onChange={handleChange}
-                maxLength={500}
-                rows={4}
-                placeholder="Tell us about your journey as a maker..."
-                className="bg-background resize-none"
-              />
-              <p className="text-xs text-muted-foreground">
-                {formData.story.length}/500 characters
-              </p>
-              {errors.story && (
-                <p className="text-sm text-destructive">{errors.story}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="specialty">
-                What Makes Your Work Special? (300 characters max)
-              </Label>
-              <Textarea
-                id="specialty"
-                name="specialty"
-                value={formData.specialty}
-                onChange={handleChange}
-                maxLength={300}
-                rows={3}
-                className="bg-background resize-none"
-              />
-              <p className="text-xs text-muted-foreground">
-                {formData.specialty.length}/300 characters
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="website">Website URL</Label>
-                <Input
-                  id="website"
-                  name="website"
-                  type="url"
-                  value={formData.website}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                  className="bg-background"
-                />
-                {errors.website && (
-                  <p className="text-sm text-destructive">{errors.website}</p>
+            {/* Password Requirements */}
+            {showPasswordReqs && (
+              <div className="text-xs space-y-1 p-3 rounded-lg bg-muted/50">
+                {passwordStrength.feedback.length > 0 ? (
+                  passwordStrength.feedback.map((req, i) => (
+                    <div key={i} className="flex items-center gap-2 text-muted-foreground">
+                      <XCircle className="w-3 h-3 text-destructive" />
+                      <span>{req}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <CheckCircle className="w-3 h-3" />
+                    <span>Strong password!</span>
+                  </div>
                 )}
               </div>
+            )}
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="instagram">Instagram Handle</Label>
-                <Input
-                  id="instagram"
-                  name="instagram"
-                  value={formData.instagram}
-                  onChange={handleChange}
-                  placeholder="@yourusername"
-                  className="bg-background"
-                />
-                {errors.instagram && (
-                  <p className="text-sm text-destructive">{errors.instagram}</p>
-                )}
-              </div>
-            </div>
+          <button
+            onClick={handleSignUp}
+            disabled={isLoading || (username && isUsernameAvailable === false)}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2 rounded-xl shadow hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mb-4 mt-2 flex items-center justify-center"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              "Create Account"
+            )}
+          </button>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number (optional)</Label>
-              <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                className="bg-background"
-              />
-              {errors.phone && (
-                <p className="text-sm text-destructive">{errors.phone}</p>
-              )}
-            </div>
-
-            <div className="pt-6">
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                Apply to Join Hestia
-              </Button>
-            </div>
-
-            <p className="text-sm text-muted-foreground text-center pt-4">
-              We'll review your application and be in touch within 5 business
-              days
-            </p>
-          </form>
-        </section>
-
-        <Footer />
-      </div>
-    </PageLayout>
+          <div className="mt-6 text-center space-y-2">
+            <Link
+              to="/login"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors block"
+            >
+              ← Already have an account? Sign in
+            </Link>
+            <Link
+              to="/"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors block"
+            >
+              Continue as Guest →
+            </Link>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 };
 

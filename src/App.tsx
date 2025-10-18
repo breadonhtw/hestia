@@ -16,7 +16,8 @@ const CreatorProfile = React.lazy(() => import("./pages/CreatorProfile"));
 const ProfileModal = React.lazy(() => import("./pages/ProfileModal"));
 const About = React.lazy(() => import("./pages/About"));
 const Contact = React.lazy(() => import("./pages/Contact"));
-const Auth = React.lazy(() => import("./pages/Auth"));
+const Login = React.lazy(() => import("./pages/Login"));
+const Join = React.lazy(() => import("./pages/Join"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const ArtisanUpgrade = React.lazy(() => import("./pages/ArtisanUpgrade"));
 const Settings = React.lazy(() => import("./pages/Settings"));
@@ -54,7 +55,8 @@ const AppRoutes = () => {
         <Route path="/creator/:id" element={<CreatorProfile />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/join" element={<Join />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/become-artisan" element={<ArtisanUpgrade />} />
         <Route path="/settings" element={<Settings />}>

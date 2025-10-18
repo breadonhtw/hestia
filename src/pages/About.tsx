@@ -106,12 +106,12 @@ const About = () => {
               welcome you to join our community of makers.
             </p>
             <div className="text-center">
-              <Link to={user ? "/join" : "/auth"}>
+              <Link to={user ? "/profile" : "/join"}>
                 <Button
                   size="lg"
                   className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
                 >
-                  Join as a Creator
+                  {user ? "View Profile" : "Join as a Creator"}
                 </Button>
               </Link>
             </div>
