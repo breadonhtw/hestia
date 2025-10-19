@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X, ArrowRight, Loader2, ImageOff, Mail, CheckCircle, Clock } from "lucide-react";
+import { X, ArrowRight, Loader2, ImageOff, CheckCircle, Clock } from "lucide-react";
 import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { useFeaturedGalleryImages, useArtisanById } from "@/hooks/useArtisans";
 import { ArtisanBadges } from "@/components/artisan/ArtisanBadge";
 import { useAuth } from "@/contexts/AuthContext";
-import { ContactFormDialog } from "@/components/artisan/ContactFormDialog";
 
 interface CreatorOverlayProps {
   creator: Creator;
@@ -26,7 +25,6 @@ export const CreatorOverlay = ({
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const { data: featuredImages, isLoading: loadingFeatured } =
     useFeaturedGalleryImages(creator.id);
   const { data: artisan } = useArtisanById(creator.id);
@@ -226,39 +224,16 @@ export const CreatorOverlay = ({
           ) : null}
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
-            {!isOwnProfile && (
-              <Button
-                onClick={() => setContactDialogOpen(true)}
-                variant="outline"
-                className="flex-1 gap-2"
-                size="lg"
-              >
-                <Mail className="h-4 w-4" />
-                Contact
-              </Button>
-            )}
-            <Button
-              onClick={handleViewProfile}
-              className="flex-1 gap-2"
-              size="lg"
-            >
-              View Profile
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            onClick={handleViewProfile}
+            className="w-full gap-2"
+            size="lg"
+          >
+            View Profile
+            <ArrowRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
-
-      {/* Contact Form Dialog */}
-      {artisan && (
-        <ContactFormDialog
-          artisanId={artisan.id}
-          artisanName={creator.name}
-          open={contactDialogOpen}
-          onOpenChange={setContactDialogOpen}
-        />
-      )}
     </>
   );
 };

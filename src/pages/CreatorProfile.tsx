@@ -16,9 +16,8 @@ import {
   Loader2,
   Edit,
   Mail,
-  Heart,
-  Eye,
-  MessageCircle,
+  Phone,
+  MessageSquare,
   CheckCircle,
   Clock,
 } from "lucide-react";
@@ -30,12 +29,10 @@ import {
   useSimilarArtisans,
   useGalleryImages,
 } from "@/hooks/useArtisans";
-import { useArtisanAnalyticsRealtime } from "@/hooks/useAnalytics";
 import type { Creator } from "@/types/creator";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArtisanBadges } from "@/components/artisan/ArtisanBadge";
 import { trackProfileViewDebounced } from "@/lib/analytics";
-import { ContactFormDialog } from "@/components/artisan/ContactFormDialog";
 import { ImageLightbox, LightboxImage } from "@/components/ui/image-lightbox";
 
 const CreatorProfile = () => {
@@ -43,7 +40,6 @@ const CreatorProfile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("about");
-  const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -69,13 +65,6 @@ const CreatorProfile = () => {
 
   // Check if viewing own profile
   const isOwnProfile = user?.id === artisan?.user_id;
-
-  // Fetch real analytics data (only if not own profile)
-  const { data: analytics } = useArtisanAnalyticsRealtime(
-    artisan?.id || "",
-    30,
-    !!artisan && !isOwnProfile
-  );
 
   // Track profile view when artisan data is loaded
   useEffect(() => {
@@ -239,8 +228,8 @@ const CreatorProfile = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-2">
-                    {isOwnProfile && (
+                  {isOwnProfile && (
+                    <div className="flex gap-2">
                       <Button
                         onClick={() => navigate("/settings/profile")}
                         variant="outline"
@@ -250,18 +239,8 @@ const CreatorProfile = () => {
                         <Edit className="h-4 w-4" />
                         Edit Profile
                       </Button>
-                    )}
-                    {!isOwnProfile && (
-                      <Button
-                        size="sm"
-                        className="gap-2"
-                        onClick={() => setContactDialogOpen(true)}
-                      >
-                        <Mail className="h-4 w-4" />
-                        Contact
-                      </Button>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Status Indicators */}
@@ -312,48 +291,6 @@ const CreatorProfile = () => {
           </div>
         </section>
 
-        {/* Stats Section - Only show to visitors with real analytics data */}
-        {!isOwnProfile && analytics && (
-          <section className="border-b border-border">
-            <div className="container mx-auto px-4 lg:px-8 py-6">
-              <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-2xl">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 text-muted-foreground mb-1">
-                    <Eye className="h-4 w-4" />
-                    <span className="text-xs md:text-sm font-medium">
-                      Views
-                    </span>
-                  </div>
-                  <p className="text-xl md:text-2xl font-bold text-foreground">
-                    {analytics.total_profile_views.toLocaleString()}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 text-muted-foreground mb-1">
-                    <Heart className="h-4 w-4" />
-                    <span className="text-xs md:text-sm font-medium">
-                      Favorites
-                    </span>
-                  </div>
-                  <p className="text-xl md:text-2xl font-bold text-foreground">
-                    {analytics.current_favorites}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 text-muted-foreground mb-1">
-                    <MessageCircle className="h-4 w-4" />
-                    <span className="text-xs md:text-sm font-medium">
-                      Messages
-                    </span>
-                  </div>
-                  <p className="text-xl md:text-2xl font-bold text-foreground">
-                    {analytics.total_contact_requests}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         {/* Tabbed Content */}
         <section className="container mx-auto px-4 lg:px-8 py-12">
@@ -378,7 +315,7 @@ const CreatorProfile = () => {
                     About {creator.name.split(" ")[0]}
                   </h2>
                   <div className="prose prose-lg max-w-none">
-                    <p className="text-base md:text-lg text-foreground leading-relaxed mb-4 whitespace-pre-wrap">
+                    <p className="text-base md:text-lg text-foreground leading-relaxed mb-4 whitespace-pre-wrap break-words">
                       {creator.bio}
                     </p>
                     {creator.story && (
@@ -454,74 +391,102 @@ const CreatorProfile = () => {
               <Card>
                 <CardContent className="p-6 md:p-8">
                   <h2 className="font-serif text-2xl md:text-3xl font-bold mb-6">
-                    Get in Touch
+                    Contact Information
                   </h2>
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="font-semibold text-lg mb-2">
-                        Work Together
-                      </h3>
-                      <p className="text-muted-foreground mb-4">
-                        Interested in commissioning a piece or learning more
-                        about {creator.name.split(" ")[0]}'s work? Send a
-                        message to get started.
-                      </p>
-                      <Button
-                        className="w-full md:w-auto gap-2"
-                        size="lg"
-                        onClick={() => setContactDialogOpen(true)}
+                  <div className="space-y-4">
+                    {artisan.email && (
+                      <a
+                        href={`mailto:${artisan.email}`}
+                        className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
                       >
-                        <Mail className="h-5 w-5" />
-                        Send Message
-                      </Button>
-                    </div>
-
-                    {(creator.instagram || creator.website) && (
-                      <>
-                        <Separator />
+                        <Mail className="h-5 w-5 text-primary" />
                         <div>
-                          <h3 className="font-semibold text-lg mb-4">
-                            Connect Online
-                          </h3>
-                          <div className="flex flex-col gap-3">
-                            {creator.instagram && (
-                              <a
-                                href={`https://instagram.com/${sanitizeInstagramHandle(
-                                  creator.instagram
-                                )}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
-                              >
-                                <Instagram className="h-5 w-5 text-primary" />
-                                <div>
-                                  <p className="font-medium">Instagram</p>
-                                  <p className="text-sm text-muted-foreground">
-                                    @
-                                    {sanitizeInstagramHandle(creator.instagram)}
-                                  </p>
-                                </div>
-                              </a>
-                            )}
-                            {creator.website && (
-                              <a
-                                href={sanitizeUrl(creator.website)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
-                              >
-                                <Globe className="h-5 w-5 text-primary" />
-                                <div>
-                                  <p className="font-medium">Website</p>
-                                  <p className="text-sm text-muted-foreground break-all">
-                                    {creator.website}
-                                  </p>
-                                </div>
-                              </a>
-                            )}
-                          </div>
+                          <p className="font-medium">Email</p>
+                          <p className="text-sm text-muted-foreground break-all">
+                            {artisan.email}
+                          </p>
                         </div>
-                      </>
+                      </a>
+                    )}
+                    {artisan.phone && (
+                      <a
+                        href={`tel:${artisan.phone}`}
+                        className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
+                      >
+                        <Phone className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="font-medium">Phone</p>
+                          <p className="text-sm text-muted-foreground">
+                            {artisan.phone}
+                          </p>
+                        </div>
+                      </a>
+                    )}
+                    {creator.instagram && (
+                      <a
+                        href={`https://instagram.com/${sanitizeInstagramHandle(
+                          creator.instagram
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
+                      >
+                        <Instagram className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="font-medium">Instagram</p>
+                          <p className="text-sm text-muted-foreground">
+                            @{sanitizeInstagramHandle(creator.instagram)}
+                          </p>
+                        </div>
+                      </a>
+                    )}
+                    {artisan.telegram && (
+                      <a
+                        href={`https://t.me/${artisan.telegram.replace('@', '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
+                      >
+                        <MessageSquare className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="font-medium">Telegram</p>
+                          <p className="text-sm text-muted-foreground">
+                            {artisan.telegram}
+                          </p>
+                        </div>
+                      </a>
+                    )}
+                    {artisan.whatsapp_url && (
+                      <a
+                        href={sanitizeUrl(artisan.whatsapp_url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
+                      >
+                        <MessageSquare className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="font-medium">WhatsApp</p>
+                          <p className="text-sm text-muted-foreground break-all">
+                            Chat on WhatsApp
+                          </p>
+                        </div>
+                      </a>
+                    )}
+                    {creator.website && (
+                      <a
+                        href={sanitizeUrl(creator.website)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
+                      >
+                        <Globe className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="font-medium">Website</p>
+                          <p className="text-sm text-muted-foreground break-all">
+                            {creator.website}
+                          </p>
+                        </div>
+                      </a>
                     )}
                   </div>
                 </CardContent>
@@ -551,14 +516,6 @@ const CreatorProfile = () => {
         )}
 
         <Footer />
-
-        {/* Contact Form Dialog */}
-        <ContactFormDialog
-          artisanId={artisan.id}
-          artisanName={creator.name}
-          open={contactDialogOpen}
-          onOpenChange={setContactDialogOpen}
-        />
 
         {/* Image Lightbox */}
         <ImageLightbox
