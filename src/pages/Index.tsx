@@ -1,6 +1,5 @@
 import { Helmet } from "react-helmet";
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   ChevronDown,
@@ -22,14 +21,12 @@ import { ScrollProgress } from "@/components/ScrollProgress";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useArtisans } from "@/hooks/useArtisans";
 import { usePublications } from "@/hooks/usePublications";
-import { HeroShadow } from "@/components/HeroShadow";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import type { Creator } from "@/types/creator";
 import { GradientText } from "@/components/ui/gradient-text";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { MagazineModal } from "@/components/MagazineModal";
-// Floating effects and Footer are loaded on idle to reduce initial JS
-import heroBackground from "@/assets/hero-background.jpg";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   const { user } = useAuth();
@@ -39,29 +36,6 @@ const Index = () => {
 
   // Get latest publication
   const latestPublication = publicationsData?.[0];
-  const [showEffects, setShowEffects] = useState(false);
-  const [FloatingOrbsComp, setFloatingOrbsComp] = useState<
-    null | ((props: any) => JSX.Element)
-  >(null);
-  const [FooterComp, setFooterComp] = useState<
-    null | ((props: any) => JSX.Element)
-  >(null);
-
-  useEffect(() => {
-    const schedule = (cb: () => void) =>
-      (window as any).requestIdleCallback
-        ? (window as any).requestIdleCallback(cb)
-        : setTimeout(cb, 200);
-    schedule(() => {
-      setShowEffects(true);
-      import("@/components/ui/floating-orbs").then((m) =>
-        setFloatingOrbsComp(() => m.FloatingOrbs as any)
-      );
-      import("@/components/Footer").then((m) =>
-        setFooterComp(() => m.Footer as any)
-      );
-    });
-  }, []);
 
   // Transform artisan data to Creator format
   const creators: Creator[] = (artisansData || []).map((artisan) => ({
@@ -126,7 +100,6 @@ const Index = () => {
           />
           <meta property="og:type" content="website" />
           <meta property="og:image" content="https://www.hestia.sg/og-image.jpg" />
-          <link rel="preload" as="image" href={heroBackground} />
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -167,55 +140,59 @@ const Index = () => {
         </Helmet>
         <ScrollProgress />
 
-        {/* Hero Section with Ethereal Shadow */}
-        <HeroShadow
-          variant="sage"
-          intensity="medium"
-          className="pointer-events-none min-h-screen"
-          deferAnimation
-        >
-          {showEffects && FloatingOrbsComp && <FloatingOrbsComp count={6} />}
-          <section className="min-h-screen flex items-center justify-center overflow-hidden pointer-events-auto pt-20">
-            <div className="text-center max-w-4xl mx-auto px-4">
-              <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-in-up drop-shadow-lg">
-                Discover the Makers Behind Your Neighborhood's Hidden Treasures
-              </h1>
-              <p
-                className="font-sans text-xl md:text-2xl text-foreground mb-8 animate-fade-in-up drop-shadow-md"
-                style={{ animationDelay: "0.1s" }}
-              >
-                Connect with local artisans crafting beauty from home
-              </p>
-              <div className="flex flex-row gap-6 justify-center">
-                <Link to="/browse" aria-label="Explore creators">
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up pointer-events-auto"
-                    style={{ animationDelay: "0.2s" }}
-                  >
-                    Explore Creators
-                  </Button>
-                </Link>
-                <Link
-                  to={user ? "/profile" : "/join"}
-                  className="pointer-events-auto"
-                >
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl shadow-glow animate-fade-in-up"
-                    style={{ animationDelay: "0.3s" }}
-                  >
-                    {user ? "View Profile" : "Join as a Creator"}
-                  </Button>
-                </Link>
+        {/* Hero Section - Split Layout */}
+        <section className="min-h-screen bg-neutral flex items-center overflow-hidden">
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-screen py-20">
+              {/* Left: Content */}
+              <div className="space-y-8 max-w-xl">
+                <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight">
+                  Discover the Makers Behind Your Neighborhood's Hidden Treasures
+                </h1>
+
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                  Connect with talented artisans and makers in your community
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link to="/browse" aria-label="Explore creators">
+                    <Button
+                      size="lg"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg rounded-xl w-full sm:w-auto"
+                    >
+                      Explore Creators
+                    </Button>
+                  </Link>
+                  <Link to={user ? "/profile" : "/join"}>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="px-8 py-6 text-lg rounded-xl border-2 w-full sm:w-auto"
+                    >
+                      {user ? "View Profile" : "Join as a Creator"}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right: Illustration */}
+              <div className="hidden lg:flex items-center justify-center">
+                <img
+                  src="/hero-illustration.png"
+                  alt="Artisan crafting illustration"
+                  className="w-full h-auto max-w-2xl"
+                  loading="eager"
+                  fetchPriority="high"
+                />
               </div>
             </div>
 
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-20 pointer-events-auto">
-              <ChevronDown className="h-8 w-8 text-muted-foreground drop-shadow-md" />
+            {/* Scroll indicator */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+              <ChevronDown className="h-8 w-8 text-muted-foreground" />
             </div>
-          </section>
-        </HeroShadow>
+          </div>
+        </section>
 
         {/* Latest Magazine Section */}
         {latestPublication && (
@@ -362,7 +339,7 @@ const Index = () => {
           </div>
         </section>
 
-        {FooterComp ? <FooterComp /> : null}
+        <Footer />
       </div>
     </PageLayout>
   );
