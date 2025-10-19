@@ -12,24 +12,37 @@ export const FavoritesList = () => {
     queryKey: ['favorites', user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase
+      // First get the artisan IDs from user_favorites
+      const { data: favoriteIds } = await supabase
         .from('user_favorites')
-        .select(`
-          *,
-          artisan:artisans!inner(
-            id,
-            bio,
-            craft_type,
-            location,
-            profile:profiles!inner(
-              username,
-              full_name,
-              avatar_url
-            )
-          )
-        `)
+        .select('artisan_id')
         .eq('user_id', user!.id);
-      return data;
+
+      if (!favoriteIds || favoriteIds.length === 0) {
+        return [];
+      }
+
+      // Then fetch full artisan data from artisans_public view
+      const { data: artisans } = await supabase
+        .from('artisans_public')
+        .select('*')
+        .in('id', favoriteIds.map(f => f.artisan_id));
+
+      // Map back to favorites format for compatibility
+      return artisans?.map(artisan => ({
+        id: artisan.id,
+        artisan: {
+          id: artisan.id,
+          bio: artisan.bio,
+          craft_type: artisan.craft_type,
+          location: artisan.location,
+          profile: {
+            username: artisan.username,
+            full_name: artisan.full_name,
+            avatar_url: artisan.avatar_url
+          }
+        }
+      })) || [];
     }
   });
 

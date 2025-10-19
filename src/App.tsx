@@ -1,5 +1,4 @@
-import ToasterModern from "@/components/ui/toast-modern";
-import { useToastModern } from "@/hooks/use-toast-modern";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -81,8 +80,6 @@ const AppRoutes = () => {
 };
 
 const App = () => {
-  const toasterRef = useToastModern();
-
   const persister =
     typeof window !== "undefined"
       ? createSyncStoragePersister({ storage: window.localStorage })
@@ -95,7 +92,7 @@ const App = () => {
     >
       <AuthProvider>
         <TooltipProvider>
-          <ToasterModern ref={toasterRef} />
+          <Toaster />
           <BrowserRouter>
             <ScrollToTop />
             <AppRoutes />

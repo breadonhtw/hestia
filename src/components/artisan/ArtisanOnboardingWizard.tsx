@@ -162,13 +162,13 @@ export function ArtisanOnboardingWizard({
 
   // Profile data will be initialized through loadDraftProfile function
 
-  // Load existing draft or create new one
+  // Load existing draft if it exists (but don't create one yet)
   useEffect(() => {
     const initializeProfile = async () => {
       if (!user || isInitialized.current) return;
       isInitialized.current = true;
 
-      // Try to load existing draft
+      // Try to load existing draft (if user has already started onboarding before)
       const existing = await loadDraftProfile();
 
       if (existing && existing.id) {
@@ -180,12 +180,8 @@ export function ArtisanOnboardingWizard({
         setGalleryImages(images);
         hasLoadedData.current = true;
       } else {
-        // Create new draft
-        const newId = await createArtisanProfile();
-        if (newId) {
-          setArtisanId(newId);
-          hasLoadedData.current = true;
-        }
+        // Don't create artisan record yet - wait until they publish
+        hasLoadedData.current = true;
       }
     };
 
@@ -194,8 +190,11 @@ export function ArtisanOnboardingWizard({
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-save on field changes (debounced)
+  // Only auto-save if artisan record exists (i.e., user has uploaded images or saved)
   useEffect(() => {
-    // Skip auto-save until data has been loaded initially
+    // Skip auto-save until:
+    // 1. Data has been loaded initially
+    // 2. An artisan record exists (created when they upload images or save)
     if (!artisanId || !hasLoadedData.current) return;
 
     const timeoutId = setTimeout(async () => {
@@ -229,9 +228,28 @@ export function ArtisanOnboardingWizard({
   };
 
   const handlePublish = async () => {
-    if (!artisanId) return;
+    // If no artisan record exists yet, create it first
+    let currentArtisanId = artisanId;
 
-    const result = await publishArtisanProfile(artisanId);
+    if (!currentArtisanId) {
+      currentArtisanId = await createArtisanProfile();
+
+      if (!currentArtisanId) {
+        toast.error("Failed to create artisan profile");
+        return;
+      }
+
+      setArtisanId(currentArtisanId);
+
+      // Save the form data to the newly created profile
+      await updateDraftProfile(currentArtisanId, formData);
+
+      // Upload gallery images if any were selected
+      // (This shouldn't happen in practice since images require artisanId,
+      // but keeping for safety)
+    }
+
+    const result = await publishArtisanProfile(currentArtisanId);
 
     if (result.success) {
       // Invalidate role and profile queries to refresh the UI
@@ -251,22 +269,62 @@ export function ArtisanOnboardingWizard({
   };
 
   const handleSaveAndExit = async () => {
-    if (artisanId) {
-      await updateDraftProfile(artisanId, formData);
+    // Only save if user has filled out some data
+    const hasData =
+      formData.displayName ||
+      formData.category ||
+      formData.bio ||
+      formData.location;
+
+    if (hasData) {
+      let currentArtisanId = artisanId;
+
+      // Create artisan record if it doesn't exist yet
+      if (!currentArtisanId) {
+        currentArtisanId = await createArtisanProfile();
+
+        if (!currentArtisanId) {
+          toast.error("Failed to save progress");
+          return;
+        }
+
+        setArtisanId(currentArtisanId);
+      }
+
+      await updateDraftProfile(currentArtisanId, formData);
       toast.success("Progress saved");
     }
+
     onCancel?.();
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || !artisanId) return;
+    if (!files) return;
+
+    // If no artisan record exists yet, create it first
+    let currentArtisanId = artisanId;
+
+    if (!currentArtisanId) {
+      currentArtisanId = await createArtisanProfile();
+
+      if (!currentArtisanId) {
+        toast.error("Failed to create artisan profile");
+        return;
+      }
+
+      setArtisanId(currentArtisanId);
+
+      // Save current form data to the profile
+      await updateDraftProfile(currentArtisanId, formData);
+      hasLoadedData.current = true;
+    }
 
     setUploadingImage(true);
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const result = await uploadGalleryImage(artisanId, file);
+      const result = await uploadGalleryImage(currentArtisanId, file);
 
       if (result.success && result.url) {
         setGalleryImages((prev) => [...prev, result.url!]);

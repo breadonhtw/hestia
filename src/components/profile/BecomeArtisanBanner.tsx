@@ -34,22 +34,6 @@ export const BecomeArtisanBanner = () => {
                 </p>
               </div>
 
-              {/* Quick Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-                <div className="bg-background/50 backdrop-blur-sm rounded-lg p-3 border border-primary/10">
-                  <div className="text-2xl font-bold text-primary">125+</div>
-                  <p className="text-xs text-muted-foreground">Artisans</p>
-                </div>
-                <div className="bg-background/50 backdrop-blur-sm rounded-lg p-3 border border-primary/10">
-                  <div className="text-2xl font-bold text-primary">5K+</div>
-                  <p className="text-xs text-muted-foreground">Visitors/Month</p>
-                </div>
-                <div className="bg-background/50 backdrop-blur-sm rounded-lg p-3 border border-primary/10">
-                  <div className="text-2xl font-bold text-primary">100%</div>
-                  <p className="text-xs text-muted-foreground">Free to Join</p>
-                </div>
-              </div>
-
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-3 pt-4">
                 <Button

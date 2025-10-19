@@ -86,15 +86,19 @@ export function useArtisanUpgrade() {
     try {
       // Fetch both artisan profile and user profile in parallel
       const [artisanResult, profileResult] = await Promise.all([
-        supabase.from("artisans").select("*").eq("user_id", user.id).single(),
-        supabase.from("profiles").select("*").eq("id", user.id).single(),
+        supabase
+          .from("artisans")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle(),
+        supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
       ]);
 
       const { data: artisanData, error: artisanError } = artisanResult;
       const { data: profileData, error: profileError } = profileResult;
 
-      if (artisanError && artisanError.code !== "PGRST116") throw artisanError; // PGRST116 = not found
-      if (profileError && profileError.code !== "PGRST116") throw profileError;
+      if (artisanError) throw artisanError;
+      if (profileError) throw profileError;
 
       if (artisanData) {
         const draft: ArtisanProfileDraft = {

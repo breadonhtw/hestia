@@ -9,7 +9,6 @@ import {
   User,
   LogOut,
   BarChart3,
-  Heart,
   LogIn,
   Settings as SettingsIcon,
 } from "lucide-react";
@@ -85,11 +84,6 @@ export const Header = () => {
           },
         },
         {
-          label: "Favorites",
-          Icon: <Heart className="w-4 h-4" />,
-          onClick: () => navigate("/profile?tab=favorites"),
-        },
-        {
           label: "Analytics",
           Icon: <BarChart3 className="w-4 h-4" />,
           onClick: () => navigate("/settings/analytics"),
@@ -112,11 +106,6 @@ export const Header = () => {
           label: "Profile",
           Icon: <User className="w-4 h-4" />,
           onClick: () => navigate("/profile"),
-        },
-        {
-          label: "Favorites",
-          Icon: <Heart className="w-4 h-4" />,
-          onClick: () => navigate("/profile?tab=favorites"),
         },
         {
           label: "Settings",
