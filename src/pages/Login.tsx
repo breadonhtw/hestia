@@ -2,7 +2,7 @@ import { useState } from "react";
 import { LogIn, Lock, Mail, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { showToast } from "@/hooks/use-toast-modern";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 
@@ -21,12 +21,8 @@ const Login = () => {
 
   const handleSignIn = async () => {
     if (!emailOrUsername || !password) {
-      showToast({
-        title: "Missing Information",
-        message: "Please enter both email/username and password.",
-        variant: "warning",
-        position: "bottom-right",
-        duration: 4000,
+      toast.warning("Missing Information", {
+        description: "Please enter both email/username and password.",
       });
       return;
     }
@@ -35,24 +31,15 @@ const Login = () => {
     const { error } = await signIn(emailOrUsername, password);
 
     if (error) {
-      showToast({
-        title: "Sign In Failed",
-        message: error.message || "Invalid credentials. Please try again.",
-        variant: "error",
-        position: "bottom-right",
-        duration: 5000,
+      toast.error("Sign In Failed", {
+        description: error.message || "Invalid credentials. Please try again.",
       });
       setIsLoading(false);
       return;
     }
 
-    showToast({
-      title: "Welcome to Hestia!",
-      message: "You've successfully signed in.",
-      variant: "success",
-      position: "bottom-right",
-      duration: 3000,
-      highlightTitle: true,
+    toast.success("Welcome to Hestia!", {
+      description: "You've successfully signed in.",
     });
     navigate("/");
   };
@@ -67,12 +54,8 @@ const Login = () => {
     });
 
     if (error) {
-      showToast({
-        title: "Google Sign In Failed",
-        message: error.message,
-        variant: "error",
-        position: "bottom-right",
-        duration: 5000,
+      toast.error("Google Sign In Failed", {
+        description: error.message,
       });
       setIsLoading(false);
     }
