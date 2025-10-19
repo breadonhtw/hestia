@@ -16,7 +16,9 @@
       "Read(//Users/brandon/.claude/plugins/marketplaces/anthropic-agent-skills/skill-creator/**)",
       "Bash(python /Users/brandon/.claude/skills/hestia-uiux-designer/scripts/validate-accessibility.py /Users/brandon/hestia-2/src/pages/CreatorProfileEnhanced.tsx)",
       "Bash(wc -l /Users/brandon/hestia-2/src/**/*.{ts,tsx})",
-      "Bash(git add -A)"
+      "Bash(git add -A)",
+      "Bash(git commit -m \"Fix: Contact tab updates and resolve React fetchPriority warning\")",
+      "Bash(git push origin main)"
     ],
     "deny": [],
     "ask": []
