@@ -29,20 +29,27 @@ export const FavoritesList = () => {
         .in('id', favoriteIds.map(f => f.artisan_id));
 
       // Map back to favorites format for compatibility
-      return artisans?.map(artisan => ({
-        id: artisan.id,
-        artisan: {
+      // Filter out null/undefined artisans and those missing required fields
+      return artisans
+        ?.filter(artisan =>
+          artisan != null &&
+          artisan.username != null &&
+          artisan.full_name != null
+        )
+        .map(artisan => ({
           id: artisan.id,
-          bio: artisan.bio,
-          craft_type: artisan.craft_type,
-          location: artisan.location,
-          profile: {
-            username: artisan.username,
-            full_name: artisan.full_name,
-            avatar_url: artisan.avatar_url
+          artisan: {
+            id: artisan.id,
+            bio: artisan.bio,
+            craft_type: artisan.craft_type,
+            location: artisan.location,
+            profile: {
+              username: artisan.username,
+              full_name: artisan.full_name,
+              avatar_url: artisan.avatar_url
+            }
           }
-        }
-      })) || [];
+        })) || [];
     }
   });
 
@@ -67,26 +74,33 @@ export const FavoritesList = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {favorites.map((fav: any) => (
-        <Link key={fav.id} to={`/artisan/${fav.artisan.profile.username}`}>
-          <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-            <div className="aspect-square bg-muted relative">
-              {fav.artisan.profile.avatar_url && (
-                <img
-                  src={fav.artisan.profile.avatar_url}
-                  alt={fav.artisan.profile.full_name}
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
-            <div className="p-4">
-              <h3 className="font-semibold text-lg">{fav.artisan.profile.full_name}</h3>
-              <p className="text-sm text-muted-foreground">{fav.artisan.craft_type}</p>
-              <p className="text-sm text-muted-foreground">{fav.artisan.location}</p>
-            </div>
-          </Card>
-        </Link>
-      ))}
+      {favorites.map((fav: any) => {
+        // Additional safety check - skip if profile data is incomplete
+        if (!fav?.artisan?.profile?.username || !fav?.artisan?.profile?.full_name) {
+          return null;
+        }
+
+        return (
+          <Link key={fav.id} to={`/artisan/${fav.artisan.profile.username}`}>
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="aspect-square bg-muted relative">
+                {fav.artisan.profile.avatar_url && (
+                  <img
+                    src={fav.artisan.profile.avatar_url}
+                    alt={fav.artisan.profile.full_name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-lg">{fav.artisan.profile.full_name}</h3>
+                <p className="text-sm text-muted-foreground">{fav.artisan.craft_type}</p>
+                <p className="text-sm text-muted-foreground">{fav.artisan.location}</p>
+              </div>
+            </Card>
+          </Link>
+        );
+      })}
     </div>
   );
 };
