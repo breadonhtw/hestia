@@ -198,7 +198,7 @@ const Index = () => {
         {latestPublication && (
           <section
             ref={magazineReveal.ref}
-            className="relative z-10 py-24 pointer-events-auto"
+            className="relative z-10 min-h-[60vh] py-12 md:py-16 lg:py-20 flex items-center pointer-events-auto"
           >
             <div className="container mx-auto px-4 lg:px-8">
               <div className="text-center mb-12">
@@ -266,7 +266,7 @@ const Index = () => {
         )}
 
         {/* Explore Our Artisans - Uniform Grid with Scroll Reveal */}
-        <section className="relative z-10 container mx-auto px-4 lg:px-8 py-24 pointer-events-auto">
+        <section className="relative z-10 container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20 pointer-events-auto">
           <div className="text-center mb-12">
             <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
               Explore Our Artisans
@@ -309,7 +309,7 @@ const Index = () => {
         </section>
 
         {/* Browse by Craft Categories with Custom Icons */}
-        <section className="relative z-10 bg-primary/5 py-24">
+        <section className="relative z-10 bg-primary/5 py-12 md:py-16 lg:py-20">
           <div className="container mx-auto px-4 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">

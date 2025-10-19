@@ -81,9 +81,11 @@ const CreatorProfile = () => {
   if (isLoading) {
     return (
       <PageLayout>
-        <div className="w-full max-w-[1920px]">
-          <div className="container mx-auto px-4 py-24 text-center">
-            <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+        <div className="w-full">
+          <div className="container mx-auto px-4 min-h-[60vh] py-12 md:py-16 lg:py-20 flex items-center justify-center">
+            <div className="text-center">
+              <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+            </div>
           </div>
           <Footer />
         </div>
@@ -94,14 +96,16 @@ const CreatorProfile = () => {
   if (!artisan) {
     return (
       <PageLayout>
-        <div className="w-full max-w-[1920px]">
-          <div className="container mx-auto px-4 py-24 text-center">
-            <h1 className="font-serif text-4xl font-bold mb-4">
-              Creator Not Found
-            </h1>
-            <Link to="/browse">
-              <Button>Browse Creators</Button>
-            </Link>
+        <div className="w-full">
+          <div className="container mx-auto px-4 min-h-[60vh] py-12 md:py-16 lg:py-20 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="font-serif text-4xl font-bold mb-4">
+                Creator Not Found
+              </h1>
+              <Link to="/browse">
+                <Button>Browse Creators</Button>
+              </Link>
+            </div>
           </div>
           <Footer />
         </div>
@@ -154,7 +158,7 @@ const CreatorProfile = () => {
 
   return (
     <PageLayout>
-      <div className="w-full max-w-[1920px]">
+      <div className="w-full">
         <Helmet>
           <title>{`${creator.name} | ${creator.craftType} | Hestia`}</title>
           <meta
@@ -184,7 +188,7 @@ const CreatorProfile = () => {
 
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-          <div className="container mx-auto px-4 lg:px-8 py-12 md:py-16">
+          <div className="container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20">
             <div className="flex flex-col md:flex-row gap-8 items-start">
               {/* Avatar */}
               <div className="relative">
@@ -291,9 +295,8 @@ const CreatorProfile = () => {
           </div>
         </section>
 
-
         {/* Tabbed Content */}
-        <section className="container mx-auto px-4 lg:px-8 py-12">
+        <section className="container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20">
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
@@ -442,7 +445,10 @@ const CreatorProfile = () => {
                     )}
                     {artisan.telegram && (
                       <a
-                        href={`https://t.me/${artisan.telegram.replace('@', '')}`}
+                        href={`https://t.me/${artisan.telegram.replace(
+                          "@",
+                          ""
+                        )}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 p-4 rounded-xl bg-card hover:bg-muted transition-colors border border-border"
@@ -497,7 +503,7 @@ const CreatorProfile = () => {
 
         {/* Similar Creators */}
         {similarCreators.length > 0 && (
-          <section className="container mx-auto px-4 lg:px-8 py-16 border-t border-border">
+          <section className="container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20 border-t border-border">
             <h2 className="font-serif text-2xl md:text-3xl font-bold mb-8">
               Discover Similar Creators
             </h2>

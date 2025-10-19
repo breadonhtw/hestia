@@ -18,7 +18,7 @@ const Publications = () => {
 
   return (
     <PageLayout>
-      <div className="w-full max-w-[1920px]">
+      <div className="w-full">
         <Helmet>
           <title>This Week at Hestia – Magazine Archive | Hestia</title>
           <meta
@@ -26,20 +26,27 @@ const Publications = () => {
             content="Explore our weekly magazine featuring themed content about artisans and makers in Singapore."
           />
           <link rel="canonical" href={`https://www.hestia.sg/publications`} />
-          <meta property="og:title" content="This Week at Hestia – Magazine Archive | Hestia" />
+          <meta
+            property="og:title"
+            content="This Week at Hestia – Magazine Archive | Hestia"
+          />
           <meta
             property="og:description"
             content="Discover weekly themed magazines celebrating artisans and makers."
           />
           <meta property="og:type" content="website" />
-          <meta property="og:image" content="https://www.hestia.sg/og-image.jpg" />
+          <meta
+            property="og:image"
+            content="https://www.hestia.sg/og-image.jpg"
+          />
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
               "@type": "CollectionPage",
               name: "This Week at Hestia – Magazine Archive",
               url: "https://www.hestia.sg/publications",
-              description: "Weekly magazine archive celebrating artisans and makers",
+              description:
+                "Weekly magazine archive celebrating artisans and makers",
               mainEntity: {
                 "@type": "Collection",
                 name: "Hestia Magazine Archive",
@@ -49,7 +56,7 @@ const Publications = () => {
         </Helmet>
 
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-primary/20 to-secondary/20 py-20">
+        <section className="relative bg-gradient-to-br from-primary/20 to-secondary/20 min-h-[50vh] py-12 md:py-16 lg:py-20 flex items-center">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
           <div className="container mx-auto px-4 relative">
             <div className="max-w-3xl">
@@ -57,7 +64,8 @@ const Publications = () => {
                 This Week at Hestia
               </h1>
               <p className="text-lg text-muted-foreground">
-                Weekly magazine celebrating artisans, makers, and creative community.
+                Weekly magazine celebrating artisans, makers, and creative
+                community.
               </p>
             </div>
           </div>
@@ -65,7 +73,7 @@ const Publications = () => {
 
         {/* Current Week's Magazine */}
         {currentPublication && (
-          <section className="container mx-auto px-4 lg:px-8 py-16 border-b border-border">
+          <section className="container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20 border-b border-border">
             <div className="text-center mb-8">
               <div className="inline-block mb-4">
                 <span className="text-sm font-medium text-primary bg-primary/10 px-4 py-2 rounded-full">
@@ -123,7 +131,7 @@ const Publications = () => {
         )}
 
         {/* Past Issues Archive */}
-        <section className="container mx-auto px-4 lg:px-8 py-16">
+        <section className="container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20">
           <div className="mb-8">
             <h2 className="font-serif text-3xl font-bold text-foreground mb-2">
               Past Issues
@@ -200,7 +208,9 @@ const Publications = () => {
 
                         {publication.active_from && (
                           <div className="text-sm text-[#5A6F6B] dark:text-[#C4B5A5]">
-                            {new Date(publication.active_from).toLocaleDateString("en-US", {
+                            {new Date(
+                              publication.active_from
+                            ).toLocaleDateString("en-US", {
                               month: "long",
                               day: "numeric",
                               year: "numeric",
@@ -214,7 +224,7 @@ const Publications = () => {
               </div>
             </>
           ) : (
-            <div className="text-center py-16">
+            <div className="text-center py-12 md:py-16 lg:py-20">
               <Sparkles className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
               <h3 className="font-serif text-2xl font-bold text-foreground mb-2">
                 No Past Issues Yet

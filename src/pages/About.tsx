@@ -11,26 +11,28 @@ const About = () => {
 
   return (
     <PageLayout>
-      <div className="w-full max-w-[1920px]">
+      <div className="w-full">
         {/* Hero */}
-        <section className="container mx-auto px-4 lg:px-8 py-24 text-center">
-          <img
-            src={hestiaLogo}
-            alt="Hestia"
-            className="h-24 mx-auto mb-8 animate-float"
-          />
-          <h1 className="font-serif text-5xl md:text-6xl font-bold text-foreground mb-6">
-            About Hestia
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Named after the Greek goddess of home and hearth, Hestia celebrates
-            the makers who craft beauty from their homes, bringing warmth and
-            artistry to our neighborhoods.
-          </p>
+        <section className="container mx-auto px-4 lg:px-8 min-h-[60vh] py-12 md:py-16 lg:py-20 flex items-center justify-center">
+          <div className="text-center w-full">
+            <img
+              src={hestiaLogo}
+              alt="Hestia"
+              className="h-24 mx-auto mb-8 animate-float"
+            />
+            <h1 className="font-serif text-5xl md:text-6xl font-bold text-foreground mb-6">
+              About Hestia
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Named after the Greek goddess of home and hearth, Hestia
+              celebrates the makers who craft beauty from their homes, bringing
+              warmth and artistry to our neighborhoods.
+            </p>
+          </div>
         </section>
 
         {/* Mission */}
-        <section className="bg-primary/5 py-24">
+        <section className="bg-primary/5 py-12 md:py-16 lg:py-20">
           <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
             <h2 className="font-serif text-4xl font-bold text-foreground mb-8 text-center">
               Our Mission
@@ -46,7 +48,7 @@ const About = () => {
         </section>
 
         {/* Values */}
-        <section className="container mx-auto px-4 lg:px-8 py-24">
+        <section className="container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20">
           <h2 className="font-serif text-4xl font-bold text-foreground mb-16 text-center">
             Why Hestia?
           </h2>
@@ -94,7 +96,7 @@ const About = () => {
         </section>
 
         {/* For Creators */}
-        <section className="bg-card border-y border-border py-24">
+        <section className="bg-card border-y border-border py-12 md:py-16 lg:py-20">
           <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
             <h2 className="font-serif text-4xl font-bold text-foreground mb-8 text-center">
               For Creators
@@ -119,7 +121,7 @@ const About = () => {
         </section>
 
         {/* For Discoverers */}
-        <section className="container mx-auto px-4 lg:px-8 py-24 max-w-4xl">
+        <section className="container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20 max-w-4xl">
           <h2 className="font-serif text-4xl font-bold text-foreground mb-8 text-center">
             For Discoverers
           </h2>

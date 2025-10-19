@@ -219,7 +219,7 @@ const Browse = () => {
   };
   return (
     <PageLayout>
-      <div className="w-full max-w-[1920px]">
+      <div className="w-full">
         <Helmet>
           <title>Browse Artisans | Hestia</title>
           <meta
@@ -233,7 +233,10 @@ const Browse = () => {
             content="Discover and connect with talented local artisans by craft and location."
           />
           <meta property="og:type" content="website" />
-          <meta property="og:image" content="https://www.hestia.sg/og-image.jpg" />
+          <meta
+            property="og:image"
+            content="https://www.hestia.sg/og-image.jpg"
+          />
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -244,7 +247,7 @@ const Browse = () => {
             })}
           </script>
         </Helmet>
-        <div className="container mx-auto px-4 lg:px-8 py-12">
+        <div className="container mx-auto px-4 lg:px-8 py-12 md:py-16 lg:py-20">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar Filters */}
             <aside className="lg:w-80 flex-shrink-0">
