@@ -2,7 +2,7 @@ import { useState } from "react";
 import { UserPlus, Lock, Mail, User, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { showToast } from "@/hooks/use-toast-modern";
+import { toast } from "sonner";
 import { validatePasswordStrength, validateUsername } from "@/lib/password-validation";
 import { motion } from "framer-motion";
 
@@ -29,45 +29,29 @@ const Join = () => {
   const handleSignUp = async () => {
     // Validation
     if (!email || !username || !fullName || !password) {
-      showToast({
-        title: "Missing Information",
-        message: "Please fill in all required fields.",
-        variant: "warning",
-        position: "bottom-right",
-        duration: 4000,
+      toast.warning("Missing Information", {
+        description: "Please fill in all required fields.",
       });
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showToast({
-        title: "Invalid Email",
-        message: "Please enter a valid email address.",
-        variant: "error",
-        position: "bottom-right",
-        duration: 4000,
+      toast.error("Invalid Email", {
+        description: "Please enter a valid email address.",
       });
       return;
     }
 
     if (!usernameValidation.isValid) {
-      showToast({
-        title: "Invalid Username",
-        message: usernameValidation.error,
-        variant: "error",
-        position: "bottom-right",
-        duration: 4000,
+      toast.error("Invalid Username", {
+        description: usernameValidation.error,
       });
       return;
     }
 
     if (!passwordStrength.isValid) {
-      showToast({
-        title: "Weak Password",
-        message: passwordStrength.feedback.join(", "),
-        variant: "error",
-        position: "bottom-right",
-        duration: 5000,
+      toast.error("Weak Password", {
+        description: passwordStrength.feedback.join(", "),
       });
       return;
     }
@@ -77,24 +61,15 @@ const Join = () => {
     const { error } = await signUp(email, password, fullName, username, 'community_member');
 
     if (error) {
-      showToast({
-        title: "Sign Up Failed",
-        message: error.message,
-        variant: "error",
-        position: "bottom-right",
-        duration: 5000,
+      toast.error("Sign Up Failed", {
+        description: error.message,
       });
       setIsLoading(false);
       return;
     }
 
-    showToast({
-      title: "Welcome to Hestia!",
-      message: "Please check your email to verify your account.",
-      variant: "success",
-      position: "bottom-right",
-      duration: 5000,
-      highlightTitle: true,
+    toast.success("Welcome to Hestia!", {
+      description: "Please check your email to verify your account.",
     });
 
     setIsLoading(false);
@@ -107,12 +82,8 @@ const Join = () => {
       setIsUsernameAvailable(isAvailable);
 
       if (!isAvailable) {
-        showToast({
-          title: "Username Taken",
-          message: "This username is already in use. Please choose another.",
-          variant: "warning",
-          position: "bottom-right",
-          duration: 4000,
+        toast.warning("Username Taken", {
+          description: "This username is already in use. Please choose another.",
         });
       }
     }
