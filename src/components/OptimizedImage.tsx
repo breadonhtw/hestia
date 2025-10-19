@@ -63,7 +63,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       alt={alt}
       loading={fetchPriority === "high" ? undefined : "lazy"}
       decoding="async"
-      fetchPriority={fetchPriority}
+      fetchpriority={fetchPriority}
       className={className}
       {...imgProps}
     />

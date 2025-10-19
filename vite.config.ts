@@ -48,13 +48,15 @@ export default defineConfig(async ({ mode }) => {
           // Create meaningful vendor chunks to improve caching
           manualChunks(id) {
             if (id.includes("node_modules")) {
+              // Bundle React and Radix UI together to prevent loading race conditions
+              if (id.match(/[\\/]react(-dom)?[\\/]/) || id.includes("@radix-ui")) {
+                return "vendor-react";
+              }
               if (id.includes("@supabase")) return "vendor-supabase";
               if (id.includes("@tanstack")) return "vendor-react-query";
               if (id.includes("react-router")) return "vendor-router";
               if (id.includes("lucide-react")) return "vendor-icons";
-              if (id.includes("@radix-ui")) return "vendor-radix";
               if (id.includes("framer-motion")) return "vendor-motion";
-              if (id.match(/[\\/]react(-dom)?[\\/]/)) return "vendor-react";
             }
           },
         },

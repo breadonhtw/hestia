@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -101,6 +102,12 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
+      {/* React Query DevTools - Only in development */}
+      {import.meta.env.DEV && (
+        <React.Suspense fallback={null}>
+          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+        </React.Suspense>
+      )}
     </PersistQueryClientProvider>
   );
 };
