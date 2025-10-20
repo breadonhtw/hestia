@@ -112,6 +112,9 @@ export const CreatorCard = ({
           boxShadow: isHovered
             ? "0 6px 20px rgba(184, 151, 106, 0.3)"
             : "0 2px 12px rgba(0, 0, 0, 0.08)",
+          willChange: "transform",
+          transformOrigin: "center center",
+          contain: "layout",
         }}
       >
         {/* New Badge */}
@@ -190,6 +193,8 @@ export const CreatorCard = ({
         boxShadow: isHovered
           ? "0 8px 24px rgba(184, 151, 106, 0.4)"
           : "0 2px 12px rgba(0, 0, 0, 0.08)",
+        willChange: "transform",
+        contain: "layout",
       }}
     >
       {/* New Badge */}
@@ -265,6 +270,7 @@ export const CreatorCard = ({
               <div
                 key={work.id}
                 className="w-16 h-16 rounded-lg overflow-hidden border-2 border-primary/20 hover:border-primary transition-all"
+                style={{ aspectRatio: '1 / 1' }}
               >
                 <img
                   src={work.image}

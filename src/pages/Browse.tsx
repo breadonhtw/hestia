@@ -6,6 +6,25 @@ import { PageLayout } from "@/components/PageLayout";
 const FooterLazy = lazy(() =>
   import("@/components/Footer").then((m) => ({ default: m.Footer }))
 );
+// Lazy load heavy Select component (uses react-aria-components - 2MB)
+const Select = lazy(() =>
+  import("@/components/ui/select").then((m) => ({ default: m.Select }))
+);
+const SelectItem = lazy(() =>
+  import("@/components/ui/select").then((m) => ({ default: m.SelectItem }))
+);
+const SelectListBox = lazy(() =>
+  import("@/components/ui/select").then((m) => ({ default: m.SelectListBox }))
+);
+const SelectPopover = lazy(() =>
+  import("@/components/ui/select").then((m) => ({ default: m.SelectPopover }))
+);
+const SelectTrigger = lazy(() =>
+  import("@/components/ui/select").then((m) => ({ default: m.SelectTrigger }))
+);
+const SelectValue = lazy(() =>
+  import("@/components/ui/select").then((m) => ({ default: m.SelectValue }))
+);
 import { CreatorCard } from "@/components/CreatorCard";
 import { CreatorOverlay } from "@/components/CreatorOverlay";
 import { Button } from "@/components/ui/button";
@@ -13,14 +32,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { SkeletonCard } from "@/components/SkeletonCard";
-import {
-  Select,
-  SelectItem,
-  SelectListBox,
-  SelectPopover,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useArtisans } from "@/hooks/useArtisans";
 import { useArtisansInfinite } from "@/hooks/useArtisansInfinite";
 import { Creator } from "@/types/creator";
@@ -288,29 +299,31 @@ const Browse = () => {
                   <h3 className="font-medium mb-3 text-[#2A5A54] dark:text-[#E8DFD3]">
                     Location
                   </h3>
-                  <Select
-                    selectedKey={pendingLocation}
-                    onSelectionChange={(key) =>
-                      setPendingLocation(key as string)
-                    }
-                    placeholder="Select location"
-                  >
-                    <SelectTrigger className="w-full bg-background dark:bg-[rgba(245,240,232,0.08)] focus-terracotta">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectPopover className="dark:bg-[rgba(245,240,232,0.08)]">
-                      <SelectListBox>
-                        {locations.map((location) => (
-                          <SelectItem
-                            key={location}
-                            id={location === "All Locations" ? "all" : location}
-                          >
-                            {location}
-                          </SelectItem>
-                        ))}
-                      </SelectListBox>
-                    </SelectPopover>
-                  </Select>
+                  <Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded-md" />}>
+                    <Select
+                      selectedKey={pendingLocation}
+                      onSelectionChange={(key) =>
+                        setPendingLocation(key as string)
+                      }
+                      placeholder="Select location"
+                    >
+                      <SelectTrigger className="w-full bg-background dark:bg-[rgba(245,240,232,0.08)] focus-terracotta">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectPopover className="dark:bg-[rgba(245,240,232,0.08)]">
+                        <SelectListBox>
+                          {locations.map((location) => (
+                            <SelectItem
+                              key={location}
+                              id={location === "All Locations" ? "all" : location}
+                            >
+                              {location}
+                            </SelectItem>
+                          ))}
+                        </SelectListBox>
+                      </SelectPopover>
+                    </Select>
+                  </Suspense>
                 </div>
 
                 {/* Availability Filters */}
@@ -569,25 +582,27 @@ const Browse = () => {
                   <span className="text-sm text-[#2A5A54] dark:text-[#E8DFD3]">
                     Sort by:
                   </span>
-                  <Select
-                    selectedKey={sortBy}
-                    onSelectionChange={(key) => setSortBy(key as string)}
-                  >
-                    <SelectTrigger
-                      className="w-40 dark:bg-[rgba(245,240,232,0.08)] focus-terracotta"
-                      aria-label="Sort by"
+                  <Suspense fallback={<div className="h-10 w-40 bg-muted animate-pulse rounded-md" />}>
+                    <Select
+                      selectedKey={sortBy}
+                      onSelectionChange={(key) => setSortBy(key as string)}
                     >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectPopover className="dark:bg-[rgba(245,240,232,0.08)]">
-                      <SelectListBox>
-                        <SelectItem id="featured">Featured</SelectItem>
-                        <SelectItem id="newest">Newest</SelectItem>
-                        <SelectItem id="a-z">A-Z</SelectItem>
-                        <SelectItem id="nearby">Nearby</SelectItem>
-                      </SelectListBox>
-                    </SelectPopover>
-                  </Select>
+                      <SelectTrigger
+                        className="w-40 dark:bg-[rgba(245,240,232,0.08)] focus-terracotta"
+                        aria-label="Sort by"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectPopover className="dark:bg-[rgba(245,240,232,0.08)]">
+                        <SelectListBox>
+                          <SelectItem id="featured">Featured</SelectItem>
+                          <SelectItem id="newest">Newest</SelectItem>
+                          <SelectItem id="a-z">A-Z</SelectItem>
+                          <SelectItem id="nearby">Nearby</SelectItem>
+                        </SelectListBox>
+                      </SelectPopover>
+                    </Select>
+                  </Suspense>
                 </div>
               </div>
 

@@ -99,12 +99,12 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
-      {/* React Query DevTools - Only in development */}
-      {import.meta.env.DEV && (
+      {/* React Query DevTools - Temporarily disabled for CLS testing */}
+      {/* {import.meta.env.DEV && (
         <React.Suspense fallback={null}>
           <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
         </React.Suspense>
-      )}
+      )} */}
     </PersistQueryClientProvider>
   );
 };

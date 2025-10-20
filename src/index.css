@@ -25,7 +25,7 @@ All colors MUST be HSL.
   src: url("/fonts/PlayfairDisplay-VariableFont_wght.woff2") format("woff2"),
     url("/fonts/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
   font-weight: 100 900;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -33,7 +33,7 @@ All colors MUST be HSL.
   src: url("/fonts/Inter-VariableFont_opsz,wght.woff2") format("woff2"),
     url("/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
   font-weight: 100 900;
-  font-display: swap;
+  font-display: block;
 }
 
 @layer base {

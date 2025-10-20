@@ -145,9 +145,13 @@ export const Header = () => {
             <img
               src={hestiaLogo}
               alt="Hestia"
-              className={`transition-all duration-300 ${
-                isScrolled ? "h-10" : "h-12"
-              }`}
+              className="h-12 transition-transform duration-300"
+              style={{
+                transform: isScrolled ? "scale(0.833)" : "scale(1)",
+                transformOrigin: "left center",
+              }}
+              width={48}
+              height={48}
             />
           </Link>
 

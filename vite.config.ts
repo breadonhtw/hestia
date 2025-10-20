@@ -52,11 +52,15 @@ export default defineConfig(async ({ mode }) => {
               if (id.match(/[\\/]react(-dom)?[\\/]/) || id.includes("@radix-ui")) {
                 return "vendor-react";
               }
+              // Separate large dependencies for better code splitting
+              if (id.includes("@sentry")) return "vendor-sentry";
+              if (id.includes("react-aria-components")) return "vendor-aria";
               if (id.includes("@supabase")) return "vendor-supabase";
               if (id.includes("@tanstack")) return "vendor-react-query";
               if (id.includes("react-router")) return "vendor-router";
               if (id.includes("lucide-react")) return "vendor-icons";
               if (id.includes("framer-motion")) return "vendor-motion";
+              if (id.includes("react-helmet")) return "vendor-helmet";
             }
           },
         },

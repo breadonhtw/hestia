@@ -213,6 +213,8 @@ export const CreatorOverlay = ({
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                           loading="lazy"
                           decoding="async"
+                          width={160}
+                          height={160}
                           onError={() => handleImageError(image.id)}
                         />
                       )}

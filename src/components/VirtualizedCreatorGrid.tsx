@@ -27,7 +27,9 @@ export function VirtualizedCreatorGrid({ creators, renderCard, onEndReached }: P
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => 460, // approximate row height
+    // Dynamic height estimate: card (~420px) + gap (32px) + buffer (20px) = 472px
+    // Buffer accounts for badges, longer names, and content variations
+    estimateSize: () => 472,
     overscan: 6,
   });
 

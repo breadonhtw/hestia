@@ -1,6 +1,3 @@
-import * as Sentry from "@sentry/react";
-import { onCLS, onLCP, onFCP, onTTFB, onINP } from 'web-vitals';
-
 /**
  * Initialize monitoring and error tracking for production
  *
@@ -10,8 +7,9 @@ import { onCLS, onLCP, onFCP, onTTFB, onINP } from 'web-vitals';
  * - Performance tracing for critical operations
  *
  * Only runs in production to avoid noise in development
+ * Uses dynamic imports to avoid loading Sentry in development
  */
-export function initMonitoring() {
+export async function initMonitoring() {
   // Only run in production
   if (import.meta.env.MODE !== 'production') {
     console.log('📊 Monitoring disabled in development mode');
@@ -24,6 +22,12 @@ export function initMonitoring() {
     console.warn('⚠️ VITE_SENTRY_DSN not configured - error tracking disabled');
     return;
   }
+
+  // Dynamically import Sentry only in production
+  const [{ default: Sentry }, { onCLS, onLCP, onFCP, onTTFB, onINP }] = await Promise.all([
+    import('@sentry/react').then(mod => ({ default: mod })),
+    import('web-vitals')
+  ]);
 
   // Initialize Sentry
   Sentry.init({
@@ -51,11 +55,6 @@ export function initMonitoring() {
   // Report Web Vitals to Sentry
   function sendToSentry(metric: any) {
     Sentry.setMeasurement(metric.name, metric.value, metric.unit);
-
-    // Also log to console in development
-    if (import.meta.env.DEV) {
-      console.log(`📈 ${metric.name}:`, metric.value, metric.unit);
-    }
   }
 
   onCLS(sendToSentry);
@@ -87,13 +86,14 @@ export const trackPerformance = {
     }
   },
 
-  measure(name: string, startMark: string, endMark?: string) {
+  async measure(name: string, startMark: string, endMark?: string) {
     if (typeof performance !== 'undefined' && performance.measure) {
       try {
         const measurement = performance.measure(name, startMark, endMark);
 
         // Send to Sentry in production
         if (import.meta.env.MODE === 'production') {
+          const { default: Sentry } = await import('@sentry/react').then(mod => ({ default: mod }));
           Sentry.setMeasurement(name, measurement.duration, 'millisecond');
         }
 
