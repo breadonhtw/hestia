@@ -18,7 +18,8 @@
       "Bash(wc -l /Users/brandon/hestia-2/src/**/*.{ts,tsx})",
       "Bash(git add -A)",
       "Bash(git commit -m \"Fix: Contact tab updates and resolve React fetchPriority warning\")",
-      "Bash(git push origin main)"
+      "Bash(git push origin main)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
