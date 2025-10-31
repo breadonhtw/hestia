@@ -27,11 +27,13 @@ import { GradientText } from "@/components/ui/gradient-text";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { MagazineModal } from "@/components/MagazineModal";
 import { Footer } from "@/components/Footer";
+import { StreetSign } from "@/components/StreetSign";
 
 const Index = () => {
   const { user } = useAuth();
   const { data: artisansData, isLoading } = useArtisans();
-  const { data: publicationsData, isLoading: isLoadingPublications } = usePublications();
+  const { data: publicationsData, isLoading: isLoadingPublications } =
+    usePublications();
   const location = useLocation();
 
   // Get latest publication
@@ -99,7 +101,10 @@ const Index = () => {
             content="Connect with talented home-based artisans and makers in your neighbourhood."
           />
           <meta property="og:type" content="website" />
-          <meta property="og:image" content="https://www.hestia.sg/og-image.jpg" />
+          <meta
+            property="og:image"
+            content="https://www.hestia.sg/og-image.jpg"
+          />
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -107,10 +112,9 @@ const Index = () => {
               name: "Hestia",
               url: "https://www.hestia.sg",
               logo: "https://www.hestia.sg/hestia-logo.svg",
-              description: "Connect with talented home-based artisans and makers in Singapore. Discover handcrafted pottery, textiles, woodwork, and more.",
-              sameAs: [
-                "https://instagram.com/hestia_sg",
-              ],
+              description:
+                "Connect with talented home-based artisans and makers in Singapore. Discover handcrafted pottery, textiles, woodwork, and more.",
+              sameAs: ["https://instagram.com/hestia_sg"],
               address: {
                 "@type": "PostalAddress",
                 addressCountry: "SG",
@@ -147,7 +151,12 @@ const Index = () => {
               {/* Left: Content */}
               <div className="space-y-8 max-w-xl">
                 <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight">
-                  Discover the Makers Behind Your Neighborhood's Hidden Treasures
+                  Discover the Makers Behind Your{" "}
+                  <StreetSign
+                    className="mx-1 md:mx-2 align-middle"
+                    text="Neighborhood's"
+                  />{" "}
+                  Hidden Treasures
                 </h1>
 
                 <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
@@ -206,7 +215,8 @@ const Index = () => {
                   Stories from Our Community
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Pull up a chair and discover the heartwarming stories of makers in your neighborhood
+                  Pull up a chair and discover the heartwarming stories of
+                  makers in your neighborhood
                 </p>
               </div>
 
@@ -257,7 +267,10 @@ const Index = () => {
               </div>
 
               <div className="text-center mt-8">
-                <Link to="/publications" className="text-sm text-muted-foreground hover:text-primary transition-colors underline">
+                <Link
+                  to="/publications"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors underline"
+                >
                   Browse All Stories
                 </Link>
               </div>
